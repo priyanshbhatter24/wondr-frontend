@@ -4,6 +4,10 @@ import { useState, useRef, useEffect } from "react";
 import Sidebar from "@/components/Sidebar";
 import InsightCard from "@/components/InsightCard";
 import InsightModal from "@/components/InsightModal";
+import CompetitorCard, {
+  type CompetitorHero,
+  type CompetitorMetric,
+} from "@/components/CompetitorCard";
 import { ChevronLeftIcon, ChevronRightIcon, FileIcon } from "@radix-ui/react-icons";
 
 interface InsightData {
@@ -16,6 +20,13 @@ interface InsightData {
 }
 
 type CompetitorType = "Meta" | "Alphabet" | "Microsoft";
+
+interface CompetitorInsightData extends InsightData {
+  hero: CompetitorHero;
+  metrics: CompetitorMetric[];
+  ctaLabel: string;
+  ctaHref?: string;
+}
 
 export default function IdeaHubPage() {
   const [selectedInsight, setSelectedInsight] = useState<InsightData | null>(null);
@@ -88,7 +99,7 @@ export default function IdeaHubPage() {
   ];
 
   // Competitor Insights data
-  const competitorInsights: Record<CompetitorType, InsightData[]> = {
+  const competitorInsights: Record<CompetitorType, CompetitorInsightData[]> = {
     Meta: [
       {
         id: "meta-1",
@@ -103,6 +114,19 @@ export default function IdeaHubPage() {
           { text: "Need for smaller form factor to enable tech" },
         ],
         fullContent: "Meta's strategic analysis...",
+        hero: {
+          imageUrl: "/window.svg",
+          imageAlt: "Earplug advertisement",
+          source: "Remix campaign",
+          sourceUrl: "remixstudio.ai",
+        },
+        metrics: [
+          { type: "views", label: "Views", value: 27864 },
+          { type: "likes", label: "Likes", value: 3245 },
+          { type: "shares", label: "Shares", value: 450 },
+          { type: "comments", label: "Comments", value: 271 },
+        ],
+        ctaLabel: "Try with 100-day free returns",
       },
       {
         id: "meta-2",
@@ -117,6 +141,19 @@ export default function IdeaHubPage() {
           { text: "Need for smaller form factor to enable tech" },
         ],
         fullContent: "Additional Meta insights...",
+        hero: {
+          imageUrl: "/globe.svg",
+          imageAlt: "Global collaboration graphic",
+          source: "Research spotlight",
+          sourceUrl: "insights.meta.com",
+        },
+        metrics: [
+          { type: "views", label: "Views", value: 19840 },
+          { type: "likes", label: "Likes", value: 2860 },
+          { type: "shares", label: "Shares", value: 390 },
+          { type: "comments", label: "Comments", value: 185 },
+        ],
+        ctaLabel: "Open competitive brief",
       },
     ],
     Alphabet: [
@@ -133,6 +170,19 @@ export default function IdeaHubPage() {
           { text: "Need for smaller form factor to enable tech" },
         ],
         fullContent: "Alphabet insights...",
+        hero: {
+          imageUrl: "/file.svg",
+          imageAlt: "Product concept illustration",
+          source: "Design proposal",
+          sourceUrl: "designhub.google",
+        },
+        metrics: [
+          { type: "views", label: "Views", value: 23450 },
+          { type: "likes", label: "Likes", value: 1982 },
+          { type: "shares", label: "Shares", value: 512 },
+          { type: "comments", label: "Comments", value: 143 },
+        ],
+        ctaLabel: "Review opportunity",
       },
     ],
     Microsoft: [
@@ -149,6 +199,19 @@ export default function IdeaHubPage() {
           { text: "Need for smaller form factor to enable tech" },
         ],
         fullContent: "Microsoft analysis...",
+        hero: {
+          imageUrl: "/window.svg",
+          imageAlt: "Immersive collaboration mockup",
+          source: "Campaign rollout",
+          sourceUrl: "microsoft.design",
+        },
+        metrics: [
+          { type: "views", label: "Views", value: 25670 },
+          { type: "likes", label: "Likes", value: 3104 },
+          { type: "shares", label: "Shares", value: 478 },
+          { type: "comments", label: "Comments", value: 206 },
+        ],
+        ctaLabel: "Download playbook",
       },
     ],
   };
@@ -268,12 +331,16 @@ export default function IdeaHubPage() {
               className="flex gap-4 overflow-x-auto scrollbar-hide scroll-smooth pb-2"
             >
               {competitorInsights[activeCompetitor].map((insight) => (
-                <InsightCard
+                <CompetitorCard
                   key={insight.id}
                   source={insight.source}
                   topic={insight.topic}
                   description={insight.description}
                   remixOptions={insight.remixOptions}
+                  hero={insight.hero}
+                  metrics={insight.metrics}
+                  ctaLabel={insight.ctaLabel}
+                  ctaHref={insight.ctaHref}
                   onClick={() => handleCardClick(insight)}
                 />
               ))}
