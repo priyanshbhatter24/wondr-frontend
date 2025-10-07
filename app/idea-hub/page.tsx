@@ -5,6 +5,7 @@ import Sidebar from "@/components/Sidebar";
 import InsightCard from "@/components/InsightCard";
 import InsightModal from "@/components/InsightModal";
 import { ChevronLeftIcon, ChevronRightIcon, FileIcon } from "@radix-ui/react-icons";
+import { mockGenerations } from "@/lib/mockGenerations";
 
 interface InsightData {
   id: string;
@@ -23,23 +24,7 @@ export default function IdeaHubPage() {
   const [activeCompetitor, setActiveCompetitor] = useState<CompetitorType>("Meta");
 
   // Placeholder generations for sidebar - matching wireframe
-  const generations = [
-    { id: "1", name: "Google pixel 12mp camera", timestamp: "2 hours ago" },
-    { id: "2", name: "Deepmind image model ann", timestamp: "3 hours ago" },
-    { id: "3", name: "Google maps new navigatio", timestamp: "4 hours ago" },
-    { id: "4", name: "Gemini 2.5 pro intro posts", timestamp: "5 hours ago" },
-    { id: "5", name: "Google pixel 12mp camera", timestamp: "6 hours ago" },
-    { id: "6", name: "Deepmind image model ann", timestamp: "7 hours ago" },
-    { id: "7", name: "Google maps new navigatio", timestamp: "8 hours ago" },
-    { id: "8", name: "Gemini 2.5 pro intro posts", timestamp: "9 hours ago" },
-    { id: "9", name: "Google pixel 12mp camera", timestamp: "10 hours ago" },
-    { id: "10", name: "Deepmind image model ann", timestamp: "11 hours ago" },
-    { id: "11", name: "Google maps new navigatio", timestamp: "12 hours ago" },
-    { id: "12", name: "Gemini 2.5 pro intro posts", timestamp: "13 hours ago" },
-    { id: "13", name: "Google pixel 12mp camera", timestamp: "14 hours ago" },
-    { id: "14", name: "Deepmind image model ann", timestamp: "15 hours ago" },
-    { id: "15", name: "Google maps new navigatio", timestamp: "16 hours ago" },
-  ];
+  const generations = mockGenerations;
 
   // Industry Updates data
   const industryUpdates: InsightData[] = [
@@ -153,6 +138,14 @@ export default function IdeaHubPage() {
     ],
   };
 
+  const [activeGeneration, setActiveGeneration] = useState<string | null>(() =>
+    generations.length > 0 ? generations[0].id : null,
+  );
+
+  const handleGenerationSelect = (generationId: string) => {
+    setActiveGeneration(generationId);
+  };
+
   const handleCardClick = (insight: InsightData) => {
     setSelectedInsight(insight);
     setIsModalOpen(true);
@@ -173,7 +166,11 @@ export default function IdeaHubPage() {
 
   return (
     <div className="flex h-screen overflow-hidden bg-[color:var(--color-gray-dark)]">
-      <Sidebar generations={generations} />
+      <Sidebar
+        generations={generations}
+        activeItem={activeGeneration ?? undefined}
+        onItemClick={handleGenerationSelect}
+      />
 
       <div className="flex-1 overflow-y-auto">
         <div className="p-8">
