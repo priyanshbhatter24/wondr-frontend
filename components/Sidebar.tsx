@@ -22,7 +22,7 @@ export default function Sidebar({
   onItemClick,
 }: SidebarProps) {
   return (
-    <div className="w-64 bg-[#262626] text-white h-screen flex flex-col flex-shrink-0">
+    <div className="w-64 bg-[color:var(--color-gray-dark)] text-white h-screen flex flex-col flex-shrink-0">
       {/* Header */}
       <div className="p-4 flex items-center gap-3">
         <div className="w-6 h-6 bg-white rounded-full flex items-center justify-center text-black font-bold text-sm">
@@ -34,25 +34,25 @@ export default function Sidebar({
 
       {/* Navigation Items */}
       <div className="px-4 py-2 space-y-1">
-        <button className="w-full text-left px-3 py-2 rounded-md hover:bg-[#333333] transition-colors flex items-center gap-3 text-sm">
+        <button className="w-full text-left px-3 py-2 rounded-md transition-colors flex items-center gap-3 text-sm hover:bg-black/40">
           <Pencil2Icon className="w-4 h-4" />
           <span>Generate Post</span>
         </button>
-        <button className="w-full text-left px-3 py-2 rounded-md bg-[#333333] transition-colors flex items-center gap-3 text-sm">
+        <button className="w-full text-left px-3 py-2 rounded-md bg-black/60 transition-colors flex items-center gap-3 text-sm">
           <LightningBoltIcon className="w-4 h-4" />
           <span>Idea Hub</span>
         </button>
-        <button className="w-full text-left px-3 py-2 rounded-md hover:bg-[#333333] transition-colors flex items-center gap-3 text-sm">
+        <button className="w-full text-left px-3 py-2 rounded-md transition-colors flex items-center gap-3 text-sm hover:bg-black/40">
           <ImageIcon className="w-4 h-4" />
           <span>Gallery</span>
         </button>
       </div>
 
-      <Separator.Root className="bg-[#333333] h-px my-2" />
+      <Separator.Root className="bg-black/50 h-px my-2" />
 
       {/* Generations Section */}
       <div className="px-4 flex-1 min-h-0">
-        <div className="text-xs font-medium text-gray-400 mb-3 px-3">
+        <div className="text-xs font-medium text-white/70 mb-3 px-3">
           Generations
         </div>
         <ScrollArea.Root className="w-full h-full overflow-hidden">
@@ -62,8 +62,8 @@ export default function Sidebar({
                 <button
                   key={gen.id}
                   onClick={() => onItemClick?.(gen.id)}
-                  className={`w-full text-left px-3 py-1.5 rounded-md hover:bg-[#333333] transition-colors text-xs ${
-                    activeItem === gen.id ? "bg-[#333333]" : ""
+                  className={`w-full text-left px-3 py-1.5 rounded-md transition-colors text-xs hover:bg-black/40 ${
+                    activeItem === gen.id ? "bg-black/60" : ""
                   }`}
                 >
                   <div className="font-normal truncate text-white">{gen.name}</div>
@@ -75,20 +75,20 @@ export default function Sidebar({
             className="flex select-none touch-none p-0.5 bg-transparent transition-colors duration-150 ease-out data-[orientation=vertical]:w-2"
             orientation="vertical"
           >
-            <ScrollArea.Thumb className="flex-1 bg-gray-600 rounded-full" />
+            <ScrollArea.Thumb className="flex-1 bg-white/20 rounded-full" />
           </ScrollArea.Scrollbar>
         </ScrollArea.Root>
       </div>
 
       {/* View Plans Footer */}
-      <div className="p-4 border-t border-[#333333]">
+      <div className="p-4 border-t border-black/50">
         <div className="flex items-center gap-2 text-sm">
           <div className="w-5 h-5 bg-white rounded-sm flex items-center justify-center">
             <span className="text-black text-xs font-bold">W</span>
           </div>
           <div>
             <div className="text-white font-medium">View plans</div>
-            <div className="text-gray-400 text-xs">Unlimited access</div>
+            <div className="text-white/60 text-xs">Unlimited access</div>
           </div>
         </div>
       </div>
