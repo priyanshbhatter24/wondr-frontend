@@ -22,7 +22,7 @@ export default function InsightCard({
   return (
     <div
       onClick={onClick}
-      className="bg-[#846348] text-white p-6 rounded-lg min-w-[400px] max-w-[400px] cursor-pointer hover:bg-[#755745] transition-colors flex flex-col gap-3"
+      className="bg-[color:var(--color-brown)] text-white p-6 rounded-lg min-w-[400px] max-w-[400px] cursor-pointer transition-all duration-200 hover:brightness-110 flex flex-col gap-3"
     >
       {/* Source */}
       <div className="text-xs font-semibold tracking-wider uppercase">

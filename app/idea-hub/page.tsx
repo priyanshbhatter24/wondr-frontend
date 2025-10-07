@@ -236,9 +236,17 @@ export default function IdeaHubPage() {
     }
   };
 
+  const [activeGenerationId, setActiveGenerationId] = useState<string | undefined>(
+    generations[0]?.id,
+  );
+
   return (
-    <div className="flex h-screen overflow-hidden bg-[#262626]">
-      <Sidebar generations={generations} />
+    <div className="flex h-screen overflow-hidden bg-[color:var(--color-gray-dark)]">
+      <Sidebar
+        generations={generations}
+        activeItem={activeGenerationId}
+        onItemClick={(id) => setActiveGenerationId(id)}
+      />
 
       <div className="flex-1 overflow-y-auto">
         <div className="p-8">
@@ -255,13 +263,13 @@ export default function IdeaHubPage() {
               <div className="flex gap-2">
                 <button
                   onClick={() => scroll(industrySliderRef, "left")}
-                  className="w-8 h-8 rounded-full bg-transparent hover:bg-[#333333] border border-gray-600 flex items-center justify-center text-white transition-colors"
+                  className="w-8 h-8 rounded-full bg-transparent border border-white/20 flex items-center justify-center text-white transition-colors hover:bg-black/40"
                 >
                   <ChevronLeftIcon className="w-4 h-4" />
                 </button>
                 <button
                   onClick={() => scroll(industrySliderRef, "right")}
-                  className="w-8 h-8 rounded-full bg-transparent hover:bg-[#333333] border border-gray-600 flex items-center justify-center text-white transition-colors"
+                  className="w-8 h-8 rounded-full bg-transparent border border-white/20 flex items-center justify-center text-white transition-colors hover:bg-black/40"
                 >
                   <ChevronRightIcon className="w-4 h-4" />
                 </button>
@@ -287,7 +295,7 @@ export default function IdeaHubPage() {
           {/* Competitor Tabs and Insights */}
           <div className="mb-12">
             {/* Competitor Tabs */}
-            <div className="flex gap-8 mb-6 border-b border-gray-600">
+            <div className="flex gap-8 mb-6 border-b border-white/20">
               {(["Meta", "Alphabet", "Microsoft"] as CompetitorType[]).map((competitor) => (
                 <button
                   key={competitor}
@@ -295,7 +303,7 @@ export default function IdeaHubPage() {
                   className={`pb-3 text-lg font-medium transition-colors relative ${
                     activeCompetitor === competitor
                       ? "text-white border-b-2 border-white"
-                      : "text-gray-400 hover:text-gray-300"
+                      : "text-white/70 hover:text-white/80"
                   }`}
                 >
                   {competitor}
@@ -309,13 +317,13 @@ export default function IdeaHubPage() {
               <div className="flex gap-2">
                 <button
                   onClick={() => scroll(competitorSliderRef, "left")}
-                  className="w-8 h-8 rounded-full bg-transparent hover:bg-[#333333] border border-gray-600 flex items-center justify-center text-white transition-colors"
+                  className="w-8 h-8 rounded-full bg-transparent border border-white/20 flex items-center justify-center text-white transition-colors hover:bg-black/40"
                 >
                   <ChevronLeftIcon className="w-4 h-4" />
                 </button>
                 <button
                   onClick={() => scroll(competitorSliderRef, "right")}
-                  className="w-8 h-8 rounded-full bg-transparent hover:bg-[#333333] border border-gray-600 flex items-center justify-center text-white transition-colors"
+                  className="w-8 h-8 rounded-full bg-transparent border border-white/20 flex items-center justify-center text-white transition-colors hover:bg-black/40"
                 >
                   <ChevronRightIcon className="w-4 h-4" />
                 </button>
