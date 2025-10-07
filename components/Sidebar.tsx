@@ -3,6 +3,7 @@
 import * as ScrollArea from "@radix-ui/react-scroll-area";
 import * as Separator from "@radix-ui/react-separator";
 import { Pencil2Icon, LightningBoltIcon, ImageIcon, MagnifyingGlassIcon } from "@radix-ui/react-icons";
+import { useUser } from "@clerk/nextjs";
 
 interface Generation {
   id: string;
@@ -21,14 +22,30 @@ export default function Sidebar({
   activeItem,
   onItemClick,
 }: SidebarProps) {
+  const { user } = useUser();
+
+  const displayName = user?.fullName || user?.firstName || "User";
+  const avatarUrl = user?.imageUrl;
+
   return (
-    <div className="w-64 bg-[color:var(--color-gray-dark)] text-white h-screen flex flex-col flex-shrink-0">
+    <div className="w-64 bg-black text-white h-screen flex flex-col flex-shrink-0">
       {/* Header */}
       <div className="p-4 flex items-center gap-3">
-        <div className="w-6 h-6 bg-white rounded-full flex items-center justify-center text-black font-bold text-sm">
-          G
-        </div>
-        <span className="font-medium text-base">Google</span>
+        {avatarUrl ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={avatarUrl}
+            alt={`${displayName}'s avatar`}
+            className="w-7 h-7 rounded-full object-cover"
+          />
+        ) : (
+          <div className="w-7 h-7 bg-white rounded-full flex items-center justify-center text-black font-semibold text-sm">
+            {displayName.charAt(0).toUpperCase()}
+          </div>
+        )}
+        <span className="font-medium text-base truncate" title={displayName}>
+          {displayName}
+        </span>
         <MagnifyingGlassIcon className="w-4 h-4 text-white ml-auto" />
       </div>
 
@@ -57,12 +74,12 @@ export default function Sidebar({
         </div>
         <ScrollArea.Root className="w-full h-full overflow-hidden">
           <ScrollArea.Viewport className="w-full h-full">
-            <div className="space-y-0.5">
+            <div className="space-y-1.5">
               {generations.map((gen) => (
                 <button
                   key={gen.id}
                   onClick={() => onItemClick?.(gen.id)}
-                  className={`w-full text-left px-3 py-1.5 rounded-md transition-colors text-xs hover:bg-black/40 ${
+                  className={`w-full text-left px-3 py-2 rounded-md transition-colors text-xs hover:bg-black/40 ${
                     activeItem === gen.id ? "bg-black/60" : ""
                   }`}
                 >
