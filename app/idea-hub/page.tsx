@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import Sidebar from "@/components/Sidebar";
 import InsightCard from "@/components/InsightCard";
 import InsightModal from "@/components/InsightModal";
+import CompetitorCard from "@/components/CompetitorCard";
 import { ChevronLeftIcon, ChevronRightIcon, FileIcon } from "@radix-ui/react-icons";
 
 interface InsightData {
@@ -16,6 +17,16 @@ interface InsightData {
 }
 
 type CompetitorType = "Meta" | "Alphabet" | "Microsoft";
+
+interface CompetitorInsight extends InsightData {
+  imageUrl: string;
+  imageAlt: string;
+  sourceUrl?: string;
+  views: number;
+  likes: number;
+  shares: number;
+  ctaLabel: string;
+}
 
 export default function IdeaHubPage() {
   const [selectedInsight, setSelectedInsight] = useState<InsightData | null>(null);
@@ -88,11 +99,12 @@ export default function IdeaHubPage() {
   ];
 
   // Competitor Insights data
-  const competitorInsights: Record<CompetitorType, InsightData[]> = {
+  const competitorInsights: Record<CompetitorType, CompetitorInsight[]> = {
     Meta: [
       {
         id: "meta-1",
         source: "VERGE",
+        sourceUrl: "https://www.theverge.com/",
         topic: "Meta Ray Ban glasses fail live demo.",
         description:
           "During the live demo from mark zuckerberg, there was an error states, and onboarding flows. There is a need to further refine the framework and add more accessibility.",
@@ -103,10 +115,18 @@ export default function IdeaHubPage() {
           { text: "Need for smaller form factor to enable tech" },
         ],
         fullContent: "Meta's strategic analysis...",
+        imageUrl:
+          "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?auto=format&fit=crop&w=600&q=80",
+        imageAlt: "Person wearing modern eyewear headset",
+        views: 27864,
+        likes: 3245,
+        shares: 450,
+        ctaLabel: "Try with 100-day free returns",
       },
       {
         id: "meta-2",
         source: "VERGE",
+        sourceUrl: "https://www.theverge.com/",
         topic: "Meta Ray Ban glasses fail live demo.",
         description:
           "During the live demo from mark zuckerberg, there was an error states, and onboarding flows. There is a need to further refine the framework and add more accessibility.",
@@ -117,12 +137,20 @@ export default function IdeaHubPage() {
           { text: "Need for smaller form factor to enable tech" },
         ],
         fullContent: "Additional Meta insights...",
+        imageUrl:
+          "https://images.unsplash.com/photo-1526312426976-f4d754fa9bd6?auto=format&fit=crop&w=600&q=80",
+        imageAlt: "Virtual reality headset glowing in dark room",
+        views: 19845,
+        likes: 2140,
+        shares: 312,
+        ctaLabel: "Explore audience reactions",
       },
     ],
     Alphabet: [
       {
         id: "alphabet-1",
         source: "VERGE",
+        sourceUrl: "https://www.theverge.com/",
         topic: "Meta Ray Ban glasses fail live demo.",
         description:
           "During the live demo from mark zuckerberg, there was an error states, and onboarding flows. There is a need to further refine the framework and add more accessibility.",
@@ -133,12 +161,20 @@ export default function IdeaHubPage() {
           { text: "Need for smaller form factor to enable tech" },
         ],
         fullContent: "Alphabet insights...",
+        imageUrl:
+          "https://images.unsplash.com/photo-1484704849700-f032a568e944?auto=format&fit=crop&w=600&q=80",
+        imageAlt: "Smart glasses prototype resting on notebook",
+        views: 15678,
+        likes: 1890,
+        shares: 265,
+        ctaLabel: "Review competitor response",
       },
     ],
     Microsoft: [
       {
         id: "microsoft-1",
         source: "VERGE",
+        sourceUrl: "https://www.theverge.com/",
         topic: "Meta Ray Ban glasses fail live demo.",
         description:
           "During the live demo from mark zuckerberg, there was an error states, and onboarding flows. There is a need to further refine the framework and add more accessibility.",
@@ -149,6 +185,13 @@ export default function IdeaHubPage() {
           { text: "Need for smaller form factor to enable tech" },
         ],
         fullContent: "Microsoft analysis...",
+        imageUrl:
+          "https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?auto=format&fit=crop&w=600&q=80",
+        imageAlt: "Futuristic wearable tech headset on display",
+        views: 23109,
+        likes: 2874,
+        shares: 398,
+        ctaLabel: "Evaluate product roadmap",
       },
     ],
   };
@@ -268,12 +311,19 @@ export default function IdeaHubPage() {
               className="flex gap-4 overflow-x-auto scrollbar-hide scroll-smooth pb-2"
             >
               {competitorInsights[activeCompetitor].map((insight) => (
-                <InsightCard
+                <CompetitorCard
                   key={insight.id}
                   source={insight.source}
+                  sourceUrl={insight.sourceUrl}
                   topic={insight.topic}
                   description={insight.description}
                   remixOptions={insight.remixOptions}
+                  imageUrl={insight.imageUrl}
+                  imageAlt={insight.imageAlt}
+                  views={insight.views}
+                  likes={insight.likes}
+                  shares={insight.shares}
+                  ctaLabel={insight.ctaLabel}
                   onClick={() => handleCardClick(insight)}
                 />
               ))}
