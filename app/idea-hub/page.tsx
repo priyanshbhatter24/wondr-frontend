@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import Sidebar from "@/components/Sidebar";
 import InsightCard from "@/components/InsightCard";
 import InsightModal from "@/components/InsightModal";
@@ -160,6 +160,13 @@ export default function IdeaHubPage() {
 
   const industrySliderRef = useRef<HTMLDivElement>(null);
   const competitorSliderRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    competitorSliderRef.current?.scrollTo({
+      left: 0,
+      behavior: "instant",
+    });
+  }, [activeCompetitor]);
 
   const scroll = (ref: React.RefObject<HTMLDivElement>, direction: "left" | "right") => {
     if (ref.current) {
