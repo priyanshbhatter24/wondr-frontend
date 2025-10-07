@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import Sidebar from "@/components/Sidebar";
 import InsightCard from "@/components/InsightCard";
 import InsightModal from "@/components/InsightModal";
+import CompetitorCard from "@/components/CompetitorCard";
 import { ChevronLeftIcon, ChevronRightIcon, FileIcon } from "@radix-ui/react-icons";
 
 interface InsightData {
@@ -16,6 +17,20 @@ interface InsightData {
 }
 
 type CompetitorType = "Meta" | "Alphabet" | "Microsoft";
+
+interface CompetitorInsightData extends InsightData {
+  heroMedia: {
+    src: string;
+    alt: string;
+  };
+  metrics: {
+    views: number;
+    likes: number;
+    shares: number;
+  };
+  ctaLabel: string;
+  ctaHref?: string;
+}
 
 export default function IdeaHubPage() {
   const [selectedInsight, setSelectedInsight] = useState<InsightData | null>(null);
@@ -88,7 +103,7 @@ export default function IdeaHubPage() {
   ];
 
   // Competitor Insights data
-  const competitorInsights: Record<CompetitorType, InsightData[]> = {
+  const competitorInsights: Record<CompetitorType, CompetitorInsightData[]> = {
     Meta: [
       {
         id: "meta-1",
@@ -103,10 +118,21 @@ export default function IdeaHubPage() {
           { text: "Need for smaller form factor to enable tech" },
         ],
         fullContent: "Meta's strategic analysis...",
+        heroMedia: {
+          src: "/window.svg",
+          alt: "Mock promotion for new earplugs",
+        },
+        metrics: {
+          views: 27864,
+          likes: 3245,
+          shares: 271,
+        },
+        ctaLabel: "Try with 100-day free returns",
+        ctaHref: "https://example.com/meta-earplugs",
       },
       {
         id: "meta-2",
-        source: "VERGE",
+        source: "REMIX",
         topic: "Meta Ray Ban glasses fail live demo.",
         description:
           "During the live demo from mark zuckerberg, there was an error states, and onboarding flows. There is a need to further refine the framework and add more accessibility.",
@@ -117,6 +143,16 @@ export default function IdeaHubPage() {
           { text: "Need for smaller form factor to enable tech" },
         ],
         fullContent: "Additional Meta insights...",
+        heroMedia: {
+          src: "/globe.svg",
+          alt: "Stylized globe illustration",
+        },
+        metrics: {
+          views: 19842,
+          likes: 2541,
+          shares: 318,
+        },
+        ctaLabel: "View creative",
       },
     ],
     Alphabet: [
@@ -133,6 +169,17 @@ export default function IdeaHubPage() {
           { text: "Need for smaller form factor to enable tech" },
         ],
         fullContent: "Alphabet insights...",
+        heroMedia: {
+          src: "/file.svg",
+          alt: "Filing cabinet inspired layout",
+        },
+        metrics: {
+          views: 24567,
+          likes: 3044,
+          shares: 289,
+        },
+        ctaLabel: "Open opportunity",
+        ctaHref: "https://example.com/alphabet",
       },
     ],
     Microsoft: [
@@ -149,6 +196,16 @@ export default function IdeaHubPage() {
           { text: "Need for smaller form factor to enable tech" },
         ],
         fullContent: "Microsoft analysis...",
+        heroMedia: {
+          src: "/vercel.svg",
+          alt: "Abstract wave pattern",
+        },
+        metrics: {
+          views: 31201,
+          likes: 4120,
+          shares: 502,
+        },
+        ctaLabel: "Share recap",
       },
     ],
   };
@@ -268,12 +325,16 @@ export default function IdeaHubPage() {
               className="flex gap-4 overflow-x-auto scrollbar-hide scroll-smooth pb-2"
             >
               {competitorInsights[activeCompetitor].map((insight) => (
-                <InsightCard
+                <CompetitorCard
                   key={insight.id}
                   source={insight.source}
                   topic={insight.topic}
                   description={insight.description}
                   remixOptions={insight.remixOptions}
+                  heroMedia={insight.heroMedia}
+                  metrics={insight.metrics}
+                  ctaLabel={insight.ctaLabel}
+                  ctaHref={insight.ctaHref}
                   onClick={() => handleCardClick(insight)}
                 />
               ))}
