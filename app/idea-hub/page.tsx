@@ -1,9 +1,10 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import Sidebar from "@/components/Sidebar";
 import InsightCard from "@/components/InsightCard";
 import InsightModal from "@/components/InsightModal";
+import CompetitorCard from "@/components/CompetitorCard";
 import { ChevronLeftIcon, ChevronRightIcon, FileIcon } from "@radix-ui/react-icons";
 
 interface InsightData {
@@ -16,6 +17,19 @@ interface InsightData {
 }
 
 type CompetitorType = "Meta" | "Alphabet" | "Microsoft";
+
+interface CompetitorInsightData extends InsightData {
+  heroImageUrl: string;
+  heroImageAlt: string;
+  heroImageSourceUrl: string;
+  metrics: {
+    views: number;
+    likes: number;
+    shares: number;
+  };
+  ctaLabel: string;
+  ctaHref: string;
+}
 
 export default function IdeaHubPage() {
   const [selectedInsight, setSelectedInsight] = useState<InsightData | null>(null);
@@ -88,7 +102,7 @@ export default function IdeaHubPage() {
   ];
 
   // Competitor Insights data
-  const competitorInsights: Record<CompetitorType, InsightData[]> = {
+  const competitorInsights: Record<CompetitorType, CompetitorInsightData[]> = {
     Meta: [
       {
         id: "meta-1",
@@ -103,6 +117,17 @@ export default function IdeaHubPage() {
           { text: "Need for smaller form factor to enable tech" },
         ],
         fullContent: "Meta's strategic analysis...",
+        heroImageUrl:
+          "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=800&q=80",
+        heroImageAlt: "Person holding modern wearable earbuds",
+        heroImageSourceUrl: "https://unsplash.com/photos/a-person-holding-a-pair-of-earbuds-0y8Hq15SCBM",
+        metrics: {
+          views: 27864,
+          likes: 3245,
+          shares: 271,
+        },
+        ctaLabel: "Try with 100-day free returns",
+        ctaHref: "https://www.verge.com/articles/meta-rayban-demo",
       },
       {
         id: "meta-2",
@@ -117,6 +142,17 @@ export default function IdeaHubPage() {
           { text: "Need for smaller form factor to enable tech" },
         ],
         fullContent: "Additional Meta insights...",
+        heroImageUrl:
+          "https://images.unsplash.com/photo-1589177778881-11d88d789b8e?auto=format&fit=crop&w=800&q=80",
+        heroImageAlt: "Augmented reality glasses on display",
+        heroImageSourceUrl: "https://unsplash.com/photos/a-close-up-of-a-pair-of-glasses-on-a-table-g6fNRoe8t44",
+        metrics: {
+          views: 21950,
+          likes: 1984,
+          shares: 184,
+        },
+        ctaLabel: "View competitive teardown",
+        ctaHref: "https://www.verge.com/articles/meta-rayban-analysis",
       },
     ],
     Alphabet: [
@@ -133,6 +169,17 @@ export default function IdeaHubPage() {
           { text: "Need for smaller form factor to enable tech" },
         ],
         fullContent: "Alphabet insights...",
+        heroImageUrl:
+          "https://images.unsplash.com/photo-1579536564083-09c1f8c8fb35?auto=format&fit=crop&w=800&q=80",
+        heroImageAlt: "Person testing futuristic wearable display",
+        heroImageSourceUrl: "https://unsplash.com/photos/person-wearing-augmented-reality-glasses-pOUA8Xay514",
+        metrics: {
+          views: 18742,
+          likes: 1644,
+          shares: 132,
+        },
+        ctaLabel: "Read the full report",
+        ctaHref: "https://www.verge.com/articles/alphabet-ar-roadmap",
       },
     ],
     Microsoft: [
@@ -149,6 +196,17 @@ export default function IdeaHubPage() {
           { text: "Need for smaller form factor to enable tech" },
         ],
         fullContent: "Microsoft analysis...",
+        heroImageUrl:
+          "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?auto=format&fit=crop&w=800&q=80",
+        heroImageAlt: "Smart speaker with ambient lighting",
+        heroImageSourceUrl: "https://unsplash.com/photos/gray-and-black-echo-dot-2nd-generation-AHVqE7MjIzk",
+        metrics: {
+          views: 20431,
+          likes: 1762,
+          shares: 165,
+        },
+        ctaLabel: "Explore partnership pitch",
+        ctaHref: "https://www.verge.com/articles/microsoft-mesh-launch",
       },
     ],
   };
@@ -160,6 +218,13 @@ export default function IdeaHubPage() {
 
   const industrySliderRef = useRef<HTMLDivElement>(null);
   const competitorSliderRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    competitorSliderRef.current?.scrollTo({
+      left: 0,
+      behavior: "instant",
+    });
+  }, [activeCompetitor]);
 
   const scroll = (ref: React.RefObject<HTMLDivElement>, direction: "left" | "right") => {
     if (ref.current) {
@@ -269,12 +334,18 @@ export default function IdeaHubPage() {
               className="flex gap-4 overflow-x-auto scrollbar-hide scroll-smooth pb-2"
             >
               {competitorInsights[activeCompetitor].map((insight) => (
-                <InsightCard
+                <CompetitorCard
                   key={insight.id}
                   source={insight.source}
                   topic={insight.topic}
                   description={insight.description}
                   remixOptions={insight.remixOptions}
+                  heroImageUrl={insight.heroImageUrl}
+                  heroImageAlt={insight.heroImageAlt}
+                  heroImageSourceUrl={insight.heroImageSourceUrl}
+                  metrics={insight.metrics}
+                  ctaLabel={insight.ctaLabel}
+                  ctaHref={insight.ctaHref}
                   onClick={() => handleCardClick(insight)}
                 />
               ))}
