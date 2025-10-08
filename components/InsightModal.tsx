@@ -1,9 +1,13 @@
 "use client";
 
+import { useState } from "react";
 import * as Dialog from "@radix-ui/react-dialog";
+import { ExternalLinkIcon } from "@radix-ui/react-icons";
+import { ChannelDetail } from "@/types/industry-updates";
 
 interface RemixOption {
   text: string;
+  reasoning?: string;
 }
 
 interface InsightModalProps {
@@ -13,6 +17,7 @@ interface InsightModalProps {
   topic: string;
   description: string;
   remixOptions: RemixOption[];
+  channels?: { [key: string]: ChannelDetail[] };
   fullContent?: string;
 }
 
@@ -23,8 +28,12 @@ export default function InsightModal({
   topic,
   description,
   remixOptions,
+  channels,
   fullContent,
 }: InsightModalProps) {
+  const channelNames = channels ? Object.keys(channels).filter(ch => channels[ch].length > 0) : [];
+  const [activeChannel, setActiveChannel] = useState(channelNames[0] || "");
+
   return (
     <Dialog.Root open={isOpen} onOpenChange={onClose}>
       <Dialog.Portal>
@@ -53,8 +62,51 @@ export default function InsightModal({
                 {description}
               </Dialog.Description>
 
-              {/* Full Content */}
-              {fullContent && (
+              {/* Channels Section */}
+              {channels && channelNames.length > 0 && (
+                <div className="rounded-lg border border-white/10 bg-white/5 p-6">
+                  <h3 className="mb-4 text-xl font-bold text-white">Channel Insights</h3>
+
+                  {/* Channel Tabs */}
+                  <div className="flex gap-4 mb-4 border-b border-white/10 pb-2">
+                    {channelNames.map((channelName) => (
+                      <button
+                        key={channelName}
+                        onClick={() => setActiveChannel(channelName)}
+                        className={`px-3 py-1 text-sm font-medium transition-colors ${
+                          activeChannel === channelName
+                            ? "text-white border-b-2 border-white"
+                            : "text-white/60 hover:text-white/80"
+                        }`}
+                      >
+                        {channelName}
+                      </button>
+                    ))}
+                  </div>
+
+                  {/* Channel Content */}
+                  <div className="space-y-4">
+                    {channels[activeChannel]?.map((detail, index) => (
+                      <div key={index} className="rounded border border-white/10 bg-white/5 p-4">
+                        <blockquote className="border-l-4 border-white/30 pl-4 italic text-white/90 mb-2">
+                          "{detail.filtered_detail}"
+                        </blockquote>
+                        <a
+                          href={detail.link}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1 text-sm text-white/60 hover:text-white/80 transition-colors"
+                        >
+                          View Source <ExternalLinkIcon className="w-3 h-3" />
+                        </a>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Full Content (fallback if no channels) */}
+              {fullContent && !channels && (
                 <div className="rounded-lg border border-white/10 bg-white/5 p-6">
                   <h3 className="mb-4 text-xl font-bold text-white">Detailed Analysis</h3>
                   <p className="leading-relaxed text-white/90">{fullContent}</p>
@@ -68,10 +120,17 @@ export default function InsightModal({
                   {remixOptions.map((option, index) => (
                     <div
                       key={index}
-                      className="flex items-start gap-3 rounded-lg border border-white/10 bg-white/5 p-4"
+                      className="rounded-lg border border-white/10 bg-white/5 p-4"
                     >
-                      <div className="mt-2 h-2 w-2 flex-shrink-0 rounded-full bg-white/70" />
-                      <span className="text-base text-white/90">{option.text}</span>
+                      <div className="flex items-start gap-3">
+                        <div className="mt-2 h-2 w-2 flex-shrink-0 rounded-full bg-white/70" />
+                        <div className="flex-1">
+                          <p className="text-base text-white/90 font-medium">{option.text}</p>
+                          {option.reasoning && (
+                            <p className="text-sm text-white/60 mt-2">{option.reasoning}</p>
+                          )}
+                        </div>
+                      </div>
                     </div>
                   ))}
                 </div>

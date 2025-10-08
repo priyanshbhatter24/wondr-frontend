@@ -6,14 +6,19 @@ import InsightCard from "@/components/InsightCard";
 import InsightModal from "@/components/InsightModal";
 import CompetitorCard from "@/components/CompetitorCard";
 import { ChevronLeftIcon, ChevronRightIcon, FileIcon } from "@radix-ui/react-icons";
+import { useApiClient } from "@/lib/api-client";
+import { IndustryUpdate } from "@/types/industry-updates";
+import { getChannelSourcesLabel } from "@/utils/date";
 
 interface InsightData {
   id: string;
   source: string;
   topic: string;
   description: string;
-  remixOptions: { text: string }[];
-  fullContent: string;
+  remixOptions: { text: string; reasoning?: string }[];
+  fullContent?: string;
+  channels?: { [key: string]: any[] };
+  created_at?: string;
 }
 
 type CompetitorType = "Meta" | "Alphabet" | "Microsoft";
@@ -35,6 +40,31 @@ export default function IdeaHubPage() {
   const [selectedInsight, setSelectedInsight] = useState<InsightData | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [activeCompetitor, setActiveCompetitor] = useState<CompetitorType>("Meta");
+
+  // API state for industry updates
+  const [industryUpdatesFromAPI, setIndustryUpdatesFromAPI] = useState<IndustryUpdate[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // Get API client
+  const api = useApiClient();
+
+  // Fetch industry updates on mount
+  useEffect(() => {
+    async function fetchUpdates() {
+      try {
+        const data = await api.industryUpdates.list({ limit: 20 });
+        setIndustryUpdatesFromAPI(data.updates);
+      } catch (error) {
+        console.error("Failed to fetch industry updates:", error);
+        setError("Failed to load industry updates");
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchUpdates();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Only run once on mount
 
   // Placeholder generations for sidebar - matching wireframe
   const generations = [
@@ -118,7 +148,7 @@ export default function IdeaHubPage() {
         ],
         fullContent: "Meta's strategic analysis...",
         heroImageUrl:
-          "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=800&q=80",
+          "https://cdn.mos.cms.futurecdn.net/uBLE9FqeNG6j3kX2DowuXD.jpg",
         heroImageAlt: "Person holding modern wearable earbuds",
         heroImageSourceUrl: "https://unsplash.com/photos/a-person-holding-a-pair-of-earbuds-0y8Hq15SCBM",
         metrics: {
@@ -143,7 +173,7 @@ export default function IdeaHubPage() {
         ],
         fullContent: "Additional Meta insights...",
         heroImageUrl:
-          "https://images.unsplash.com/photo-1589177778881-11d88d789b8e?auto=format&fit=crop&w=800&q=80",
+          "https://cdn.mos.cms.futurecdn.net/uBLE9FqeNG6j3kX2DowuXD.jpg",
         heroImageAlt: "Augmented reality glasses on display",
         heroImageSourceUrl: "https://unsplash.com/photos/a-close-up-of-a-pair-of-glasses-on-a-table-g6fNRoe8t44",
         metrics: {
@@ -170,7 +200,7 @@ export default function IdeaHubPage() {
         ],
         fullContent: "Alphabet insights...",
         heroImageUrl:
-          "https://images.unsplash.com/photo-1579536564083-09c1f8c8fb35?auto=format&fit=crop&w=800&q=80",
+          "https://cdn.mos.cms.futurecdn.net/uBLE9FqeNG6j3kX2DowuXD.jpg",
         heroImageAlt: "Person testing futuristic wearable display",
         heroImageSourceUrl: "https://unsplash.com/photos/person-wearing-augmented-reality-glasses-pOUA8Xay514",
         metrics: {
@@ -197,7 +227,7 @@ export default function IdeaHubPage() {
         ],
         fullContent: "Microsoft analysis...",
         heroImageUrl:
-          "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?auto=format&fit=crop&w=800&q=80",
+          "https://cdn.mos.cms.futurecdn.net/uBLE9FqeNG6j3kX2DowuXD.jpg",
         heroImageAlt: "Smart speaker with ambient lighting",
         heroImageSourceUrl: "https://unsplash.com/photos/gray-and-black-echo-dot-2nd-generation-AHVqE7MjIzk",
         metrics: {
@@ -275,21 +305,79 @@ export default function IdeaHubPage() {
                 </button>
               </div>
             </div>
-            <div
-              ref={industrySliderRef}
-              className="flex gap-4 overflow-x-auto scrollbar-hide scroll-smooth pb-2"
-            >
-              {industryUpdates.map((insight) => (
-                <InsightCard
-                  key={insight.id}
-                  source={insight.source}
-                  topic={insight.topic}
-                  description={insight.description}
-                  remixOptions={insight.remixOptions}
-                  onClick={() => handleCardClick(insight)}
-                />
-              ))}
-            </div>
+
+            {/* Loading State */}
+            {loading && (
+              <div
+                ref={industrySliderRef}
+                className="flex gap-4 overflow-x-auto scrollbar-hide scroll-smooth pb-2"
+              >
+                {[1, 2, 3].map((i) => (
+                  <div
+                    key={i}
+                    className="bg-white/5 animate-pulse min-w-[400px] h-[300px] rounded"
+                  />
+                ))}
+              </div>
+            )}
+
+            {/* Error State */}
+            {error && !loading && (
+              <div className="text-center py-12 text-red-400">
+                <p>{error}</p>
+              </div>
+            )}
+
+            {/* Data or Empty State */}
+            {!loading && !error && (
+              <div
+                ref={industrySliderRef}
+                className="flex gap-4 overflow-x-auto scrollbar-hide scroll-smooth pb-2"
+              >
+                {industryUpdatesFromAPI.length > 0 ? (
+                  // Real API data
+                  industryUpdatesFromAPI.map((update) => {
+                    const insightData: InsightData = {
+                      id: update.id,
+                      source: getChannelSourcesLabel(update.channels),
+                      topic: update.topic,
+                      description: update.description,
+                      remixOptions: update.post_suggestions.map((s) => ({
+                        text: s.suggestion,
+                        reasoning: s.reasoning,
+                      })),
+                      channels: update.channels,
+                      created_at: update.created_at,
+                    };
+                    return (
+                      <InsightCard
+                        key={update.id}
+                        id={update.id}
+                        source={insightData.source}
+                        topic={update.topic}
+                        description={update.description}
+                        remixOptions={insightData.remixOptions}
+                        createdAt={update.created_at}
+                        onClick={() => handleCardClick(insightData)}
+                      />
+                    );
+                  })
+                ) : (
+                  // Fallback to mock data if no API data
+                  industryUpdates.map((insight) => (
+                    <InsightCard
+                      key={insight.id}
+                      id={insight.id}
+                      source={insight.source}
+                      topic={insight.topic}
+                      description={insight.description}
+                      remixOptions={insight.remixOptions}
+                      onClick={() => handleCardClick(insight)}
+                    />
+                  ))
+                )}
+              </div>
+            )}
           </div>
 
           {/* Competitor Tabs and Insights */}
@@ -363,6 +451,7 @@ export default function IdeaHubPage() {
           topic={selectedInsight.topic}
           description={selectedInsight.description}
           remixOptions={selectedInsight.remixOptions}
+          channels={selectedInsight.channels}
           fullContent={selectedInsight.fullContent}
         />
       )}
