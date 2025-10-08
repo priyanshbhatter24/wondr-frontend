@@ -26,18 +26,18 @@ export default function PostIdeationView({
     <div className="min-h-screen bg-[#000000] text-white">
       <ScrollArea.Root className="h-screen">
         <ScrollArea.Viewport className="h-full w-full">
-          <div className="max-w-6xl mx-auto p-8 space-y-8">
+          <div className="max-w-6xl mx-auto px-8 py-12 space-y-12">
             {/* Header - Remix Topic */}
-            <div className="space-y-4">
-              <h1 className="text-4xl font-bold text-white leading-tight">
+            <div className="space-y-6">
+              <h1 className="text-5xl font-bold text-white leading-tight">
                 {remixTopic}
               </h1>
 
-              <Separator.Root className="bg-white/10 h-px" />
+              <Separator.Root className="bg-white/20 h-px" />
 
               {/* Reasoning */}
-              <div className="text-base text-white/70 leading-relaxed">
-                <span className="text-[#C1D75B] font-semibold uppercase text-xs tracking-wider mr-2">
+              <div className="text-lg text-white/80 leading-relaxed">
+                <span className="text-[#C1D75B] font-semibold uppercase text-sm tracking-wider mr-3">
                   Reasoning:
                 </span>
                 {reasoning}
@@ -45,20 +45,20 @@ export default function PostIdeationView({
             </div>
 
             {/* Context Blurb */}
-            <div className="bg-[#262626] border border-white/10 rounded-lg p-6">
-              <h2 className="text-xs font-bold uppercase tracking-wider text-[#C1D75B] mb-4">
+            <div className="bg-[#1a1a1a] border border-white/20 rounded-xl p-8">
+              <h2 className="text-sm font-bold uppercase tracking-wider text-[#C1D75B] mb-5">
                 Context
               </h2>
-              <p className="text-sm leading-relaxed text-white/80">
+              <p className="text-base leading-relaxed text-white/90">
                 {contextBlurb}
               </p>
             </div>
 
-            <Separator.Root className="bg-white/10 h-px" />
+            <Separator.Root className="bg-white/20 h-px" />
 
             {/* Summary Section */}
-            <div className="bg-[#262626] border border-white/10 rounded-lg p-6">
-              <h2 className="text-xs font-bold uppercase tracking-wider text-[#C1D75B] mb-4">
+            <div className="bg-[#1a1a1a] border border-white/20 rounded-xl p-8">
+              <h2 className="text-sm font-bold uppercase tracking-wider text-[#C1D75B] mb-5">
                 Summary
               </h2>
               <p className="text-base leading-relaxed text-white">
@@ -67,42 +67,42 @@ export default function PostIdeationView({
             </div>
 
             {/* Image Recommendations Section */}
-            <div className="bg-[#262626] border border-white/10 rounded-lg p-6">
-              <h2 className="text-xs font-bold uppercase tracking-wider text-[#C1D75B] mb-4">
+            <div className="bg-[#1a1a1a] border border-white/20 rounded-xl p-8">
+              <h2 className="text-sm font-bold uppercase tracking-wider text-[#C1D75B] mb-5">
                 Image Recommendations
               </h2>
-              <p className="text-sm leading-relaxed text-white/90 whitespace-pre-line">
+              <p className="text-base leading-relaxed text-white/90 whitespace-pre-line">
                 {imageRecommendations}
               </p>
             </div>
 
             {/* Suggested Tasks Section */}
-            <div className="space-y-4">
-              <h2 className="text-xs font-bold uppercase tracking-wider text-[#C1D75B]">
+            <div className="space-y-6">
+              <h2 className="text-sm font-bold uppercase tracking-wider text-[#C1D75B]">
                 Suggested Tasks
               </h2>
 
               {/* Tasks Grid */}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
                 {suggestedTasks.map((task, index) => (
                   <PromptTooltip
                     key={index}
                     taskTitle={task.task_title}
                     detailedPrompt={task.detailed_prompt}
                   >
-                    <div className="bg-[#846348] hover:brightness-110 transition-all duration-200 rounded-lg p-5 cursor-pointer border border-transparent hover:border-[#C1D75B]/30">
-                      <div className="flex items-start gap-3">
+                    <div className="bg-[#846348] hover:brightness-110 transition-all duration-200 rounded-xl p-6 cursor-pointer border border-transparent hover:border-[#C1D75B]/40">
+                      <div className="flex items-start gap-4">
                         {/* Task Number */}
-                        <div className="flex-shrink-0 w-6 h-6 rounded-full bg-white/10 flex items-center justify-center text-xs font-bold">
+                        <div className="flex-shrink-0 w-7 h-7 rounded-full bg-white/15 flex items-center justify-center text-sm font-bold">
                           {index + 1}
                         </div>
 
                         {/* Task Title */}
                         <div className="flex-1">
-                          <h3 className="text-sm font-semibold text-white leading-tight">
+                          <h3 className="text-base font-semibold text-white leading-tight">
                             {task.task_title}
                           </h3>
-                          <p className="text-xs text-white/60 mt-2">
+                          <p className="text-xs text-white/50 mt-2">
                             Hover to see detailed prompt
                           </p>
                         </div>
@@ -113,8 +113,8 @@ export default function PostIdeationView({
               </div>
             </div>
 
-            {/* Bottom Spacing */}
-            <div className="h-8" />
+            {/* Bottom Spacing for Input Bar */}
+            <div className="h-32" />
           </div>
         </ScrollArea.Viewport>
 
