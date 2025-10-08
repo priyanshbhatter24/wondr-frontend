@@ -123,19 +123,21 @@ export default function PostIdeationPage() {
 
           {/* Editing Prompt (before recommendations) */}
           {stage === 'editing-prompt' && !error && (
-            <div className="max-w-4xl mx-auto p-8 space-y-6">
+            <div className="max-w-4xl mx-auto px-8 py-12 space-y-8">
               <div>
-                <h1 className="text-3xl font-bold text-white mb-4">
+                <h1 className="text-4xl font-bold text-white mb-6">
                   Create Your Post
                 </h1>
                 {contextPreview && (
-                  <p className="text-white/60 text-sm mb-6">
-                    {contextPreview}
-                  </p>
+                  <div className="bg-[#1a1a1a] border border-white/20 rounded-xl p-6 mb-8">
+                    <p className="text-white/70 text-sm leading-relaxed">
+                      {contextPreview}
+                    </p>
+                  </div>
                 )}
-                <p className="text-white/80 leading-relaxed">
+                <p className="text-white/80 text-base leading-relaxed">
                   Below is an auto-generated prompt based on the industry insights.
-                  Feel free to edit it to match your vision, then click Generate to create
+                  Feel free to edit it to match your vision, then click <span className="text-[#C1D75B] font-semibold">Generate</span> to create
                   text and image recommendations.
                 </p>
               </div>
