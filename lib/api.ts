@@ -65,4 +65,11 @@ export const api = {
         body: JSON.stringify(data),
       }),
   },
+  postIdeation: {
+    generate: (data: { industry_update_id: string; post_suggestion_index: number }) =>
+      apiClient("/api/post-ideation", {
+        method: "POST",
+        body: JSON.stringify(data),
+      }),
+  },
 };

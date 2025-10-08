@@ -453,6 +453,7 @@ export default function IdeaHubPage() {
           remixOptions={selectedInsight.remixOptions}
           channels={selectedInsight.channels}
           fullContent={selectedInsight.fullContent}
+          industryUpdateId={selectedInsight.id}
         />
       )}
     </div>
