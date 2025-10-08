@@ -8,6 +8,7 @@ import {
   ImageIcon,
   MagnifyingGlassIcon,
   Cross2Icon,
+  GearIcon,
 } from "@radix-ui/react-icons";
 import Image from "next/image";
 import Link from "next/link";
@@ -141,6 +142,13 @@ export default function Sidebar({
         >
           <LightningBoltIcon className="w-4 h-4" />
           <span>Idea Hub</span>
+        </Link>
+        <Link
+          href="/icp-settings"
+          className="w-full text-left px-3 py-2 rounded-md transition-colors flex items-center gap-3 text-sm hover:bg-black/40 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/40"
+        >
+          <GearIcon className="w-4 h-4" />
+          <span>ICP Settings</span>
         </Link>
         <Link
           href="/"
