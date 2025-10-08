@@ -3,9 +3,20 @@ export interface SuggestedTask {
   detailed_prompt: string;
 }
 
+export interface InitialPromptRequest {
+  industry_update_id: string;
+  post_suggestion_index: number;
+}
+
+export interface InitialPromptResponse {
+  generated_prompt: string;
+  context_preview: string;
+}
+
 export interface PostIdeationRequest {
   industry_update_id: string;
   post_suggestion_index: number;
+  user_prompt: string;
 }
 
 export interface PostIdeationResponse {

@@ -4,18 +4,23 @@ import { useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import { useApiClient } from "@/lib/api-client";
 import PostIdeationView from "@/components/PostIdeationView";
+import PromptInputBar from "@/components/PromptInputBar";
 import Sidebar from "@/components/Sidebar";
 import { PostIdeationResponse } from "@/types/post-ideation";
 import { ArrowLeftIcon } from "@radix-ui/react-icons";
 import Link from "next/link";
+
+type Stage = 'loading-prompt' | 'editing-prompt' | 'loading-recommendations' | 'showing-recommendations';
 
 export default function PostIdeationPage() {
   const searchParams = useSearchParams();
   const updateId = searchParams.get("id");
   const suggestionIndex = searchParams.get("index");
 
-  const [ideation, setIdeation] = useState<PostIdeationResponse | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [stage, setStage] = useState<Stage>('loading-prompt');
+  const [userPrompt, setUserPrompt] = useState('');
+  const [contextPreview, setContextPreview] = useState('');
+  const [recommendations, setRecommendations] = useState<PostIdeationResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const api = useApiClient();
@@ -28,32 +33,61 @@ export default function PostIdeationPage() {
     { id: "4", name: "Gemini 2.5 pro intro posts", timestamp: "5 hours ago" },
   ];
 
+  // Step 1: Generate initial prompt on mount
   useEffect(() => {
-    async function fetchIdeation() {
+    async function fetchInitialPrompt() {
       if (!updateId || !suggestionIndex) {
         setError("Missing required parameters");
-        setLoading(false);
+        setStage('editing-prompt');
         return;
       }
 
       try {
-        setLoading(true);
-        const data = await api.postIdeation.generate({
+        setStage('loading-prompt');
+        const data = await api.postIdeation.generatePrompt({
           industry_update_id: updateId,
           post_suggestion_index: parseInt(suggestionIndex),
         });
-        setIdeation(data);
+        setUserPrompt(data.generated_prompt);
+        setContextPreview(data.context_preview);
+        setStage('editing-prompt');
       } catch (err) {
-        console.error("Failed to fetch post ideation:", err);
-        setError("Failed to generate post ideation");
-      } finally {
-        setLoading(false);
+        console.error("Failed to generate initial prompt:", err);
+        setError("Failed to generate initial prompt");
+        setStage('editing-prompt');
       }
     }
 
-    fetchIdeation();
+    fetchInitialPrompt();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [updateId, suggestionIndex]);
+
+  // Step 2: Generate recommendations from user's edited prompt
+  const handleGenerateRecommendations = async () => {
+    if (!updateId || !suggestionIndex || !userPrompt.trim()) return;
+
+    try {
+      setStage('loading-recommendations');
+      const data = await api.postIdeation.generate({
+        industry_update_id: updateId,
+        post_suggestion_index: parseInt(suggestionIndex),
+        user_prompt: userPrompt,
+      });
+      setRecommendations(data);
+      setStage('showing-recommendations');
+    } catch (err) {
+      console.error("Failed to generate recommendations:", err);
+      setError("Failed to generate recommendations");
+      setStage('editing-prompt');
+    }
+  };
+
+  // Step 3: Regenerate with new prompt (iterative refinement)
+  const handleRegenerate = async () => {
+    if (!userPrompt.trim()) return;
+    // Same as initial generation
+    await handleGenerateRecommendations();
+  };
 
   return (
     <div className="flex h-screen overflow-hidden bg-[#000000]">
@@ -63,9 +97,9 @@ export default function PostIdeationPage() {
         onItemClick={() => {}}
       />
 
-      <div className="flex-1 overflow-y-auto">
-        {/* Back Button */}
-        <div className="p-6 border-b border-white/10">
+      <div className="flex-1 flex flex-col overflow-hidden">
+        {/* Header with Back Button */}
+        <div className="flex-shrink-0 p-6 border-b border-white/10">
           <Link
             href="/idea-hub"
             className="inline-flex items-center gap-2 text-white/70 hover:text-white transition-colors text-sm"
@@ -75,42 +109,91 @@ export default function PostIdeationPage() {
           </Link>
         </div>
 
-        {/* Loading State */}
-        {loading && (
-          <div className="flex items-center justify-center min-h-[60vh]">
-            <div className="space-y-4 text-center">
-              <div className="w-12 h-12 border-4 border-[#C1D75B] border-t-transparent rounded-full animate-spin mx-auto" />
-              <p className="text-white/60 text-sm">Generating post ideation...</p>
-            </div>
-          </div>
-        )}
-
-        {/* Error State */}
-        {error && !loading && (
-          <div className="flex items-center justify-center min-h-[60vh]">
-            <div className="text-center space-y-4 max-w-md">
-              <div className="text-red-400 text-lg font-semibold">
-                {error}
+        {/* Main Content Area */}
+        <div className="flex-1 overflow-y-auto">
+          {/* Loading Initial Prompt */}
+          {stage === 'loading-prompt' && (
+            <div className="flex items-center justify-center min-h-full">
+              <div className="space-y-4 text-center">
+                <div className="w-12 h-12 border-4 border-[#C1D75B] border-t-transparent rounded-full animate-spin mx-auto" />
+                <p className="text-white/60 text-sm">Generating initial prompt...</p>
               </div>
-              <Link
-                href="/idea-hub"
-                className="inline-block px-6 py-3 bg-[#846348] hover:brightness-110 transition-all text-white rounded"
-              >
-                Return to Idea Hub
-              </Link>
             </div>
-          </div>
-        )}
+          )}
 
-        {/* Success State */}
-        {ideation && !loading && !error && (
-          <PostIdeationView
-            remixTopic={ideation.remix_topic}
-            reasoning={ideation.reasoning}
-            contextBlurb={ideation.context_blurb}
-            textSummary={ideation.text_summary}
-            imageRecommendations={ideation.image_recommendations}
-            suggestedTasks={ideation.suggested_tasks}
+          {/* Editing Prompt (before recommendations) */}
+          {stage === 'editing-prompt' && !error && (
+            <div className="max-w-4xl mx-auto p-8 space-y-6">
+              <div>
+                <h1 className="text-3xl font-bold text-white mb-4">
+                  Create Your Post
+                </h1>
+                {contextPreview && (
+                  <p className="text-white/60 text-sm mb-6">
+                    {contextPreview}
+                  </p>
+                )}
+                <p className="text-white/80 leading-relaxed">
+                  Below is an auto-generated prompt based on the industry insights.
+                  Feel free to edit it to match your vision, then click Generate to create
+                  text and image recommendations.
+                </p>
+              </div>
+            </div>
+          )}
+
+          {/* Loading Recommendations */}
+          {stage === 'loading-recommendations' && (
+            <div className="flex items-center justify-center min-h-full">
+              <div className="space-y-4 text-center">
+                <div className="w-12 h-12 border-4 border-[#C1D75B] border-t-transparent rounded-full animate-spin mx-auto" />
+                <p className="text-white/60 text-sm">Generating recommendations...</p>
+              </div>
+            </div>
+          )}
+
+          {/* Showing Recommendations */}
+          {stage === 'showing-recommendations' && recommendations && (
+            <PostIdeationView
+              remixTopic={recommendations.remix_topic}
+              reasoning={recommendations.reasoning}
+              contextBlurb={recommendations.context_blurb}
+              textSummary={recommendations.text_summary}
+              imageRecommendations={recommendations.image_recommendations}
+              suggestedTasks={recommendations.suggested_tasks}
+            />
+          )}
+
+          {/* Error State */}
+          {error && (
+            <div className="flex items-center justify-center min-h-full">
+              <div className="text-center space-y-4 max-w-md">
+                <div className="text-red-400 text-lg font-semibold">
+                  {error}
+                </div>
+                <Link
+                  href="/idea-hub"
+                  className="inline-block px-6 py-3 bg-[#846348] hover:brightness-110 transition-all text-white rounded"
+                >
+                  Return to Idea Hub
+                </Link>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Input Bar - Shows in editing or showing stages */}
+        {(stage === 'editing-prompt' || stage === 'showing-recommendations') && !error && (
+          <PromptInputBar
+            value={userPrompt}
+            onChange={setUserPrompt}
+            onSubmit={stage === 'editing-prompt' ? handleGenerateRecommendations : handleRegenerate}
+            loading={false}
+            placeholder={
+              stage === 'editing-prompt'
+                ? "Edit your prompt here..."
+                : "Refine your prompt to regenerate recommendations..."
+            }
           />
         )}
       </div>
