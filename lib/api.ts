@@ -47,4 +47,22 @@ export const api = {
         body: JSON.stringify(data),
       }),
   },
+  industryUpdates: {
+    list: (params?: { limit?: number; offset?: number }) => {
+      const searchParams = new URLSearchParams();
+      if (params?.limit) searchParams.append("limit", params.limit.toString());
+      if (params?.offset) searchParams.append("offset", params.offset.toString());
+      const queryString = searchParams.toString();
+      return apiClient(`/api/industry-updates${queryString ? `?${queryString}` : ""}`);
+    },
+    get: (id: string) => apiClient(`/api/industry-updates/${id}`),
+  },
+  userConfig: {
+    getIcp: () => apiClient("/api/user-config/icp"),
+    updateIcp: (data: any) =>
+      apiClient("/api/user-config/icp", {
+        method: "POST",
+        body: JSON.stringify(data),
+      }),
+  },
 };
