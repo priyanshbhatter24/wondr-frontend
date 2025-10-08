@@ -1,8 +1,9 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import * as Dialog from "@radix-ui/react-dialog";
-import { ExternalLinkIcon } from "@radix-ui/react-icons";
+import { ExternalLinkIcon, ArrowRightIcon } from "@radix-ui/react-icons";
 import { ChannelDetail } from "@/types/industry-updates";
 
 interface RemixOption {
@@ -19,6 +20,7 @@ interface InsightModalProps {
   remixOptions: RemixOption[];
   channels?: { [key: string]: ChannelDetail[] };
   fullContent?: string;
+  industryUpdateId?: string; // Add ID for navigation
 }
 
 export default function InsightModal({
@@ -30,9 +32,17 @@ export default function InsightModal({
   remixOptions,
   channels,
   fullContent,
+  industryUpdateId,
 }: InsightModalProps) {
+  const router = useRouter();
   const channelNames = channels ? Object.keys(channels).filter(ch => channels[ch].length > 0) : [];
   const [activeChannel, setActiveChannel] = useState(channelNames[0] || "");
+
+  const handleRemixClick = (index: number) => {
+    if (industryUpdateId) {
+      router.push(`/post-ideation?id=${industryUpdateId}&index=${index}`);
+    }
+  };
 
   return (
     <Dialog.Root open={isOpen} onOpenChange={onClose}>
@@ -120,16 +130,18 @@ export default function InsightModal({
                   {remixOptions.map((option, index) => (
                     <div
                       key={index}
-                      className="rounded-lg border border-white/10 bg-white/5 p-4"
+                      onClick={() => handleRemixClick(index)}
+                      className="rounded-lg border border-white/10 bg-white/5 p-4 cursor-pointer hover:bg-white/10 transition-all hover:border-[#C1D75B]/30 group"
                     >
                       <div className="flex items-start gap-3">
                         <div className="mt-2 h-2 w-2 flex-shrink-0 rounded-full bg-white/70" />
                         <div className="flex-1">
-                          <p className="text-base text-white/90 font-medium">{option.text}</p>
+                          <p className="text-base text-white/90 font-medium group-hover:text-white">{option.text}</p>
                           {option.reasoning && (
                             <p className="text-sm text-white/60 mt-2">{option.reasoning}</p>
                           )}
                         </div>
+                        <ArrowRightIcon className="w-5 h-5 text-white/40 group-hover:text-[#C1D75B] transition-colors flex-shrink-0" />
                       </div>
                     </div>
                   ))}

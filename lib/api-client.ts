@@ -88,5 +88,17 @@ export function useApiClient() {
           body: JSON.stringify(data),
         }),
     },
+    postIdeation: {
+      generatePrompt: (data: { industry_update_id: string; post_suggestion_index: number }) =>
+        apiClient("/api/post-ideation/generate-prompt", {
+          method: "POST",
+          body: JSON.stringify(data),
+        }),
+      generate: (data: { industry_update_id: string; post_suggestion_index: number; user_prompt: string }) =>
+        apiClient("/api/post-ideation", {
+          method: "POST",
+          body: JSON.stringify(data),
+        }),
+    },
   };
 }
