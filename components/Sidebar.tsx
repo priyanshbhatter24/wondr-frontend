@@ -179,6 +179,7 @@ export default function Sidebar({
                   }`}
                 >
                   <div className="font-normal truncate text-white">{gen.name}</div>
+                  <div className="text-white/50 text-xs mt-1">{gen.timestamp}</div>
                 </button>
               ))}
               {filteredGenerations.length === 0 && (
