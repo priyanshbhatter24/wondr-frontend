@@ -1,8 +1,22 @@
 import { auth } from "@clerk/nextjs/server";
 
+import { GenerateImageRequest, GenerateImageResponse, ImageGeneration, ImageGenerationSession, ChatMessage } from "@/types/image-generation";
+import { IndustryUpdate, IndustryUpdatesListResponse, UserICPConfig } from "@/types/industry-updates";
+import { InitialPromptRequest, InitialPromptResponse, PostIdeationRequest, PostIdeationResponse } from "@/types/post-ideation";
+
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
-export async function apiClient(endpoint: string, options: RequestInit = {}) {
+type JsonRecord = Record<string, unknown>;
+
+interface ImageGenerationHistoryResponse {
+  generations: ImageGeneration[];
+}
+
+interface ImageGenerationMessagesResponse {
+  messages: ChatMessage[];
+}
+
+export async function apiClient<TResponse>(endpoint: string, options: RequestInit = {}): Promise<TResponse> {
   const { getToken } = await auth();
   const token = await getToken();
 
@@ -21,28 +35,28 @@ export async function apiClient(endpoint: string, options: RequestInit = {}) {
     throw new Error(`API Error: ${response.statusText}`);
   }
 
-  return response.json();
+  return response.json() as Promise<TResponse>;
 }
 
 // Example API functions
 export const api = {
   auth: {
-    getMe: () => apiClient("/api/auth/me"),
+    getMe: () => apiClient<JsonRecord>("/api/auth/me"),
   },
   campaigns: {
-    list: () => apiClient("/api/campaigns"),
-    create: (data: any) =>
-      apiClient("/api/campaigns", {
+    list: () => apiClient<JsonRecord>("/api/campaigns"),
+    create: (data: JsonRecord) =>
+      apiClient<JsonRecord>("/api/campaigns", {
         method: "POST",
         body: JSON.stringify(data),
       }),
   },
   analytics: {
-    get: () => apiClient("/api/analytics"),
+    get: () => apiClient<JsonRecord>("/api/analytics"),
   },
   ai: {
-    generateInsights: (data: any) =>
-      apiClient("/api/ai/insights", {
+    generateInsights: (data: JsonRecord) =>
+      apiClient<JsonRecord>("/api/ai/insights", {
         method: "POST",
         body: JSON.stringify(data),
       }),
@@ -50,49 +64,49 @@ export const api = {
   industryUpdates: {
     list: (params?: { limit?: number; offset?: number }) => {
       const searchParams = new URLSearchParams();
-      if (params?.limit) searchParams.append("limit", params.limit.toString());
-      if (params?.offset) searchParams.append("offset", params.offset.toString());
+      if (params?.limit !== undefined) searchParams.append("limit", params.limit.toString());
+      if (params?.offset !== undefined) searchParams.append("offset", params.offset.toString());
       const queryString = searchParams.toString();
-      return apiClient(`/api/industry-updates${queryString ? `?${queryString}` : ""}`);
+      return apiClient<IndustryUpdatesListResponse>(`/api/industry-updates${queryString ? `?${queryString}` : ""}`);
     },
-    get: (id: string) => apiClient(`/api/industry-updates/${id}`),
+    get: (id: string) => apiClient<IndustryUpdate>(`/api/industry-updates/${id}`),
   },
   userConfig: {
-    getIcp: () => apiClient("/api/user-config/icp"),
-    updateIcp: (data: any) =>
-      apiClient("/api/user-config/icp", {
+    getIcp: () => apiClient<UserICPConfig>("/api/user-config/icp"),
+    updateIcp: (data: UserICPConfig) =>
+      apiClient<UserICPConfig>("/api/user-config/icp", {
         method: "POST",
         body: JSON.stringify(data),
       }),
   },
   postIdeation: {
-    generatePrompt: (data: { industry_update_id: string; post_suggestion_index: number }) =>
-      apiClient("/api/post-ideation/generate-prompt", {
+    generatePrompt: (data: InitialPromptRequest) =>
+      apiClient<InitialPromptResponse>("/api/post-ideation/generate-prompt", {
         method: "POST",
         body: JSON.stringify(data),
       }),
-    generate: (data: { industry_update_id: string; post_suggestion_index: number; user_prompt: string }) =>
-      apiClient("/api/post-ideation", {
+    generate: (data: PostIdeationRequest) =>
+      apiClient<PostIdeationResponse>("/api/post-ideation", {
         method: "POST",
         body: JSON.stringify(data),
       }),
   },
   imageGeneration: {
     createSession: (model?: string) =>
-      apiClient("/api/image-generation/sessions", {
+      apiClient<ImageGenerationSession>("/api/image-generation/sessions", {
         method: "POST",
         body: JSON.stringify({ model }),
       }),
     getSession: (sessionId: string) =>
-      apiClient(`/api/image-generation/sessions/${sessionId}`),
-    generate: (data: { session_id: string; prompt: string; model: string; previous_generation_id?: string }) =>
-      apiClient("/api/image-generation/generate", {
+      apiClient<ImageGenerationSession>(`/api/image-generation/sessions/${sessionId}`),
+    generate: (data: GenerateImageRequest & { model: string }) =>
+      apiClient<GenerateImageResponse>("/api/image-generation/generate", {
         method: "POST",
         body: JSON.stringify(data),
       }),
     getHistory: (sessionId: string) =>
-      apiClient(`/api/image-generation/sessions/${sessionId}/history`),
+      apiClient<ImageGenerationHistoryResponse>(`/api/image-generation/sessions/${sessionId}/history`),
     getMessages: (sessionId: string) =>
-      apiClient(`/api/image-generation/sessions/${sessionId}/messages`),
+      apiClient<ImageGenerationMessagesResponse>(`/api/image-generation/sessions/${sessionId}/messages`),
   },
 };

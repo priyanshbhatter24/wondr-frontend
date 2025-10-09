@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { useApiClient } from "@/lib/api-client";
 import PostIdeationView from "@/components/PostIdeationView";
@@ -12,7 +12,7 @@ import Link from "next/link";
 
 type Stage = 'loading-prompt' | 'editing-prompt' | 'loading-recommendations' | 'showing-recommendations';
 
-export default function PostIdeationPage() {
+function PostIdeationPageContent() {
   const searchParams = useSearchParams();
   const updateId = searchParams.get("id");
   const suggestionIndex = searchParams.get("index");
@@ -200,5 +200,22 @@ export default function PostIdeationPage() {
         )}
       </div>
     </div>
+  );
+}
+
+export default function PostIdeationPage() {
+  return (
+    <Suspense
+      fallback={(
+        <div className="flex h-screen items-center justify-center bg-[#000000] text-white">
+          <div className="space-y-4 text-center">
+            <div className="w-12 h-12 border-4 border-[#C1D75B] border-t-transparent rounded-full animate-spin mx-auto" />
+            <p className="text-white/60 text-sm">Loading post ideation...</p>
+          </div>
+        </div>
+      )}
+    >
+      <PostIdeationPageContent />
+    </Suspense>
   );
 }

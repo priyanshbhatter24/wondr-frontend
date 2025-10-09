@@ -1,3 +1,5 @@
+import { ChannelDetail } from "@/types/industry-updates";
+
 /**
  * Format an ISO date string to a relative time string
  * @param isoDate - ISO 8601 date string
@@ -30,6 +32,9 @@ export function formatRelativeTime(isoDate: string): string {
  * @param channels - Channels object with channel names as keys
  * @returns Comma-separated list of channel names (e.g., "Reddit, X, BBC")
  */
-export function getChannelSourcesLabel(channels: { [key: string]: any[] }): string {
-  return Object.keys(channels).filter((key) => channels[key].length > 0).join(", ");
+export function getChannelSourcesLabel(channels: Record<string, ChannelDetail[] | undefined>): string {
+  return Object.entries(channels)
+    .filter(([, details]) => Array.isArray(details) && details.length > 0)
+    .map(([key]) => key)
+    .join(", ");
 }

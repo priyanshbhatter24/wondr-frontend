@@ -9,7 +9,7 @@ import { ImageGeneration, ChatMessage } from "@/types/image-generation";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 
 export default function GeneratePostPage() {
-  const api = useApiClient();
+  const { imageGeneration } = useApiClient();
 
   // Session state
   const [sessionId, setSessionId] = useState<string | null>(null);
@@ -28,7 +28,7 @@ export default function GeneratePostPage() {
   useEffect(() => {
     const initSession = async () => {
       try {
-        const session = await api.imageGeneration.createSession();
+        const session = await imageGeneration.createSession();
         setSessionId(session.session_id);
       } catch (err) {
         console.error("Failed to create session:", err);
@@ -39,7 +39,7 @@ export default function GeneratePostPage() {
     };
 
     initSession();
-  }, []);
+  }, [imageGeneration]);
 
   // Load history when session changes
   useEffect(() => {
@@ -48,8 +48,8 @@ export default function GeneratePostPage() {
     const loadHistory = async () => {
       try {
         const [historyData, messagesData] = await Promise.all([
-          api.imageGeneration.getHistory(sessionId),
-          api.imageGeneration.getMessages(sessionId),
+          imageGeneration.getHistory(sessionId),
+          imageGeneration.getMessages(sessionId),
         ]);
 
         setGenerations(historyData.generations || []);
@@ -65,7 +65,7 @@ export default function GeneratePostPage() {
     };
 
     loadHistory();
-  }, [sessionId]);
+  }, [imageGeneration, sessionId]);
 
   const handleSendMessage = async (prompt: string) => {
     if (!sessionId || isGenerating) return;
@@ -90,7 +90,7 @@ export default function GeneratePostPage() {
         : undefined;
 
       // Generate image
-      await api.imageGeneration.generate({
+      await imageGeneration.generate({
         session_id: sessionId,
         prompt,
         previous_generation_id: previousGenerationId,
@@ -98,8 +98,8 @@ export default function GeneratePostPage() {
 
       // Reload history and messages
       const [historyData, messagesData] = await Promise.all([
-        api.imageGeneration.getHistory(sessionId),
-        api.imageGeneration.getMessages(sessionId),
+        imageGeneration.getHistory(sessionId),
+        imageGeneration.getMessages(sessionId),
       ]);
 
       setGenerations(historyData.generations || []);

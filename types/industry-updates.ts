@@ -34,7 +34,7 @@ export interface UserICPConfig {
     industry?: string;
     target_audience?: string;
     region?: string;
-    [key: string]: any;
+    [key: string]: string | string[] | undefined;
   };
   persona: {
     youtubers: string[];
@@ -45,7 +45,7 @@ export interface UserICPConfig {
   company_content: {
     recent_blog_titles?: string[];
     keywords?: string[];
-    [key: string]: any;
+    [key: string]: string | string[] | undefined;
   };
   updated_at?: string;
 }

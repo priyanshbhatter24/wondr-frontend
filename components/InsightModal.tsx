@@ -117,7 +117,7 @@ export default function InsightModal({
 
   // Get channels with data - dynamically generate cards for ALL channels
   const channelsWithData = Object.entries(channels || {}).filter(
-    ([_, details]) => details && details.length > 0
+    ([, details]) => Array.isArray(details) && details.length > 0
   );
 
   // Debug: Log all available channels
@@ -246,7 +246,7 @@ export default function InsightModal({
                                       className="block group"
                                     >
                                       <blockquote className="text-xs text-white/80 italic group-hover:text-white transition-colors cursor-pointer text-left">
-                                        "{truncatedText}"
+                                        &ldquo;{truncatedText}&rdquo;
                                       </blockquote>
                                     </a>
                                   );

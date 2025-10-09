@@ -30,12 +30,6 @@ export default function ICPSettingsPage() {
   const [newBlogTitle, setNewBlogTitle] = useState('');
   const [newKeyword, setNewKeyword] = useState('');
 
-  // Placeholder generations for sidebar
-  const generations = [
-    { id: "1", name: "Google pixel 12mp camera", timestamp: "2 hours ago" },
-    { id: "2", name: "Deepmind image model ann", timestamp: "3 hours ago" },
-  ];
-
   // Fetch existing config on mount
   useEffect(() => {
     async function fetchConfig() {
