@@ -19,7 +19,8 @@
     "@radix-ui/react-visually-hidden": "^1.2.3",
     "next": "15.5.4",
     "react": "19.1.0",
-    "react-dom": "19.1.0"
+    "react-dom": "19.1.0",
+    "react-resizable-panels": "^3.0.6"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
