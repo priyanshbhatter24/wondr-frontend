@@ -13,17 +13,17 @@ import Image from "next/image";
 import Link from "next/link";
 import { useMemo, useRef, useState } from "react";
 import { useClerk, useUser } from "@clerk/nextjs";
-import { SidebarGenerationItem } from "@/types/image-generation";
+import { SidebarSessionItem } from "@/types/image-generation";
 import { formatRelativeTime } from "@/utils/date";
 
 interface SidebarProps {
-  generations: SidebarGenerationItem[];
+  sessions: SidebarSessionItem[];
   activeSessionId?: string;
   onItemClick?: (sessionId: string) => void;
 }
 
 export default function Sidebar({
-  generations,
+  sessions,
   activeSessionId,
   onItemClick,
 }: SidebarProps) {
@@ -40,15 +40,15 @@ export default function Sidebar({
     user?.primaryEmailAddress?.emailAddress ??
     "Guest";
 
-  const filteredGenerations = useMemo(() => {
+  const filteredSessions = useMemo(() => {
     if (!searchTerm) {
-      return generations;
+      return sessions;
     }
 
-    return generations.filter((gen) =>
-      gen.name.toLowerCase().includes(searchTerm.toLowerCase()),
+    return sessions.filter((session) =>
+      session.name.toLowerCase().includes(searchTerm.toLowerCase()),
     );
-  }, [generations, searchTerm]);
+  }, [sessions, searchTerm]);
 
   const toggleSearch = () => {
     setIsSearching((prev) => {
@@ -157,24 +157,24 @@ export default function Sidebar({
         <ScrollArea.Root className="w-full h-full overflow-hidden">
           <ScrollArea.Viewport className="w-full h-full [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none']">
             <div className="space-y-2">
-              {filteredGenerations.map((gen) => (
+              {filteredSessions.map((session) => (
                 <button
-                  key={gen.generation_id}
+                  key={session.session_id}
                   type="button"
-                  onClick={() => onItemClick?.(gen.session_id)}
-                  title={gen.full_prompt}
+                  onClick={() => onItemClick?.(session.session_id)}
+                  title={session.full_prompt}
                   className={`w-full text-left px-3 py-2.5 rounded-md transition-colors text-xs hover:bg-black/40 ${
-                    activeSessionId === gen.session_id ? "bg-black/60" : ""
+                    activeSessionId === session.session_id ? "bg-black/60" : ""
                   }`}
                 >
-                  <div className="font-normal truncate text-white">{gen.name}</div>
+                  <div className="font-normal truncate text-white">{session.name}</div>
                   <div className="text-white/50 text-xs mt-1">
-                    {formatRelativeTime(gen.created_at)}
+                    {formatRelativeTime(session.created_at)}
                   </div>
                 </button>
               ))}
-              {filteredGenerations.length === 0 && (
-                <div className="text-white/50 text-xs px-3 py-2">No generations found.</div>
+              {filteredSessions.length === 0 && (
+                <div className="text-white/50 text-xs px-3 py-2">No sessions found.</div>
               )}
             </div>
           </ScrollArea.Viewport>

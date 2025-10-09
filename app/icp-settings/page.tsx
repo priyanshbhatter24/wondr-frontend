@@ -12,11 +12,11 @@ export default function ICPSettingsPage() {
   const router = useRouter();
   const api = useApiClient();
 
-  // Fetch generations for sidebar
-  const { generations } = useGenerations();
+  // Fetch sessions for sidebar
+  const { sessions } = useGenerations();
 
-  // Handle sidebar generation click
-  const handleGenerationClick = (sessionId: string) => {
+  // Handle sidebar session click
+  const handleSessionClick = (sessionId: string) => {
     router.push(`/generate-post?session=${sessionId}`);
   };
 
@@ -188,8 +188,8 @@ export default function ICPSettingsPage() {
   if (loading) {
     return (
       <AppShell
-        generations={generations}
-        onGenerationClick={handleGenerationClick}
+        sessions={sessions}
+        onSessionClick={handleSessionClick}
       >
         <div className="flex-1 flex items-center justify-center bg-[color:var(--color-gray-dark)]">
           <div className="text-white">Loading configuration...</div>
@@ -200,8 +200,8 @@ export default function ICPSettingsPage() {
 
   return (
     <AppShell
-      generations={generations}
-      onGenerationClick={handleGenerationClick}
+      sessions={sessions}
+      onSessionClick={handleSessionClick}
     >
       <div className="flex-1 overflow-y-auto bg-[color:var(--color-gray-dark)]">
         <div className="p-8 max-w-4xl">

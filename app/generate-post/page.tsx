@@ -17,7 +17,7 @@ export default function GeneratePostPage() {
   const sessionIdFromUrl = searchParams.get("session");
 
   const { imageGeneration } = useApiClient();
-  const { generations: sidebarGenerations, refetch } = useGenerations();
+  const { sessions: sidebarSessions, refetch } = useGenerations();
 
   // Session state
   const [sessionId, setSessionId] = useState<string | null>(sessionIdFromUrl);
@@ -173,9 +173,9 @@ export default function GeneratePostPage() {
   if (isInitializing) {
     return (
       <AppShell
-        generations={sidebarGenerations}
+        sessions={sidebarSessions}
         activeSessionId={sessionId || undefined}
-        onGenerationClick={handleGenerationClick}
+        onSessionClick={handleGenerationClick}
       >
         <div className="flex items-center justify-center h-screen bg-[#000000] text-white">
           <div className="text-center">
@@ -193,9 +193,9 @@ export default function GeneratePostPage() {
 
   return (
     <AppShell
-      generations={sidebarGenerations}
+      sessions={sidebarSessions}
       activeSessionId={sessionId || undefined}
-      onGenerationClick={handleGenerationClick}
+      onSessionClick={handleGenerationClick}
     >
       <div className="flex flex-col h-screen bg-[#000000]">
         {/* Header */}

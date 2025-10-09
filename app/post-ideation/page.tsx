@@ -27,11 +27,11 @@ function PostIdeationPageContent() {
 
   const api = useApiClient();
 
-  // Fetch generations for sidebar
-  const { generations } = useGenerations();
+  // Fetch sessions for sidebar
+  const { sessions } = useGenerations();
 
-  // Handle sidebar generation click
-  const handleGenerationClick = (sessionId: string) => {
+  // Handle sidebar session click
+  const handleSessionClick = (sessionId: string) => {
     router.push(`/generate-post?session=${sessionId}`);
   };
 
@@ -93,8 +93,8 @@ function PostIdeationPageContent() {
 
   return (
     <AppShell
-      generations={generations}
-      onGenerationClick={handleGenerationClick}
+      sessions={sessions}
+      onSessionClick={handleSessionClick}
     >
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Header with Back Button */}

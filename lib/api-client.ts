@@ -3,7 +3,7 @@
 import { useMemo } from "react";
 import { useAuth } from "@clerk/nextjs";
 
-import { GenerateImageRequest, GenerateImageResponse, ImageGeneration, ImageGenerationSession, ChatMessage, UserGenerationsResponse } from "@/types/image-generation";
+import { GenerateImageRequest, GenerateImageResponse, ImageGeneration, ImageGenerationSession, ChatMessage, UserSessionsResponse } from "@/types/image-generation";
 import { IndustryUpdate, IndustryUpdatesListResponse, UserICPConfig } from "@/types/industry-updates";
 import { InitialPromptRequest, InitialPromptResponse, PostIdeationRequest, PostIdeationResponse } from "@/types/post-ideation";
 
@@ -129,7 +129,7 @@ export function useApiClient() {
           apiClient<ImageGenerationHistoryResponse>(`/api/image-generation/sessions/${sessionId}/history`),
         getMessages: (sessionId: string) =>
           apiClient<ImageGenerationMessagesResponse>(`/api/image-generation/sessions/${sessionId}/messages`),
-        getUserGenerations: (params?: { limit?: number; offset?: number }) => {
+        getUserSessions: (params?: { limit?: number; offset?: number }) => {
           let endpoint = "/api/image-generation/user-generations";
           if (params) {
             const searchParams = new URLSearchParams();
@@ -140,7 +140,7 @@ export function useApiClient() {
               endpoint += `?${queryString}`;
             }
           }
-          return apiClient<UserGenerationsResponse>(endpoint);
+          return apiClient<UserSessionsResponse>(endpoint);
         },
       },
     };

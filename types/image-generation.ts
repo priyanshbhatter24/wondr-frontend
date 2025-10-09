@@ -41,15 +41,14 @@ export interface GenerateImageResponse {
   created_at: string;
 }
 
-export interface SidebarGenerationItem {
+export interface SidebarSessionItem {
   session_id: string;
-  generation_id: string;
-  name: string;  // Truncated prompt (25 chars)
+  name: string;  // Truncated prompt from first generation (25 chars)
   full_prompt: string;  // Full prompt for tooltip
-  created_at: string;
+  created_at: string;  // Session's updated_at timestamp
 }
 
-export interface UserGenerationsResponse {
-  generations: SidebarGenerationItem[];
+export interface UserSessionsResponse {
+  sessions: SidebarSessionItem[];
   total: number;
 }
