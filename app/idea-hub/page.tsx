@@ -7,7 +7,7 @@ import InsightModal from "@/components/InsightModal";
 import CompetitorCard from "@/components/CompetitorCard";
 import { ChevronLeftIcon, ChevronRightIcon, FileIcon } from "@radix-ui/react-icons";
 import { useApiClient } from "@/lib/api-client";
-import { IndustryUpdate } from "@/types/industry-updates";
+import { ChannelDetail, IndustryUpdate } from "@/types/industry-updates";
 import { getChannelSourcesLabel } from "@/utils/date";
 
 interface InsightData {
@@ -17,7 +17,7 @@ interface InsightData {
   description: string;
   remixOptions: { text: string; reasoning?: string }[];
   fullContent?: string;
-  channels?: { [key: string]: any[] };
+  channels?: Record<string, ChannelDetail[]>;
   created_at?: string;
 }
 
@@ -65,25 +65,6 @@ export default function IdeaHubPage() {
     fetchUpdates();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []); // Only run once on mount
-
-  // Placeholder generations for sidebar - matching wireframe
-  const generations = [
-    { id: "1", name: "Google pixel 12mp camera", timestamp: "2 hours ago" },
-    { id: "2", name: "Deepmind image model ann", timestamp: "3 hours ago" },
-    { id: "3", name: "Google maps new navigatio", timestamp: "4 hours ago" },
-    { id: "4", name: "Gemini 2.5 pro intro posts", timestamp: "5 hours ago" },
-    { id: "5", name: "Google pixel 12mp camera", timestamp: "6 hours ago" },
-    { id: "6", name: "Deepmind image model ann", timestamp: "7 hours ago" },
-    { id: "7", name: "Google maps new navigatio", timestamp: "8 hours ago" },
-    { id: "8", name: "Gemini 2.5 pro intro posts", timestamp: "9 hours ago" },
-    { id: "9", name: "Google pixel 12mp camera", timestamp: "10 hours ago" },
-    { id: "10", name: "Deepmind image model ann", timestamp: "11 hours ago" },
-    { id: "11", name: "Google maps new navigatio", timestamp: "12 hours ago" },
-    { id: "12", name: "Gemini 2.5 pro intro posts", timestamp: "13 hours ago" },
-    { id: "13", name: "Google pixel 12mp camera", timestamp: "14 hours ago" },
-    { id: "14", name: "Deepmind image model ann", timestamp: "15 hours ago" },
-    { id: "15", name: "Google maps new navigatio", timestamp: "16 hours ago" },
-  ];
 
   // Industry Updates data
   const industryUpdates: InsightData[] = [
@@ -246,8 +227,8 @@ export default function IdeaHubPage() {
     setIsModalOpen(true);
   };
 
-  const industrySliderRef = useRef<HTMLDivElement>(null);
-  const competitorSliderRef = useRef<HTMLDivElement>(null);
+  const industrySliderRef = useRef<HTMLDivElement | null>(null);
+  const competitorSliderRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     competitorSliderRef.current?.scrollTo({
@@ -256,7 +237,7 @@ export default function IdeaHubPage() {
     });
   }, [activeCompetitor]);
 
-  const scroll = (ref: React.RefObject<HTMLDivElement>, direction: "left" | "right") => {
+  const scroll = (ref: React.RefObject<HTMLDivElement | null>, direction: "left" | "right") => {
     if (ref.current) {
       const scrollAmount = 420;
       ref.current.scrollBy({

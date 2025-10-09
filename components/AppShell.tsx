@@ -1,6 +1,4 @@
 "use client";
-
-import * as Collapsible from "@radix-ui/react-collapsible";
 import { HamburgerMenuIcon } from "@radix-ui/react-icons";
 import Sidebar from "./Sidebar";
 import { useState, useEffect } from "react";
@@ -39,11 +37,12 @@ export default function AppShell({ children }: AppShellProps) {
 
   return (
     <div className="flex h-screen overflow-hidden">
-      <Collapsible.Root open={isOpen} onOpenChange={setIsOpen}>
-        <Collapsible.Content className="transition-all duration-200 ease-in-out data-[state=closed]:w-0 data-[state=open]:w-64">
-          <Sidebar generations={[]} />
-        </Collapsible.Content>
-      </Collapsible.Root>
+      <div
+        className={`transition-all duration-200 ease-in-out ${isOpen ? "w-64" : "w-0"} overflow-hidden`}
+        aria-hidden={!isOpen}
+      >
+        <Sidebar generations={[]} />
+      </div>
 
       <div className="flex-1 relative flex flex-col min-w-0">
         <button
