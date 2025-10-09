@@ -3,7 +3,7 @@
 import { useMemo } from "react";
 import { useAuth } from "@clerk/nextjs";
 
-import { GenerateImageRequest, GenerateImageResponse, ImageGeneration, ImageGenerationSession, ChatMessage } from "@/types/image-generation";
+import { GenerateImageRequest, GenerateImageResponse, ImageGeneration, ImageGenerationSession, ChatMessage, UserGenerationsResponse } from "@/types/image-generation";
 import { IndustryUpdate, IndustryUpdatesListResponse, UserICPConfig } from "@/types/industry-updates";
 import { InitialPromptRequest, InitialPromptResponse, PostIdeationRequest, PostIdeationResponse } from "@/types/post-ideation";
 
@@ -129,6 +129,19 @@ export function useApiClient() {
           apiClient<ImageGenerationHistoryResponse>(`/api/image-generation/sessions/${sessionId}/history`),
         getMessages: (sessionId: string) =>
           apiClient<ImageGenerationMessagesResponse>(`/api/image-generation/sessions/${sessionId}/messages`),
+        getUserGenerations: (params?: { limit?: number; offset?: number }) => {
+          let endpoint = "/api/image-generation/user-generations";
+          if (params) {
+            const searchParams = new URLSearchParams();
+            if (params.limit !== undefined) searchParams.append("limit", params.limit.toString());
+            if (params.offset !== undefined) searchParams.append("offset", params.offset.toString());
+            const queryString = searchParams.toString();
+            if (queryString) {
+              endpoint += `?${queryString}`;
+            }
+          }
+          return apiClient<UserGenerationsResponse>(endpoint);
+        },
       },
     };
   }, [getToken]);

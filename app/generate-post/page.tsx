@@ -1,22 +1,26 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import AppShell from "@/components/AppShell";
 import { ImageDisplay } from "@/components/ImageDisplay";
 import { ChatInterface } from "@/components/ChatInterface";
 import { useApiClient } from "@/lib/api-client";
 import { ImageGeneration, ChatMessage } from "@/types/image-generation";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
+import { useGenerations } from "@/lib/use-generations";
 
 export default function GeneratePostPage() {
   const searchParams = useSearchParams();
+  const router = useRouter();
   const initialPrompt = searchParams.get("prompt") || "";
+  const sessionIdFromUrl = searchParams.get("session");
 
   const { imageGeneration } = useApiClient();
+  const { generations: sidebarGenerations, refetch } = useGenerations();
 
   // Session state
-  const [sessionId, setSessionId] = useState<string | null>(null);
+  const [sessionId, setSessionId] = useState<string | null>(sessionIdFromUrl);
 
   // Data state
   const [generations, setGenerations] = useState<ImageGeneration[]>([]);
@@ -28,22 +32,53 @@ export default function GeneratePostPage() {
   const [error, setError] = useState<string | null>(null);
   const [isInitializing, setIsInitializing] = useState(true);
 
-  // Initialize session on mount
+  // Initialize or load session
   useEffect(() => {
     const initSession = async () => {
+      if (sessionIdFromUrl) {
+        // Load existing session (for refresh or sidebar navigation)
+        try {
+          setIsInitializing(true);
+          await imageGeneration.getSession(sessionIdFromUrl);
+          setSessionId(sessionIdFromUrl);
+          // History will be loaded by next useEffect
+        } catch (err) {
+          console.error("Failed to load session:", err);
+          // If session not found, create new one
+          await createNewSession();
+        } finally {
+          setIsInitializing(false);
+        }
+      } else {
+        // Create new session
+        await createNewSession();
+      }
+    };
+
+    async function createNewSession() {
       try {
+        setIsInitializing(true);
         const session = await imageGeneration.createSession();
         setSessionId(session.session_id);
+
+        // IMPORTANT: Update URL to include session_id for persistence
+        const params = new URLSearchParams();
+        params.set("session", session.session_id);
+        if (initialPrompt) {
+          params.set("prompt", initialPrompt);
+        }
+        router.replace(`/generate-post?${params.toString()}`);
       } catch (err) {
         console.error("Failed to create session:", err);
         setError("Failed to initialize session. Please refresh the page.");
       } finally {
         setIsInitializing(false);
       }
-    };
+    }
 
     initSession();
-  }, [imageGeneration]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sessionIdFromUrl]);
 
   // Load history when session changes
   useEffect(() => {
@@ -113,6 +148,9 @@ export default function GeneratePostPage() {
       if (historyData.generations?.length > 0) {
         setCurrentIndex(historyData.generations.length - 1);
       }
+
+      // Refetch sidebar generations
+      await refetch();
     } catch (err) {
       console.error("Failed to generate image:", err);
       setError("Failed to generate image. Please try again.");
@@ -127,9 +165,18 @@ export default function GeneratePostPage() {
     setCurrentIndex(index);
   };
 
+  // Handle sidebar generation click
+  const handleGenerationClick = (newSessionId: string) => {
+    router.push(`/generate-post?session=${newSessionId}`);
+  };
+
   if (isInitializing) {
     return (
-      <AppShell>
+      <AppShell
+        generations={sidebarGenerations}
+        activeSessionId={sessionId || undefined}
+        onGenerationClick={handleGenerationClick}
+      >
         <div className="flex items-center justify-center h-screen bg-[#000000] text-white">
           <div className="text-center">
             <div className="flex justify-center gap-1 mb-4">
@@ -145,7 +192,11 @@ export default function GeneratePostPage() {
   }
 
   return (
-    <AppShell>
+    <AppShell
+      generations={sidebarGenerations}
+      activeSessionId={sessionId || undefined}
+      onGenerationClick={handleGenerationClick}
+    >
       <div className="flex flex-col h-screen bg-[#000000]">
         {/* Header */}
         <header className="flex items-center justify-between p-4 border-b border-[#262626]">
