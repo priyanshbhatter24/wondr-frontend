@@ -130,10 +130,10 @@ export default function Sidebar({
       {/* Navigation Items */}
       <div className="px-4 py-2 space-y-1">
         <Link
-          href="/dashboard"
+          href="/generate-post"
           className="w-full text-left px-3 py-2 rounded-md transition-colors flex items-center gap-3 text-sm hover:bg-black/40 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/40"
         >
-          <Pencil2Icon className="w-4 h-4" />
+          <ImageIcon className="w-4 h-4" />
           <span>Generate Post</span>
         </Link>
         <Link
@@ -151,11 +151,11 @@ export default function Sidebar({
           <span>ICP Settings</span>
         </Link>
         <Link
-          href="/"
+          href="/dashboard"
           className="w-full text-left px-3 py-2 rounded-md transition-colors flex items-center gap-3 text-sm hover:bg-black/40 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/40"
         >
-          <ImageIcon className="w-4 h-4" />
-          <span>Gallery</span>
+          <Pencil2Icon className="w-4 h-4" />
+          <span>Dashboard</span>
         </Link>
       </div>
 
