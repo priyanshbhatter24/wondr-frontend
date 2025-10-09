@@ -4,6 +4,7 @@ import * as Separator from "@radix-ui/react-separator";
 import * as ScrollArea from "@radix-ui/react-scroll-area";
 import PromptTooltip from "./PromptTooltip";
 import { SuggestedTask } from "@/types/post-ideation";
+import Link from "next/link";
 
 interface PostIdeationViewProps {
   remixTopic: string;
@@ -85,30 +86,35 @@ export default function PostIdeationView({
               {/* Tasks Grid */}
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
                 {suggestedTasks.map((task, index) => (
-                  <PromptTooltip
+                  <Link
                     key={index}
-                    taskTitle={task.task_title}
-                    detailedPrompt={task.detailed_prompt}
+                    href={`/generate-post?prompt=${encodeURIComponent(task.detailed_prompt)}`}
+                    className="block"
                   >
-                    <div className="bg-[#846348] hover:brightness-110 transition-all duration-200 rounded-xl p-6 cursor-pointer border border-transparent hover:border-[#C1D75B]/40">
-                      <div className="flex items-start gap-4">
-                        {/* Task Number */}
-                        <div className="flex-shrink-0 w-7 h-7 rounded-full bg-white/15 flex items-center justify-center text-sm font-bold">
-                          {index + 1}
-                        </div>
+                    <PromptTooltip
+                      taskTitle={task.task_title}
+                      detailedPrompt={task.detailed_prompt}
+                    >
+                      <div className="bg-[#846348] hover:brightness-110 transition-all duration-200 rounded-xl p-6 cursor-pointer border border-transparent hover:border-[#C1D75B]/40">
+                        <div className="flex items-start gap-4">
+                          {/* Task Number */}
+                          <div className="flex-shrink-0 w-7 h-7 rounded-full bg-white/15 flex items-center justify-center text-sm font-bold">
+                            {index + 1}
+                          </div>
 
-                        {/* Task Title */}
-                        <div className="flex-1">
-                          <h3 className="text-base font-semibold text-white leading-tight">
-                            {task.task_title}
-                          </h3>
-                          <p className="text-xs text-white/50 mt-2">
-                            Hover to see detailed prompt
-                          </p>
+                          {/* Task Title */}
+                          <div className="flex-1">
+                            <h3 className="text-base font-semibold text-white leading-tight">
+                              {task.task_title}
+                            </h3>
+                            <p className="text-xs text-white/50 mt-2">
+                              Click to generate post
+                            </p>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  </PromptTooltip>
+                    </PromptTooltip>
+                  </Link>
                 ))}
               </div>
             </div>

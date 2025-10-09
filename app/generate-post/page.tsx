@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import AppShell from "@/components/AppShell";
 import { ImageDisplay } from "@/components/ImageDisplay";
 import { ChatInterface } from "@/components/ChatInterface";
@@ -9,6 +10,9 @@ import { ImageGeneration, ChatMessage } from "@/types/image-generation";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 
 export default function GeneratePostPage() {
+  const searchParams = useSearchParams();
+  const initialPrompt = searchParams.get("prompt") || "";
+
   const { imageGeneration } = useApiClient();
 
   // Session state
@@ -164,6 +168,7 @@ export default function GeneratePostPage() {
                 messages={messages}
                 onSendMessage={handleSendMessage}
                 isGenerating={isGenerating}
+                initialPrompt={initialPrompt}
               />
             </Panel>
 
