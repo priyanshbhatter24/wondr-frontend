@@ -3,7 +3,6 @@
 import * as ScrollArea from "@radix-ui/react-scroll-area";
 import * as Separator from "@radix-ui/react-separator";
 import {
-  Pencil2Icon,
   LightningBoltIcon,
   ImageIcon,
   MagnifyingGlassIcon,
@@ -14,22 +13,18 @@ import Image from "next/image";
 import Link from "next/link";
 import { useMemo, useRef, useState } from "react";
 import { useClerk, useUser } from "@clerk/nextjs";
-
-interface Generation {
-  id: string;
-  name: string;
-  timestamp: string;
-}
+import { SidebarGenerationItem } from "@/types/image-generation";
+import { formatRelativeTime } from "@/utils/date";
 
 interface SidebarProps {
-  generations: Generation[];
-  activeItem?: string;
-  onItemClick?: (id: string) => void;
+  generations: SidebarGenerationItem[];
+  activeSessionId?: string;
+  onItemClick?: (sessionId: string) => void;
 }
 
 export default function Sidebar({
   generations,
-  activeItem,
+  activeSessionId,
   onItemClick,
 }: SidebarProps) {
   const { user } = useUser();
@@ -150,13 +145,6 @@ export default function Sidebar({
           <GearIcon className="w-4 h-4" />
           <span>ICP Settings</span>
         </Link>
-        <Link
-          href="/dashboard"
-          className="w-full text-left px-3 py-2 rounded-md transition-colors flex items-center gap-3 text-sm hover:bg-black/40 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/40"
-        >
-          <Pencil2Icon className="w-4 h-4" />
-          <span>Dashboard</span>
-        </Link>
       </div>
 
       <Separator.Root className="bg-black/50 h-px my-2" />
@@ -171,15 +159,18 @@ export default function Sidebar({
             <div className="space-y-2">
               {filteredGenerations.map((gen) => (
                 <button
-                  key={gen.id}
+                  key={gen.generation_id}
                   type="button"
-                  onClick={() => onItemClick?.(gen.id)}
+                  onClick={() => onItemClick?.(gen.session_id)}
+                  title={gen.full_prompt}
                   className={`w-full text-left px-3 py-2.5 rounded-md transition-colors text-xs hover:bg-black/40 ${
-                    activeItem === gen.id ? "bg-black/60" : ""
+                    activeSessionId === gen.session_id ? "bg-black/60" : ""
                   }`}
                 >
                   <div className="font-normal truncate text-white">{gen.name}</div>
-                  <div className="text-white/50 text-xs mt-1">{gen.timestamp}</div>
+                  <div className="text-white/50 text-xs mt-1">
+                    {formatRelativeTime(gen.created_at)}
+                  </div>
                 </button>
               ))}
               {filteredGenerations.length === 0 && (
