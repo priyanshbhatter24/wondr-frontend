@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import AppShell from "@/components/AppShell";
 import InsightCard from "@/components/InsightCard";
 import InsightModal from "@/components/InsightModal";
@@ -9,6 +10,7 @@ import { ChevronLeftIcon, ChevronRightIcon, FileIcon } from "@radix-ui/react-ico
 import { useApiClient } from "@/lib/api-client";
 import { ChannelDetail, IndustryUpdate } from "@/types/industry-updates";
 import { getChannelSourcesLabel } from "@/utils/date";
+import { useGenerations } from "@/lib/use-generations";
 
 interface InsightData {
   id: string;
@@ -37,6 +39,7 @@ interface CompetitorInsightData extends InsightData {
 }
 
 export default function IdeaHubPage() {
+  const router = useRouter();
   const [selectedInsight, setSelectedInsight] = useState<InsightData | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [activeCompetitor, setActiveCompetitor] = useState<CompetitorType>("Meta");
@@ -48,6 +51,14 @@ export default function IdeaHubPage() {
 
   // Get API client
   const api = useApiClient();
+
+  // Fetch generations for sidebar
+  const { generations } = useGenerations();
+
+  // Handle sidebar generation click
+  const handleGenerationClick = (sessionId: string) => {
+    router.push(`/generate-post?session=${sessionId}`);
+  };
 
   // Fetch industry updates on mount
   useEffect(() => {
@@ -248,7 +259,10 @@ export default function IdeaHubPage() {
   };
 
   return (
-    <AppShell>
+    <AppShell
+      generations={generations}
+      onGenerationClick={handleGenerationClick}
+    >
       <div className="flex-1 overflow-y-auto bg-[color:var(--color-gray-dark)]">
         <div className="p-8">
           {/* Header */}
