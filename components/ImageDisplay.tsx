@@ -14,6 +14,12 @@ export function ImageDisplay({ generations, currentIndex, onNavigate }: ImageDis
   const currentGeneration = generations[currentIndex];
   const hasPrevious = currentIndex > 0;
   const hasNext = currentIndex < generations.length - 1;
+  const modelLabel = currentGeneration
+    ? currentGeneration.model_used
+        .split("-")
+        .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+        .join(" ")
+    : "";
 
   if (!currentGeneration) {
     return (
@@ -33,7 +39,7 @@ export function ImageDisplay({ generations, currentIndex, onNavigate }: ImageDis
         <div className="text-white/60 text-sm">
           <span className="font-medium">Version {currentGeneration.version_number}</span>
           <span className="mx-2">•</span>
-          <span>{currentGeneration.model_used}</span>
+          <span>{modelLabel}</span>
         </div>
         <div className="text-white/40 text-xs">
           {currentIndex + 1} / {generations.length}

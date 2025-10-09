@@ -1,7 +1,7 @@
 export interface ImageGenerationSession {
   session_id: string;
   user_id: string;
-  model_preference: "flux-pro" | "nano-banana";
+  model_preference: "nano-banana";
   created_at: string;
 }
 
@@ -10,7 +10,7 @@ export interface ImageGeneration {
   session_id: string;
   user_id: string;
   prompt: string;
-  model_used: "flux-pro" | "nano-banana";
+  model_used: "nano-banana";
   s3_url: string;
   s3_key: string;
   version_number: number;
@@ -30,7 +30,6 @@ export interface ChatMessage {
 export interface GenerateImageRequest {
   session_id: string;
   prompt: string;
-  model: "flux-pro" | "nano-banana";
   previous_generation_id?: string;
 }
 

@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import AppShell from "@/components/AppShell";
-import { ModelSelector } from "@/components/ModelSelector";
 import { ImageDisplay } from "@/components/ImageDisplay";
 import { ChatInterface } from "@/components/ChatInterface";
 import { useApiClient } from "@/lib/api-client";
@@ -12,9 +11,8 @@ import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 export default function GeneratePostPage() {
   const api = useApiClient();
 
-  // Session and model state
+  // Session state
   const [sessionId, setSessionId] = useState<string | null>(null);
-  const [selectedModel, setSelectedModel] = useState<"flux-pro" | "nano-banana">("flux-pro");
 
   // Data state
   const [generations, setGenerations] = useState<ImageGeneration[]>([]);
@@ -30,7 +28,7 @@ export default function GeneratePostPage() {
   useEffect(() => {
     const initSession = async () => {
       try {
-        const session = await api.imageGeneration.createSession(selectedModel);
+        const session = await api.imageGeneration.createSession();
         setSessionId(session.session_id);
       } catch (err) {
         console.error("Failed to create session:", err);
@@ -69,10 +67,6 @@ export default function GeneratePostPage() {
     loadHistory();
   }, [sessionId]);
 
-  const handleModelChange = (model: "flux-pro" | "nano-banana") => {
-    setSelectedModel(model);
-  };
-
   const handleSendMessage = async (prompt: string) => {
     if (!sessionId || isGenerating) return;
 
@@ -99,7 +93,6 @@ export default function GeneratePostPage() {
       await api.imageGeneration.generate({
         session_id: sessionId,
         prompt,
-        model: selectedModel,
         previous_generation_id: previousGenerationId,
       });
 
@@ -153,7 +146,6 @@ export default function GeneratePostPage() {
         {/* Header */}
         <header className="flex items-center justify-between p-4 border-b border-[#262626]">
           <h1 className="text-2xl font-bold text-white">Generate Post</h1>
-          <ModelSelector selectedModel={selectedModel} onModelChange={handleModelChange} />
         </header>
 
         {/* Error banner */}

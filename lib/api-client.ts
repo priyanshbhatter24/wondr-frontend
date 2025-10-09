@@ -101,14 +101,13 @@ export function useApiClient() {
         }),
     },
     imageGeneration: {
-      createSession: (model?: string) =>
+      createSession: () =>
         apiClient("/api/image-generation/sessions", {
           method: "POST",
-          body: JSON.stringify({ model }),
         }),
       getSession: (sessionId: string) =>
         apiClient(`/api/image-generation/sessions/${sessionId}`),
-      generate: (data: { session_id: string; prompt: string; model: string; previous_generation_id?: string }) =>
+      generate: (data: { session_id: string; prompt: string; previous_generation_id?: string }) =>
         apiClient("/api/image-generation/generate", {
           method: "POST",
           body: JSON.stringify(data),
