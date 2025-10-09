@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { AppShell } from "@/components/AppShell";
+import AppShell from "@/components/AppShell";
 import { ModelSelector } from "@/components/ModelSelector";
 import { ImageDisplay } from "@/components/ImageDisplay";
 import { ChatInterface } from "@/components/ChatInterface";
@@ -96,7 +96,7 @@ export default function GeneratePostPage() {
         : undefined;
 
       // Generate image
-      const response = await api.imageGeneration.generate({
+      await api.imageGeneration.generate({
         session_id: sessionId,
         prompt,
         model: selectedModel,
