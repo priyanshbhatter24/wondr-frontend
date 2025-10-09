@@ -1,13 +1,24 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { useApiClient } from "@/lib/api-client";
 import { UserICPConfig, Competitor } from "@/types/industry-updates";
 import AppShell from "@/components/AppShell";
 import { GearIcon, PlusIcon, TrashIcon, CheckIcon } from "@radix-ui/react-icons";
+import { useGenerations } from "@/lib/use-generations";
 
 export default function ICPSettingsPage() {
+  const router = useRouter();
   const api = useApiClient();
+
+  // Fetch generations for sidebar
+  const { generations } = useGenerations();
+
+  // Handle sidebar generation click
+  const handleGenerationClick = (sessionId: string) => {
+    router.push(`/generate-post?session=${sessionId}`);
+  };
 
   const [formData, setFormData] = useState<UserICPConfig>({
     ICP: { industry: '', target_audience: '', region: '' },
@@ -176,7 +187,10 @@ export default function ICPSettingsPage() {
 
   if (loading) {
     return (
-      <AppShell>
+      <AppShell
+        generations={generations}
+        onGenerationClick={handleGenerationClick}
+      >
         <div className="flex-1 flex items-center justify-center bg-[color:var(--color-gray-dark)]">
           <div className="text-white">Loading configuration...</div>
         </div>
@@ -185,7 +199,10 @@ export default function ICPSettingsPage() {
   }
 
   return (
-    <AppShell>
+    <AppShell
+      generations={generations}
+      onGenerationClick={handleGenerationClick}
+    >
       <div className="flex-1 overflow-y-auto bg-[color:var(--color-gray-dark)]">
         <div className="p-8 max-w-4xl">
           {/* Header */}
