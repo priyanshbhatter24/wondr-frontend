@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import Sidebar from "@/components/Sidebar";
+import AppShell from "@/components/AppShell";
 import InsightCard from "@/components/InsightCard";
 import InsightModal from "@/components/InsightModal";
 import CompetitorCard from "@/components/CompetitorCard";
@@ -266,19 +266,9 @@ export default function IdeaHubPage() {
     }
   };
 
-  const [activeGenerationId, setActiveGenerationId] = useState<string | undefined>(
-    generations[0]?.id,
-  );
-
   return (
-    <div className="flex h-screen overflow-hidden bg-[color:var(--color-gray-dark)]">
-      <Sidebar
-        generations={generations}
-        activeItem={activeGenerationId}
-        onItemClick={(id) => setActiveGenerationId(id)}
-      />
-
-      <div className="flex-1 overflow-y-auto">
+    <AppShell>
+      <div className="flex-1 overflow-y-auto bg-[color:var(--color-gray-dark)]">
         <div className="p-8">
           {/* Header */}
           <div className="mb-10 flex items-center gap-3">
@@ -440,22 +430,22 @@ export default function IdeaHubPage() {
             </div>
           </div>
         </div>
-      </div>
 
-      {/* Modal */}
-      {selectedInsight && (
-        <InsightModal
-          isOpen={isModalOpen}
-          onClose={() => setIsModalOpen(false)}
-          source={selectedInsight.source}
-          topic={selectedInsight.topic}
-          description={selectedInsight.description}
-          remixOptions={selectedInsight.remixOptions}
-          channels={selectedInsight.channels}
-          fullContent={selectedInsight.fullContent}
-          industryUpdateId={selectedInsight.id}
-        />
-      )}
-    </div>
+        {/* Modal */}
+        {selectedInsight && (
+          <InsightModal
+            isOpen={isModalOpen}
+            onClose={() => setIsModalOpen(false)}
+            source={selectedInsight.source}
+            topic={selectedInsight.topic}
+            description={selectedInsight.description}
+            remixOptions={selectedInsight.remixOptions}
+            channels={selectedInsight.channels}
+            fullContent={selectedInsight.fullContent}
+            industryUpdateId={selectedInsight.id}
+          />
+        )}
+      </div>
+    </AppShell>
   );
 }

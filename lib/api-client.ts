@@ -100,5 +100,22 @@ export function useApiClient() {
           body: JSON.stringify(data),
         }),
     },
+    imageGeneration: {
+      createSession: () =>
+        apiClient("/api/image-generation/sessions", {
+          method: "POST",
+        }),
+      getSession: (sessionId: string) =>
+        apiClient(`/api/image-generation/sessions/${sessionId}`),
+      generate: (data: { session_id: string; prompt: string; previous_generation_id?: string }) =>
+        apiClient("/api/image-generation/generate", {
+          method: "POST",
+          body: JSON.stringify(data),
+        }),
+      getHistory: (sessionId: string) =>
+        apiClient(`/api/image-generation/sessions/${sessionId}/history`),
+      getMessages: (sessionId: string) =>
+        apiClient(`/api/image-generation/sessions/${sessionId}/messages`),
+    },
   };
 }

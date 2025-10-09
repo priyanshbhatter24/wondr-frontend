@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useApiClient } from "@/lib/api-client";
 import { UserICPConfig, Competitor } from "@/types/industry-updates";
-import Sidebar from "@/components/Sidebar";
+import AppShell from "@/components/AppShell";
 import { GearIcon, PlusIcon, TrashIcon, CheckIcon } from "@radix-ui/react-icons";
 
 export default function ICPSettingsPage() {
@@ -182,20 +182,17 @@ export default function ICPSettingsPage() {
 
   if (loading) {
     return (
-      <div className="flex h-screen overflow-hidden bg-[color:var(--color-gray-dark)]">
-        <Sidebar generations={generations} />
-        <div className="flex-1 flex items-center justify-center">
+      <AppShell>
+        <div className="flex-1 flex items-center justify-center bg-[color:var(--color-gray-dark)]">
           <div className="text-white">Loading configuration...</div>
         </div>
-      </div>
+      </AppShell>
     );
   }
 
   return (
-    <div className="flex h-screen overflow-hidden bg-[color:var(--color-gray-dark)]">
-      <Sidebar generations={generations} />
-
-      <div className="flex-1 overflow-y-auto">
+    <AppShell>
+      <div className="flex-1 overflow-y-auto bg-[color:var(--color-gray-dark)]">
         <div className="p-8 max-w-4xl">
           {/* Header */}
           <div className="mb-10 flex items-center gap-3">
@@ -495,6 +492,6 @@ export default function ICPSettingsPage() {
           </div>
         </div>
       </div>
-    </div>
+    </AppShell>
   );
 }
