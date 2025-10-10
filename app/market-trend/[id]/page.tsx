@@ -236,7 +236,7 @@ export default function MarketTrendPage() {
 
           {/* Main Content Area - Scrollable */}
           <div className="flex-1 overflow-y-auto pb-32">
-            <div className="mx-auto max-w-7xl px-6 py-6 sm:px-10">
+            <div className="mx-auto max-w-4xl px-6 py-6 sm:px-10">
               {/* Full Width Content Box */}
               <div className="rounded-lg bg-[#3A3A3A] p-6">
                 {/* ICP Insights Section */}
@@ -362,7 +362,7 @@ export default function MarketTrendPage() {
             <div className="w-full bg-gradient-to-b from-transparent via-[#3A3A3A]/80 to-[#3A3A3A] py-6">
               <div className="flex flex-col items-center">
                 {/* Chat Input - Centered */}
-                <div className="w-full max-w-3xl px-6">
+                <div className="w-full max-w-4xl px-6">
                   <div className="rounded-2xl bg-[#2a2a2a] shadow-2xl py-2 px-4 flex items-center gap-3">
                     {/* Brain Icon - Autosuggest */}
                     <button
