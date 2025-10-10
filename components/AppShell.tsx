@@ -1,5 +1,4 @@
 "use client";
-import { HamburgerMenuIcon } from "@radix-ui/react-icons";
 import Sidebar from "./Sidebar";
 import { useState, useEffect } from "react";
 import { SidebarSessionItem } from "@/types/image-generation";
@@ -46,28 +45,15 @@ export default function AppShell({
 
   return (
     <div className="flex h-screen overflow-hidden">
-      <div
-        className={`transition-all duration-200 ease-in-out ${isOpen ? "w-64" : "w-0"} overflow-hidden`}
-        aria-hidden={!isOpen}
-      >
-        <Sidebar
-          sessions={sessions}
-          activeSessionId={activeSessionId}
-          onItemClick={onSessionClick}
-        />
-      </div>
+      <Sidebar
+        sessions={sessions}
+        activeSessionId={activeSessionId}
+        onItemClick={onSessionClick}
+        isOpen={isOpen}
+        onToggle={() => setIsOpen((prev) => !prev)}
+      />
 
-      <div className="flex-1 relative flex flex-col min-w-0">
-        <button
-          onClick={() => setIsOpen(!isOpen)}
-          className="absolute top-4 left-4 z-50 p-2 bg-black/60 hover:bg-black/80 rounded-lg transition-colors"
-          title={isOpen ? "Hide sidebar (⌘B)" : "Show sidebar (⌘B)"}
-        >
-          <HamburgerMenuIcon className="w-5 h-5 text-white" />
-        </button>
-
-        {children}
-      </div>
+      <div className="flex-1 relative flex flex-col min-w-0">{children}</div>
     </div>
   );
 }
