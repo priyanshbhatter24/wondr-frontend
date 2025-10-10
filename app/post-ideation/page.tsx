@@ -257,11 +257,11 @@ ${imagesSummary}\n`;
 
   return (
     <AppShell sessions={sessions} onSessionClick={handleSessionClick}>
-      <div className="flex-1 flex flex-col overflow-hidden bg-[#3A3A3A]">
+      <div className="flex-1 flex flex-col overflow-hidden bg-[#1a1a1a]">
         <div className="flex-shrink-0 p-6">
           <Link
             href={updateId ? `/market-trend/${updateId}` : "/idea-hub"}
-            className="inline-flex items-center gap-2 text-white/70 hover:text-white transition-colors text-sm ml-4"
+            className="inline-flex items-center gap-2 text-white/50 hover:text-white/90 transition-colors text-sm ml-4"
           >
             <ArrowLeftIcon className="w-4 h-4" />
             Back to Market Trend
@@ -272,8 +272,8 @@ ${imagesSummary}\n`;
           {status === "loading" && (
             <div className="flex items-center justify-center min-h-full">
               <div className="space-y-4 text-center">
-                <div className="w-12 h-12 border-4 border-[#C1D75B] border-t-transparent rounded-full animate-spin mx-auto" />
-                <p className="text-white/60 text-sm">
+                <div className="w-10 h-10 border-3 border-white/20 border-t-white/80 rounded-full animate-spin mx-auto" />
+                <p className="text-white/50 text-sm">
                   Preparing your ideation...
                 </p>
               </div>
@@ -290,10 +290,10 @@ ${imagesSummary}\n`;
           {status === "error" && error && (
             <div className="flex items-center justify-center min-h-full">
               <div className="text-center space-y-4 max-w-md">
-                <div className="text-red-400 text-lg font-semibold">{error}</div>
+                <div className="text-red-400/90 text-base font-medium">{error}</div>
                 <Link
                   href="/idea-hub"
-                  className="inline-block px-6 py-3 bg-[#846348] hover:brightness-110 transition-all text-white rounded"
+                  className="inline-block px-5 py-2.5 bg-white/10 hover:bg-white/15 transition-all text-white/90 rounded-lg text-sm"
                 >
                   Return to Idea Hub
                 </Link>
@@ -303,12 +303,12 @@ ${imagesSummary}\n`;
         </div>
 
         {status === "ready" && (
-          <div className="border-t border-white/20 bg-[#1a1a1a] px-6 py-4">
-            <div className="max-w-4xl mx-auto">
-              <div className="rounded-full bg-[#2a2a2a] py-3 px-4 flex items-center gap-3 shadow-2xl">
+          <div className="border-t border-white/5 bg-[#1a1a1a] px-6 py-4">
+            <div className="max-w-5xl mx-auto">
+              <div className="rounded-xl bg-[#252525] py-3 px-4 flex items-center gap-3 shadow-lg border border-white/5">
                 <button
                   type="button"
-                  className="w-8 h-8 flex items-center justify-center text-[#C5D86D]"
+                  className="w-8 h-8 flex items-center justify-center text-white/40"
                   aria-label="Magic prompt"
                   disabled
                 >
@@ -317,8 +317,8 @@ ${imagesSummary}\n`;
                 <textarea
                   value={inputPrompt}
                   onChange={(event) => setInputPrompt(event.target.value)}
-                  placeholder="Describe the post you want to generate..."
-                  className="flex-1 bg-transparent text-white text-sm placeholder:text-white/40 focus:outline-none resize-none max-h-32 min-h-[40px] leading-5 scrollbar-hide"
+                  placeholder="Refine your post idea..."
+                  className="flex-1 bg-transparent text-white text-sm placeholder:text-white/30 focus:outline-none resize-none max-h-32 min-h-[40px] leading-5 scrollbar-hide"
                   rows={1}
                   onKeyDown={(event) => {
                     if (event.key === "Enter" && !event.shiftKey) {
@@ -331,7 +331,7 @@ ${imagesSummary}\n`;
                   type="button"
                   onClick={handleSubmitAdditionalPrompt}
                   disabled={!inputPrompt.trim()}
-                  className="w-10 h-10 flex items-center justify-center bg-gray-600 hover:bg-gray-500 rounded-full transition-colors shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-9 h-9 flex items-center justify-center bg-white/10 hover:bg-white/15 rounded-lg transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
                   aria-label="Submit prompt"
                 >
                   <ArrowLeftIcon className="w-4 h-4 transform rotate-90 text-white" />

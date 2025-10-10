@@ -14,11 +14,11 @@ export default function PostIdeationView({
   conversation,
 }: PostIdeationViewProps) {
   return (
-    <div className="min-h-screen bg-[#3A3A3A] text-white">
-      <div className="mx-auto max-w-4xl px-6 py-8 space-y-6">
+    <div className="min-h-screen bg-[#1a1a1a] text-white">
+      <div className="mx-auto max-w-5xl px-8 py-8 space-y-6">
         {/* User Prompt - Right-aligned chat bubble */}
         <div className="flex justify-end">
-          <div className="max-w-[80%] bg-[#2A2A2A] rounded-2xl p-4 border border-white/10">
+          <div className="max-w-[80%] bg-[#252525] rounded-xl p-5 border border-white/5 shadow-lg">
             <p className="text-white/90 text-sm leading-relaxed whitespace-pre-wrap">
               {userPrompt}
             </p>
@@ -29,7 +29,7 @@ export default function PostIdeationView({
           <div key={`${ideation?.ideation_id || index}-${index}`} className="space-y-6">
             {index > 0 && (
               <div className="flex justify-end">
-                <div className="max-w-[80%] bg-[#2A2A2A] rounded-2xl p-4 border border-white/10">
+                <div className="max-w-[80%] bg-[#252525] rounded-xl p-5 border border-white/5 shadow-lg">
                   <p className="text-white/90 text-sm leading-relaxed whitespace-pre-wrap">
                     {prompt}
                   </p>
@@ -38,7 +38,7 @@ export default function PostIdeationView({
             )}
 
             {isLoading ? (
-              <div className="bg-[#2A2A2A] rounded-lg p-6 border border-white/10">
+              <div className="bg-[#252525] rounded-xl p-6 border border-white/5 shadow-lg">
                 <div className="animate-pulse space-y-4">
                   <div className="h-6 bg-white/10 rounded w-3/4"></div>
                   <div className="h-4 bg-white/10 rounded w-full"></div>
@@ -48,13 +48,13 @@ export default function PostIdeationView({
               </div>
             ) : ideation ? (
               <>
-                <div className="bg-[#2A2A2A] rounded-lg p-6 border border-white/10">
-                  <h2 className="text-2xl font-bold text-white mb-3">
+                <div className="bg-[#252525] rounded-xl p-6 border border-white/5 shadow-lg">
+                  <h2 className="text-xl font-semibold text-white mb-4">
                     {ideation.remix_topic}
                   </h2>
-                  <div className="flex items-start gap-2">
-                    <span className="text-[#C5D86D] font-semibold text-sm uppercase tracking-wider flex-shrink-0">
-                      Reasoning:
+                  <div className="space-y-1">
+                    <span className="text-white/50 font-medium text-xs uppercase tracking-wide">
+                      Reasoning
                     </span>
                     <p className="text-white/80 text-sm leading-relaxed">
                       {ideation.reasoning}
@@ -62,8 +62,8 @@ export default function PostIdeationView({
                   </div>
                 </div>
 
-                <div className="bg-[#2A2A2A] rounded-lg p-6 border border-white/10">
-                  <h3 className="text-sm font-bold uppercase tracking-wider text-[#C5D86D] mb-4">
+                <div className="bg-[#252525] rounded-xl p-6 border border-white/5 shadow-lg">
+                  <h3 className="text-white/50 font-medium text-xs uppercase tracking-wide mb-3">
                     Text Recommendation
                   </h3>
                   <p className="text-white/90 text-sm leading-relaxed">
@@ -71,45 +71,47 @@ export default function PostIdeationView({
                   </p>
                 </div>
 
-                <div className="space-y-6">
-                  <h3 className="text-sm font-bold uppercase tracking-wider text-[#C5D86D]">
+                <div className="space-y-4">
+                  <h3 className="text-white/50 font-medium text-xs uppercase tracking-wide">
                     Image Recommendations
                   </h3>
 
                   {ideation.image_recommendations.map((rec) => (
-                    <div key={`${index}-${rec.recommendation_number}`} className="space-y-3">
-                      <div className="flex items-start gap-3">
-                        <div className="flex-shrink-0 w-8 h-8 rounded-full bg-[#C5D86D] text-[#000000] flex items-center justify-center font-bold text-sm">
-                          {rec.recommendation_number}
-                        </div>
-                        <p className="text-white/80 text-sm leading-relaxed pt-1">
-                          {rec.explanation}
-                        </p>
-                      </div>
-
-                      <Link
-                        href={`/generate-post?prompt=${encodeURIComponent(rec.suggested_task.detailed_prompt)}`}
-                        className="block ml-11"
-                      >
-                        <PromptTooltip
-                          taskTitle={rec.suggested_task.task_title}
-                          detailedPrompt={rec.suggested_task.detailed_prompt}
-                        >
-                          <div className="bg-[#846348] hover:brightness-110 transition-all duration-200 rounded-lg p-4 cursor-pointer border border-transparent hover:border-[#C5D86D]/40">
-                            <div className="flex items-center justify-between">
-                              <h4 className="text-white font-semibold text-sm">
-                                {rec.suggested_task.task_title}
-                              </h4>
-                              <button className="text-white/70 hover:text-white text-xs font-medium flex items-center gap-1">
-                                Start task
-                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                                </svg>
-                              </button>
-                            </div>
+                    <div key={`${index}-${rec.recommendation_number}`} className="bg-[#252525] rounded-xl border border-white/5 shadow-lg overflow-hidden">
+                      <div className="p-5 space-y-4">
+                        <div className="flex items-start gap-3">
+                          <div className="flex-shrink-0 w-7 h-7 rounded-full bg-white/10 text-white flex items-center justify-center font-semibold text-sm">
+                            {rec.recommendation_number}
                           </div>
-                        </PromptTooltip>
-                      </Link>
+                          <p className="text-white/70 text-sm leading-relaxed pt-0.5">
+                            {rec.explanation}
+                          </p>
+                        </div>
+
+                        <Link
+                          href={`/generate-post?prompt=${encodeURIComponent(rec.suggested_task.detailed_prompt)}`}
+                          className="block"
+                        >
+                          <PromptTooltip
+                            taskTitle={rec.suggested_task.task_title}
+                            detailedPrompt={rec.suggested_task.detailed_prompt}
+                          >
+                            <div className="bg-[#2a2a2a] hover:bg-[#303030] transition-all duration-200 rounded-lg p-4 cursor-pointer border border-white/5 hover:border-white/10 group">
+                              <div className="flex items-center justify-between">
+                                <h4 className="text-white/90 font-medium text-sm group-hover:text-white transition-colors">
+                                  {rec.suggested_task.task_title}
+                                </h4>
+                                <button className="flex items-center gap-2 px-3 py-1.5 bg-white/5 hover:bg-white/10 rounded-md transition-all text-white/70 hover:text-white text-xs font-medium">
+                                  Start task
+                                  <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 16 16">
+                                    <path d="M3 3.732a1.5 1.5 0 012.305-1.265l6.706 4.267a1.5 1.5 0 010 2.531l-6.706 4.268A1.5 1.5 0 013 12.267V3.732z" />
+                                  </svg>
+                                </button>
+                              </div>
+                            </div>
+                          </PromptTooltip>
+                        </Link>
+                      </div>
                     </div>
                   ))}
                 </div>
