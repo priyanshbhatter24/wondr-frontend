@@ -5,13 +5,13 @@ import * as Separator from "@radix-ui/react-separator";
 import {
   LightningBoltIcon,
   ImageIcon,
-  MagnifyingGlassIcon,
-  Cross2Icon,
   GearIcon,
+  HamburgerMenuIcon,
 } from "@radix-ui/react-icons";
 import Image from "next/image";
 import Link from "next/link";
-import { useMemo, useRef, useState } from "react";
+import { useMemo, useState } from "react";
+import { usePathname } from "next/navigation";
 import { useClerk, useUser } from "@clerk/nextjs";
 import { SidebarSessionItem } from "@/types/image-generation";
 import { formatRelativeTime } from "@/utils/date";
@@ -20,18 +20,21 @@ interface SidebarProps {
   sessions: SidebarSessionItem[];
   activeSessionId?: string;
   onItemClick?: (sessionId: string) => void;
+  isOpen: boolean;
+  onToggle: () => void;
 }
 
 export default function Sidebar({
   sessions,
   activeSessionId,
   onItemClick,
+  isOpen,
+  onToggle,
 }: SidebarProps) {
   const { user } = useUser();
   const { openUserProfile } = useClerk();
-  const [isSearching, setIsSearching] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
-  const searchInputRef = useRef<HTMLInputElement | null>(null);
+  const pathname = usePathname();
 
   const displayName =
     user?.fullName ??
@@ -50,131 +53,166 @@ export default function Sidebar({
     );
   }, [sessions, searchTerm]);
 
-  const toggleSearch = () => {
-    setIsSearching((prev) => {
-      const next = !prev;
+  const navItems = [
+    {
+      href: "/generate-post",
+      label: "Generate Post",
+      icon: ImageIcon,
+    },
+    {
+      href: "/idea-hub",
+      label: "Idea Hub",
+      icon: LightningBoltIcon,
+    },
+    {
+      href: "/icp-settings",
+      label: "ICP Settings",
+      icon: GearIcon,
+    },
+  ];
 
-      if (!prev) {
-        setTimeout(() => {
-          searchInputRef.current?.focus();
-        }, 0);
-      } else {
-        setSearchTerm("");
-      }
+  const navButtonClasses = (active: boolean) =>
+    `group flex items-center rounded-lg transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-white/40 ${
+      isOpen ? "gap-3 px-3 justify-start" : "justify-center px-2"
+    } py-2 text-sm ${
+      active
+        ? "bg-[#1F1F1F] text-white hover:bg-[#323232]"
+        : "text-white/80 hover:bg-[#3A3A3A] hover:text-white"
+    }`;
 
-      return next;
-    });
-  };
+  const sessionButtonClasses = (active: boolean) =>
+    `w-full text-left rounded-lg transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-white/30 ${
+      isOpen ? "px-3 py-2.5" : "px-2 py-2"
+    } ${
+      active
+        ? "bg-[#1F1F1F] text-white hover:bg-[#323232]"
+        : "text-white/80 hover:bg-[#3A3A3A] hover:text-white"
+    }`;
 
   return (
-    <div className="w-64 bg-black text-white h-screen flex flex-col flex-shrink-0">
+    <div className="w-full h-full flex flex-col bg-[#2A2A2A] text-white">
       {/* Header */}
-      <div className="p-4 flex items-center gap-3">
-        <button
-          type="button"
-          onClick={() => {
-            if (user) {
-              openUserProfile?.();
-            }
-          }}
-          className="w-8 h-8 bg-white/10 rounded-full overflow-hidden flex items-center justify-center text-sm font-medium focus:outline-none focus-visible:ring-2 focus-visible:ring-white/40 disabled:opacity-50"
-          disabled={!user}
-        >
-          {user?.imageUrl ? (
-            <Image
-              src={user.imageUrl}
-              alt={`${displayName}'s avatar`}
-              width={32}
-              height={32}
-              className="w-full h-full object-cover"
-              unoptimized
-            />
-          ) : (
-            <span>{displayName.charAt(0).toUpperCase()}</span>
-          )}
-        </button>
-        <span className="font-medium text-base truncate">{displayName}</span>
-        <div className="ml-auto flex items-center gap-2">
-          {isSearching && (
-            <div className="relative">
-              <input
-                ref={searchInputRef}
-                value={searchTerm}
-                onChange={(event) => setSearchTerm(event.target.value)}
-                placeholder="Search"
-                className="bg-black/60 border border-white/20 rounded-md py-1 pl-7 pr-2 text-xs text-white placeholder:text-white/40 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/30"
-              />
-              <MagnifyingGlassIcon className="w-3.5 h-3.5 text-white/50 absolute left-2 top-1/2 -translate-y-1/2" />
-            </div>
-          )}
+      <div
+        className={`px-3 py-4 flex items-center ${
+          isOpen ? "gap-3" : "justify-center"
+        }`}
+      >
+        {isOpen && (
           <button
             type="button"
-            onClick={toggleSearch}
-            className="w-7 h-7 rounded-md bg-black/60 flex items-center justify-center text-white transition-colors hover:bg-black/40 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/40"
-            aria-label={isSearching ? "Close search" : "Open search"}
+            onClick={() => {
+              if (user) {
+                openUserProfile?.();
+              }
+            }}
+            className="w-9 h-9 bg-white/10 rounded-full overflow-hidden flex items-center justify-center text-sm font-medium focus:outline-none focus-visible:ring-2 focus-visible:ring-white/40 disabled:opacity-50"
+            disabled={!user}
           >
-            {isSearching ? (
-              <Cross2Icon className="w-3.5 h-3.5" />
+            {user?.imageUrl ? (
+              <Image
+                src={user.imageUrl}
+                alt={`${displayName}'s avatar`}
+                width={36}
+                height={36}
+                className="w-full h-full object-cover"
+                unoptimized
+              />
             ) : (
-              <MagnifyingGlassIcon className="w-4 h-4" />
+              <span>{displayName.charAt(0).toUpperCase()}</span>
             )}
           </button>
-        </div>
+        )}
+        {isOpen && (
+          <span className="font-medium text-base truncate">{displayName}</span>
+        )}
+        <button
+          type="button"
+          onClick={onToggle}
+          className={`w-9 h-9 rounded-md bg-[#1F1F1F] flex items-center justify-center text-white transition-colors hover:bg-[#3A3A3A] focus:outline-none focus-visible:ring-2 focus-visible:ring-white/40 ${
+            isOpen ? "ml-auto" : ""
+          }`}
+          title={isOpen ? "Hide sidebar (⌘B)" : "Show sidebar (⌘B)"}
+          aria-label={isOpen ? "Hide sidebar" : "Show sidebar"}
+        >
+          <HamburgerMenuIcon className="w-5 h-5" />
+        </button>
       </div>
+
+      {isOpen && (
+        <div className="px-4 pb-3">
+          <input
+            value={searchTerm}
+            onChange={(event) => setSearchTerm(event.target.value)}
+            placeholder="Search sessions"
+            className="w-full bg-[#1F1F1F] border border-white/10 rounded-md py-2 px-3 text-xs text-white placeholder:text-white/40 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/30"
+          />
+        </div>
+      )}
 
       {/* Navigation Items */}
-      <div className="px-4 py-2 space-y-1">
-        <Link
-          href="/generate-post"
-          className="w-full text-left px-3 py-2 rounded-md transition-colors flex items-center gap-3 text-sm hover:bg-black/40 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/40"
-        >
-          <ImageIcon className="w-4 h-4" />
-          <span>Generate Post</span>
-        </Link>
-        <Link
-          href="/idea-hub"
-          className="w-full text-left px-3 py-2 rounded-md bg-black/60 transition-colors flex items-center gap-3 text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-white/40"
-        >
-          <LightningBoltIcon className="w-4 h-4" />
-          <span>Idea Hub</span>
-        </Link>
-        <Link
-          href="/icp-settings"
-          className="w-full text-left px-3 py-2 rounded-md transition-colors flex items-center gap-3 text-sm hover:bg-black/40 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/40"
-        >
-          <GearIcon className="w-4 h-4" />
-          <span>ICP Settings</span>
-        </Link>
+      <div className={`${isOpen ? "px-4" : "px-2"} py-2 space-y-1`}>
+        {navItems.map(({ href, label, icon: Icon }) => {
+          const active = pathname?.startsWith(href);
+          return (
+            <Link
+              key={href}
+              href={href}
+              className={navButtonClasses(Boolean(active))}
+              title={label}
+            >
+              <Icon className="w-5 h-5 shrink-0" />
+              {isOpen && <span>{label}</span>}
+            </Link>
+          );
+        })}
       </div>
 
-      <Separator.Root className="bg-black/50 h-px my-2" />
+      <Separator.Root className="bg-white/10 h-px my-2" />
 
       {/* Generations Section */}
-      <div className="px-4 flex-1 min-h-0">
-        <div className="text-xs font-medium text-white/70 mb-3 px-3">
-          Generations
-        </div>
+      <div className={`${isOpen ? "px-4" : "px-2"} flex-1 min-h-0 w-full`}
+      >
+        {isOpen && (
+          <div className="text-xs font-medium text-white/70 mb-3 px-3">
+            Generations
+          </div>
+        )}
         <ScrollArea.Root className="w-full h-full overflow-hidden">
           <ScrollArea.Viewport className="w-full h-full [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none']">
             <div className="space-y-2">
-              {filteredSessions.map((session) => (
-                <button
-                  key={session.session_id}
-                  type="button"
-                  onClick={() => onItemClick?.(session.session_id)}
-                  title={session.full_prompt}
-                  className={`w-full text-left px-3 py-2.5 rounded-md transition-colors text-xs hover:bg-black/40 ${
-                    activeSessionId === session.session_id ? "bg-black/60" : ""
-                  }`}
-                >
-                  <div className="font-normal truncate text-white">{session.name}</div>
-                  <div className="text-white/50 text-xs mt-1">
-                    {formatRelativeTime(session.created_at)}
-                  </div>
-                </button>
-              ))}
+              {filteredSessions.map((session) => {
+                const active = activeSessionId === session.session_id;
+                const sessionLabel = session.name?.trim() || "Session";
+                const sessionInitial = sessionLabel.charAt(0).toUpperCase();
+                return (
+                  <button
+                    key={session.session_id}
+                    type="button"
+                    onClick={() => onItemClick?.(session.session_id)}
+                    title={session.full_prompt || sessionLabel}
+                    className={sessionButtonClasses(active)}
+                  >
+                    {isOpen ? (
+                      <>
+                        <div className="font-normal truncate">{sessionLabel}</div>
+                        <div className="text-white/50 text-xs mt-1">
+                          {formatRelativeTime(session.created_at)}
+                        </div>
+                      </>
+                    ) : (
+                      <div className="w-full flex items-center justify-center">
+                        <span className="flex h-8 w-8 items-center justify-center rounded-md bg-white/10 text-sm font-medium">
+                          {sessionInitial}
+                        </span>
+                      </div>
+                    )}
+                  </button>
+                );
+              })}
               {filteredSessions.length === 0 && (
-                <div className="text-white/50 text-xs px-3 py-2">No sessions found.</div>
+                <div className="text-white/50 text-xs px-3 py-2">
+                  No sessions found.
+                </div>
               )}
             </div>
           </ScrollArea.Viewport>
@@ -188,17 +226,25 @@ export default function Sidebar({
       </div>
 
       {/* View Plans Footer */}
-      <div className="p-4 border-t border-black/50 bg-black">
-        <div className="flex items-center gap-2 text-sm">
-          <div className="w-5 h-5 bg-white rounded-sm flex items-center justify-center">
-            <span className="text-black text-xs font-bold">W</span>
-          </div>
-          <div>
-            <div className="text-white font-medium">View plans</div>
-            <div className="text-white/60 text-xs">Unlimited access</div>
+      {isOpen ? (
+        <div className="p-4 border-t border-white/10 bg-[#262626]">
+          <div className="flex items-center gap-2 text-sm">
+            <div className="w-5 h-5 bg-white rounded-sm flex items-center justify-center">
+              <span className="text-black text-xs font-bold">W</span>
+            </div>
+            <div>
+              <div className="text-white font-medium">View plans</div>
+              <div className="text-white/60 text-xs">Unlimited access</div>
+            </div>
           </div>
         </div>
-      </div>
+      ) : (
+        <div className="p-3 border-t border-white/10 flex justify-center">
+          <div className="w-9 h-9 bg-white rounded-md flex items-center justify-center text-black font-semibold text-xs">
+            W
+          </div>
+        </div>
+      )}
     </div>
   );
 }
