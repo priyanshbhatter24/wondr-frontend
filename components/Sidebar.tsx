@@ -135,7 +135,7 @@ export default function Sidebar({
         <button
           type="button"
           onClick={onToggle}
-          className={`w-9 h-9 rounded-md bg-white/10 flex items-center justify-center text-white transition-colors hover:bg-white/15 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/40 ${
+          className={`w-9 h-9 rounded-md flex items-center justify-center text-white transition-colors hover:bg-white/15 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/40 ${
             isOpen ? "ml-auto" : ""
           }`}
           title={isOpen ? "Hide sidebar (⌘B)" : "Show sidebar (⌘B)"}
