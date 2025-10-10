@@ -220,7 +220,7 @@ export default function MarketTrendPage() {
   return (
     <AppShell sessions={sessions} onSessionClick={handleSessionClick}>
       <div
-        className="flex-1 overflow-y-auto bg-[#000000]"
+        className="flex-1 overflow-y-auto bg-[#3A3A3A]"
       >
         <div className="relative flex flex-col w-full h-full">
           {/* Header with Back Button */}
