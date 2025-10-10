@@ -363,7 +363,7 @@ export default function MarketTrendPage() {
               <div className="flex flex-col items-center">
                 {/* Chat Input - Centered */}
                 <div className="w-full max-w-4xl px-6">
-                  <div className="rounded-2xl bg-[#2a2a2a] shadow-2xl py-2 px-4 flex items-center gap-3">
+                  <div className="rounded-full bg-[#2a2a2a] shadow-2xl py-2 px-4 flex items-center gap-3">
                     {/* Brain Icon - Autosuggest */}
                     <button
                       onClick={handleAutosuggest}
