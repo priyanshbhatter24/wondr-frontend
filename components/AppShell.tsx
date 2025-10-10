@@ -16,20 +16,19 @@ export default function AppShell({
   activeSessionId,
   onSessionClick
 }: AppShellProps) {
-  const [isOpen, setIsOpen] = useState<boolean>(true);
-
-  useEffect(() => {
+  // Initialize state from localStorage to prevent auto-opening on navigation
+  const [isOpen, setIsOpen] = useState<boolean>(() => {
     if (typeof window === "undefined") {
-      return;
+      return true;
     }
 
     const saved = window.localStorage.getItem("wondr-sidebar-collapsed");
     if (saved === null) {
-      return;
+      return true;
     }
 
-    setIsOpen(saved === "false");
-  }, []);
+    return saved === "false";
+  });
 
   // Save sidebar state to localStorage
   useEffect(() => {
