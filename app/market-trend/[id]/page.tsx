@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { useRouter, useParams } from "next/navigation";
-import { ArrowLeftIcon, LightningBoltIcon, ArrowUpIcon, FileIcon, ChevronLeftIcon, ChevronRightIcon } from "@radix-ui/react-icons";
+import { ArrowLeftIcon, LightningBoltIcon, ArrowUpIcon, FileIcon, ChevronLeftIcon, ChevronRightIcon, MagicWandIcon } from "@radix-ui/react-icons";
 import AppShell from "@/components/AppShell";
 import { useApiClient } from "@/lib/api-client";
 import { useGenerations } from "@/lib/use-generations";
@@ -80,6 +80,9 @@ export default function MarketTrendPage() {
   // Carousel ref for channel cards
   const channelSliderRef = useRef<HTMLDivElement>(null);
 
+  // Textarea ref for auto-resize
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+
   // Get API client
   const api = useApiClient();
 
@@ -91,6 +94,23 @@ export default function MarketTrendPage() {
         left: direction === "left" ? -scrollAmount : scrollAmount,
         behavior: "smooth",
       });
+    }
+  };
+
+  // Auto-resize textarea based on content
+  const handleTextareaChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setPromptInput(e.target.value);
+
+    // Reset height to auto to get the correct scrollHeight
+    if (textareaRef.current) {
+      textareaRef.current.style.height = 'auto';
+
+      // Calculate new height (max 4 lines ~80px)
+      const scrollHeight = textareaRef.current.scrollHeight;
+      const maxHeight = 80; // 4 lines
+      const newHeight = Math.min(scrollHeight, maxHeight);
+
+      textareaRef.current.style.height = `${newHeight}px`;
     }
   };
 
@@ -155,7 +175,7 @@ export default function MarketTrendPage() {
     );
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
       handleSubmitPrompt();
@@ -341,15 +361,36 @@ export default function MarketTrendPage() {
               <div className="flex flex-col items-center">
                 {/* Chat Input - Centered */}
                 <div className="w-full max-w-2xl px-6">
-                  <div className="rounded-full bg-[#2a2a2a] shadow-2xl py-3 px-5 flex items-center gap-3">
-                    {/* Input Field */}
-                    <input
-                      type="text"
+                  <div className="rounded-2xl bg-[#2a2a2a] shadow-2xl py-2 px-4 flex items-end gap-3">
+                    {/* Brain Icon - Autosuggest */}
+                    <button
+                      onClick={handleAutosuggest}
+                      disabled={selectedBulletIndex === null || isGeneratingPrompt}
+                      className={`w-8 h-8 flex items-center justify-center flex-shrink-0 transition-colors ${
+                        selectedBulletIndex === null || isGeneratingPrompt
+                          ? "text-gray-500 opacity-50 cursor-not-allowed"
+                          : "text-[#C5D86D] hover:text-[#d4e479] cursor-pointer"
+                      }`}
+                      title="Autosuggest prompt"
+                      aria-label="Autosuggest prompt"
+                    >
+                      {isGeneratingPrompt ? (
+                        <div className="w-4 h-4 border-2 border-[#C5D86D] border-t-transparent rounded-full animate-spin" />
+                      ) : (
+                        <MagicWandIcon className="w-5 h-5" />
+                      )}
+                    </button>
+
+                    {/* Textarea Field */}
+                    <textarea
+                      ref={textareaRef}
                       value={promptInput}
-                      onChange={(e) => setPromptInput(e.target.value)}
+                      onChange={handleTextareaChange}
                       onKeyDown={handleKeyDown}
                       placeholder="Describe the post you want to generate"
-                      className="flex-1 bg-transparent text-white text-sm placeholder:text-white/40 focus:outline-none"
+                      className="flex-1 bg-transparent text-white text-sm placeholder:text-white/40 focus:outline-none resize-none overflow-y-auto transition-all duration-200 min-h-[40px] max-h-[80px] py-2"
+                      rows={1}
+                      style={{ lineHeight: '20px' }}
                     />
 
                     {/* Submit Button */}
