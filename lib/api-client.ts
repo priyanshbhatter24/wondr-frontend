@@ -5,7 +5,7 @@ import { useAuth } from "@clerk/nextjs";
 
 import { GenerateImageRequest, GenerateImageResponse, ImageGeneration, ImageGenerationSession, ChatMessage, UserSessionsResponse } from "@/types/image-generation";
 import { IndustryUpdate, IndustryUpdatesListResponse, UserICPConfig } from "@/types/industry-updates";
-import { InitialPromptRequest, InitialPromptResponse, PostIdeationRequest, PostIdeationResponse } from "@/types/post-ideation";
+import { InitialPromptRequest, InitialPromptResponse, PostIdeationRequest, PostIdeationResponse, PostIdeationHistoryItem } from "@/types/post-ideation";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
@@ -112,6 +112,10 @@ export function useApiClient() {
             method: "POST",
             body: JSON.stringify(data),
           }),
+        getHistory: (industryUpdateId: string) =>
+          apiClient<PostIdeationHistoryItem[]>(`/api/post-ideation/history/${industryUpdateId}`),
+        getById: (industryUpdateId: string, ideationId: string) =>
+          apiClient<PostIdeationResponse[]>(`/api/post-ideation/history/${industryUpdateId}/${ideationId}`),  // Returns array of all turns
       },
       imageGeneration: {
         createSession: () =>
