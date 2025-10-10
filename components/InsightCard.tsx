@@ -27,7 +27,7 @@ export default function InsightCard({
   return (
     <div
       onClick={onClick}
-      className="bg-[color:var(--color-brown)] text-white p-6 min-w-[400px] max-w-[400px] cursor-pointer transition-all duration-200 hover:brightness-110 flex flex-col gap-3"
+      className="bg-[#2A2A2A] text-white p-6 min-w-[400px] max-w-[400px] cursor-pointer transition-all duration-200 hover:brightness-110 flex flex-col gap-3"
     >
       {/* Source and Timestamp */}
       <div className="flex items-center justify-between">
