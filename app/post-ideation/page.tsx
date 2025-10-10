@@ -119,7 +119,7 @@ function PostIdeationPageContent() {
     >
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Header with Back Button */}
-        <div className="flex-shrink-0 p-6 border-b border-white/10">
+        <div className="flex-shrink-0 px-8 py-6 border-b border-white/10">
           <Link
             href="/idea-hub"
             className="inline-flex items-center gap-2 text-white/70 hover:text-white transition-colors text-sm"
