@@ -100,8 +100,10 @@ export default function MarketTrendPage() {
   // Auto-resize textarea based on content
   const handleTextareaChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setPromptInput(e.target.value);
+  };
 
-    // Reset height to auto to get the correct scrollHeight
+  // Resize textarea whenever promptInput changes (including autosuggest)
+  useEffect(() => {
     if (textareaRef.current) {
       textareaRef.current.style.height = 'auto';
 
@@ -112,7 +114,7 @@ export default function MarketTrendPage() {
 
       textareaRef.current.style.height = `${newHeight}px`;
     }
-  };
+  }, [promptInput]);
 
   // Fetch sessions for sidebar
   const { sessions } = useGenerations();
@@ -356,11 +358,11 @@ export default function MarketTrendPage() {
 
           {/* Chat Input - Fixed at Bottom */}
           <div className="absolute bottom-0 left-0 right-0 z-40">
-            {/* Black Backdrop with Gradient */}
-            <div className="w-full bg-gradient-to-b from-transparent via-black/80 to-black py-6">
+            {/* Backdrop with Gradient */}
+            <div className="w-full bg-gradient-to-b from-transparent via-[#3A3A3A]/80 to-[#3A3A3A] py-6">
               <div className="flex flex-col items-center">
                 {/* Chat Input - Centered */}
-                <div className="w-full max-w-2xl px-6">
+                <div className="w-full max-w-3xl px-6">
                   <div className="rounded-2xl bg-[#2a2a2a] shadow-2xl py-2 px-4 flex items-center gap-3">
                     {/* Brain Icon - Autosuggest */}
                     <button
