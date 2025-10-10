@@ -49,6 +49,7 @@ function PostIdeationPageContent() {
 
   useEffect(() => {
     hasFetchedRef.current = false;
+    isGeneratingRef.current = false;  // Also reset generating lock
     setActiveSuggestionIndex(suggestionIndex);
   }, [updateId, suggestionIndex, preGeneratedPrompt, ideationId]);
 
