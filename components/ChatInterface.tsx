@@ -9,11 +9,19 @@ interface ChatInterfaceProps {
   messages: ChatMessage[];
   onSendMessage: (prompt: string) => void;
   isGenerating: boolean;
+  initialPrompt?: string;
 }
 
-export function ChatInterface({ messages, onSendMessage, isGenerating }: ChatInterfaceProps) {
-  const [prompt, setPrompt] = useState("");
+export function ChatInterface({ messages, onSendMessage, isGenerating, initialPrompt }: ChatInterfaceProps) {
+  const [prompt, setPrompt] = useState(initialPrompt || "");
   const scrollRef = useRef<HTMLDivElement>(null);
+
+  // Update prompt if initialPrompt changes
+  useEffect(() => {
+    if (initialPrompt) {
+      setPrompt(initialPrompt);
+    }
+  }, [initialPrompt]);
 
   // Auto-scroll to bottom when messages change
   useEffect(() => {

@@ -2,12 +2,21 @@
 import { HamburgerMenuIcon } from "@radix-ui/react-icons";
 import Sidebar from "./Sidebar";
 import { useState, useEffect } from "react";
+import { SidebarSessionItem } from "@/types/image-generation";
 
 interface AppShellProps {
   children: React.ReactNode;
+  sessions: SidebarSessionItem[];
+  activeSessionId?: string;
+  onSessionClick?: (sessionId: string) => void;
 }
 
-export default function AppShell({ children }: AppShellProps) {
+export default function AppShell({
+  children,
+  sessions,
+  activeSessionId,
+  onSessionClick
+}: AppShellProps) {
   const [isOpen, setIsOpen] = useState(true);
 
   // Load sidebar state from localStorage
@@ -41,7 +50,11 @@ export default function AppShell({ children }: AppShellProps) {
         className={`transition-all duration-200 ease-in-out ${isOpen ? "w-64" : "w-0"} overflow-hidden`}
         aria-hidden={!isOpen}
       >
-        <Sidebar generations={[]} />
+        <Sidebar
+          sessions={sessions}
+          activeSessionId={activeSessionId}
+          onItemClick={onSessionClick}
+        />
       </div>
 
       <div className="flex-1 relative flex flex-col min-w-0">

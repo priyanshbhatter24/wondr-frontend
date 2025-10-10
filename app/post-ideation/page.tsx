@@ -1,19 +1,21 @@
 "use client";
 
 import { Suspense, useEffect, useState } from "react";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import { useApiClient } from "@/lib/api-client";
 import PostIdeationView from "@/components/PostIdeationView";
 import PromptInputBar from "@/components/PromptInputBar";
-import Sidebar from "@/components/Sidebar";
+import AppShell from "@/components/AppShell";
 import { PostIdeationResponse } from "@/types/post-ideation";
 import { ArrowLeftIcon } from "@radix-ui/react-icons";
 import Link from "next/link";
+import { useGenerations } from "@/lib/use-generations";
 
 type Stage = 'loading-prompt' | 'editing-prompt' | 'loading-recommendations' | 'showing-recommendations';
 
 function PostIdeationPageContent() {
   const searchParams = useSearchParams();
+  const router = useRouter();
   const updateId = searchParams.get("id");
   const suggestionIndex = searchParams.get("index");
 
@@ -25,13 +27,13 @@ function PostIdeationPageContent() {
 
   const api = useApiClient();
 
-  // Placeholder generations for sidebar
-  const generations = [
-    { id: "1", name: "Google pixel 12mp camera", timestamp: "2 hours ago" },
-    { id: "2", name: "Deepmind image model ann", timestamp: "3 hours ago" },
-    { id: "3", name: "Google maps new navigatio", timestamp: "4 hours ago" },
-    { id: "4", name: "Gemini 2.5 pro intro posts", timestamp: "5 hours ago" },
-  ];
+  // Fetch sessions for sidebar
+  const { sessions } = useGenerations();
+
+  // Handle sidebar session click
+  const handleSessionClick = (sessionId: string) => {
+    router.push(`/generate-post?session=${sessionId}`);
+  };
 
   // Step 1: Generate initial prompt on mount
   useEffect(() => {
@@ -90,13 +92,10 @@ function PostIdeationPageContent() {
   };
 
   return (
-    <div className="flex h-screen overflow-hidden bg-[#000000]">
-      <Sidebar
-        generations={generations}
-        activeItem={undefined}
-        onItemClick={() => {}}
-      />
-
+    <AppShell
+      sessions={sessions}
+      onSessionClick={handleSessionClick}
+    >
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Header with Back Button */}
         <div className="flex-shrink-0 p-6 border-b border-white/10">
@@ -199,7 +198,7 @@ function PostIdeationPageContent() {
           />
         )}
       </div>
-    </div>
+    </AppShell>
   );
 }
 

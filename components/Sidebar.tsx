@@ -3,7 +3,6 @@
 import * as ScrollArea from "@radix-ui/react-scroll-area";
 import * as Separator from "@radix-ui/react-separator";
 import {
-  Pencil2Icon,
   LightningBoltIcon,
   ImageIcon,
   MagnifyingGlassIcon,
@@ -14,22 +13,18 @@ import Image from "next/image";
 import Link from "next/link";
 import { useMemo, useRef, useState } from "react";
 import { useClerk, useUser } from "@clerk/nextjs";
-
-interface Generation {
-  id: string;
-  name: string;
-  timestamp: string;
-}
+import { SidebarSessionItem } from "@/types/image-generation";
+import { formatRelativeTime } from "@/utils/date";
 
 interface SidebarProps {
-  generations: Generation[];
-  activeItem?: string;
-  onItemClick?: (id: string) => void;
+  sessions: SidebarSessionItem[];
+  activeSessionId?: string;
+  onItemClick?: (sessionId: string) => void;
 }
 
 export default function Sidebar({
-  generations,
-  activeItem,
+  sessions,
+  activeSessionId,
   onItemClick,
 }: SidebarProps) {
   const { user } = useUser();
@@ -45,15 +40,15 @@ export default function Sidebar({
     user?.primaryEmailAddress?.emailAddress ??
     "Guest";
 
-  const filteredGenerations = useMemo(() => {
+  const filteredSessions = useMemo(() => {
     if (!searchTerm) {
-      return generations;
+      return sessions;
     }
 
-    return generations.filter((gen) =>
-      gen.name.toLowerCase().includes(searchTerm.toLowerCase()),
+    return sessions.filter((session) =>
+      session.name.toLowerCase().includes(searchTerm.toLowerCase()),
     );
-  }, [generations, searchTerm]);
+  }, [sessions, searchTerm]);
 
   const toggleSearch = () => {
     setIsSearching((prev) => {
@@ -150,13 +145,6 @@ export default function Sidebar({
           <GearIcon className="w-4 h-4" />
           <span>ICP Settings</span>
         </Link>
-        <Link
-          href="/dashboard"
-          className="w-full text-left px-3 py-2 rounded-md transition-colors flex items-center gap-3 text-sm hover:bg-black/40 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/40"
-        >
-          <Pencil2Icon className="w-4 h-4" />
-          <span>Dashboard</span>
-        </Link>
       </div>
 
       <Separator.Root className="bg-black/50 h-px my-2" />
@@ -169,21 +157,24 @@ export default function Sidebar({
         <ScrollArea.Root className="w-full h-full overflow-hidden">
           <ScrollArea.Viewport className="w-full h-full [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none']">
             <div className="space-y-2">
-              {filteredGenerations.map((gen) => (
+              {filteredSessions.map((session) => (
                 <button
-                  key={gen.id}
+                  key={session.session_id}
                   type="button"
-                  onClick={() => onItemClick?.(gen.id)}
+                  onClick={() => onItemClick?.(session.session_id)}
+                  title={session.full_prompt}
                   className={`w-full text-left px-3 py-2.5 rounded-md transition-colors text-xs hover:bg-black/40 ${
-                    activeItem === gen.id ? "bg-black/60" : ""
+                    activeSessionId === session.session_id ? "bg-black/60" : ""
                   }`}
                 >
-                  <div className="font-normal truncate text-white">{gen.name}</div>
-                  <div className="text-white/50 text-xs mt-1">{gen.timestamp}</div>
+                  <div className="font-normal truncate text-white">{session.name}</div>
+                  <div className="text-white/50 text-xs mt-1">
+                    {formatRelativeTime(session.created_at)}
+                  </div>
                 </button>
               ))}
-              {filteredGenerations.length === 0 && (
-                <div className="text-white/50 text-xs px-3 py-2">No generations found.</div>
+              {filteredSessions.length === 0 && (
+                <div className="text-white/50 text-xs px-3 py-2">No sessions found.</div>
               )}
             </div>
           </ScrollArea.Viewport>
