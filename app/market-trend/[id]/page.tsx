@@ -63,21 +63,12 @@ const capitalizeChannelName = (name: string) => {
     .join(' ');
 };
 
-// Color palette options
-const colorPalette = [
-  { id: "white", color: "#FFFFFF", label: "White" },
-  { id: "lime", color: "#C5D86D", label: "Lime" },
-  { id: "tan", color: "#8B7355", label: "Tan" },
-  { id: "gray", color: "#2C2C2C", label: "Gray" },
-  { id: "black", color: "#000000", label: "Black" },
-];
 
 export default function MarketTrendPage() {
   const router = useRouter();
   const params = useParams();
   const id = params.id as string;
 
-  const [selectedColor, setSelectedColor] = useState("#000000");
   const [promptInput, setPromptInput] = useState("");
   const [industryUpdate, setIndustryUpdate] = useState<IndustryUpdate | null>(null);
   const [loading, setLoading] = useState(true);
@@ -133,10 +124,6 @@ export default function MarketTrendPage() {
   const handleBulletClick = (index: number) => {
     // Toggle selection
     setSelectedBulletIndex(selectedBulletIndex === index ? null : index);
-  };
-
-  const handleColorSelect = (color: string) => {
-    setSelectedColor(color);
   };
 
   const handleAutosuggest = async () => {
@@ -211,8 +198,7 @@ export default function MarketTrendPage() {
   return (
     <AppShell sessions={sessions} onSessionClick={handleSessionClick}>
       <div
-        className="flex-1 overflow-y-auto transition-colors duration-300"
-        style={{ backgroundColor: selectedColor }}
+        className="flex-1 overflow-y-auto bg-[#000000]"
       >
         <div className="relative flex flex-col w-full h-full">
           {/* Header with Back Button */}
@@ -348,71 +334,34 @@ export default function MarketTrendPage() {
             </div>
           </div>
 
-          {/* Chat Input - Centered and Fixed at Bottom */}
-          <div className="absolute bottom-6 left-0 right-0 z-40">
-            <div className="flex flex-col items-center">
-              {/* Color Picker and Autosuggest Row */}
-              <div className="w-full max-w-2xl flex items-center justify-between mb-3 px-6">
-                {/* Color Picker - Left Side */}
-                <div className="flex items-center gap-0 bg-white/10 backdrop-blur-sm rounded-full p-1 shadow-lg">
-                  {colorPalette.map((colorOption, index) => (
-                    <button
-                      key={colorOption.id}
-                      onClick={() => handleColorSelect(colorOption.color)}
-                      className={`w-6 h-6 transition-all hover:scale-110 focus:outline-none ${
-                        selectedColor === colorOption.color ? "ring-1 ring-white scale-110" : ""
-                      } ${
-                        index === 0 ? "rounded-l-full" : index === colorPalette.length - 1 ? "rounded-r-full" : ""
-                      }`}
-                      style={{ backgroundColor: colorOption.color }}
-                      title={colorOption.label}
-                      aria-label={`Select ${colorOption.label} color`}
+          {/* Chat Input - Fixed at Bottom */}
+          <div className="absolute bottom-0 left-0 right-0 z-40">
+            {/* Black Backdrop */}
+            <div className="w-full bg-[#000000] py-6">
+              <div className="flex flex-col items-center">
+                {/* Chat Input - Centered */}
+                <div className="w-full max-w-2xl px-6">
+                  <div className="rounded-full bg-[#2a2a2a] shadow-2xl py-3 px-5 flex items-center gap-3">
+                    {/* Input Field */}
+                    <input
+                      type="text"
+                      value={promptInput}
+                      onChange={(e) => setPromptInput(e.target.value)}
+                      onKeyDown={handleKeyDown}
+                      placeholder="Describe the post you want to generate"
+                      className="flex-1 bg-transparent text-white text-sm placeholder:text-white/40 focus:outline-none"
                     />
-                  ))}
-                </div>
 
-                {/* Autosuggest Button - Right Side */}
-                <button
-                  onClick={handleAutosuggest}
-                  disabled={selectedBulletIndex === null || isGeneratingPrompt}
-                  className="flex items-center gap-2 px-4 py-2 bg-[#1a1a1a] text-[#C5D86D] rounded-full hover:bg-[#252525] transition-colors font-medium text-sm shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {isGeneratingPrompt ? (
-                    <>
-                      <div className="w-4 h-4 border-2 border-[#C5D86D] border-t-transparent rounded-full animate-spin" />
-                      Generating...
-                    </>
-                  ) : (
-                    <>
-                      Autosuggest prompt
-                      <ArrowUpIcon className="w-4 h-4" />
-                    </>
-                  )}
-                </button>
-              </div>
-
-              {/* Chat Input - Centered */}
-              <div className="w-full max-w-2xl px-6">
-                <div className="rounded-full bg-[#2a2a2a] shadow-2xl py-3 px-5 flex items-center gap-3">
-                  {/* Input Field */}
-                  <input
-                    type="text"
-                    value={promptInput}
-                    onChange={(e) => setPromptInput(e.target.value)}
-                    onKeyDown={handleKeyDown}
-                    placeholder="Describe the post you want to generate"
-                    className="flex-1 bg-transparent text-white text-sm placeholder:text-white/40 focus:outline-none"
-                  />
-
-                  {/* Submit Button */}
-                  <button
-                    onClick={handleSubmitPrompt}
-                    disabled={!promptInput.trim()}
-                    className="w-10 h-10 flex items-center justify-center bg-gray-600 hover:bg-gray-500 rounded-full transition-colors shadow-md flex-shrink-0 disabled:opacity-50 disabled:cursor-not-allowed"
-                    aria-label="Submit"
-                  >
-                    <ArrowUpIcon className="w-4 h-4 text-white" />
-                  </button>
+                    {/* Submit Button */}
+                    <button
+                      onClick={handleSubmitPrompt}
+                      disabled={!promptInput.trim()}
+                      className="w-10 h-10 flex items-center justify-center bg-gray-600 hover:bg-gray-500 rounded-full transition-colors shadow-md flex-shrink-0 disabled:opacity-50 disabled:cursor-not-allowed"
+                      aria-label="Submit"
+                    >
+                      <ArrowUpIcon className="w-4 h-4 text-white" />
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
