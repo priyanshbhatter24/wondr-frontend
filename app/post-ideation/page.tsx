@@ -257,7 +257,7 @@ ${imagesSummary}\n`;
 
   return (
     <AppShell sessions={sessions} onSessionClick={handleSessionClick}>
-      <div className="flex-1 flex flex-col overflow-hidden bg-[#1a1a1a]">
+      <div className="flex-1 flex flex-col overflow-hidden bg-[#3A3A3A]">
         <div className="flex-shrink-0 p-6">
           <Link
             href={updateId ? `/market-trend/${updateId}` : "/idea-hub"}
@@ -303,9 +303,9 @@ ${imagesSummary}\n`;
         </div>
 
         {status === "ready" && (
-          <div className="border-t border-white/5 bg-[#1a1a1a] px-6 py-4">
+          <div className="bg-[#3A3A3A] px-6 py-4">
             <div className="max-w-5xl mx-auto">
-              <div className="rounded-xl bg-[#252525] py-3 px-4 flex items-center gap-3 shadow-lg border border-white/5">
+              <div className="rounded-full bg-[#252525] py-3 px-4 flex items-center gap-3 shadow-lg border border-white/5">
                 <button
                   type="button"
                   className="w-8 h-8 flex items-center justify-center text-white/40"
@@ -318,7 +318,7 @@ ${imagesSummary}\n`;
                   value={inputPrompt}
                   onChange={(event) => setInputPrompt(event.target.value)}
                   placeholder="Refine your post idea..."
-                  className="flex-1 bg-transparent text-white text-sm placeholder:text-white/30 focus:outline-none resize-none max-h-32 min-h-[40px] leading-5 scrollbar-hide"
+                  className="flex-1 bg-transparent text-white text-sm placeholder:text-white/30 focus:outline-none resize-none max-h-32 min-h-[40px] leading-10 scrollbar-hide"
                   rows={1}
                   onKeyDown={(event) => {
                     if (event.key === "Enter" && !event.shiftKey) {
@@ -331,7 +331,7 @@ ${imagesSummary}\n`;
                   type="button"
                   onClick={handleSubmitAdditionalPrompt}
                   disabled={!inputPrompt.trim()}
-                  className="w-9 h-9 flex items-center justify-center bg-white/10 hover:bg-white/15 rounded-lg transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                  className="w-9 h-9 flex items-center justify-center bg-white/10 hover:bg-white/15 rounded-full transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
                   aria-label="Submit prompt"
                 >
                   <ArrowLeftIcon className="w-4 h-4 transform rotate-90 text-white" />
