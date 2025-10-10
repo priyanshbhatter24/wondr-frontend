@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter, useParams } from "next/navigation";
-import { ArrowLeftIcon, LightningBoltIcon, ArrowUpIcon } from "@radix-ui/react-icons";
+import { ArrowLeftIcon, LightningBoltIcon, ArrowUpIcon, FileIcon, ChevronLeftIcon, ChevronRightIcon, MagicWandIcon } from "@radix-ui/react-icons";
 import AppShell from "@/components/AppShell";
 import { useApiClient } from "@/lib/api-client";
 import { useGenerations } from "@/lib/use-generations";
@@ -63,21 +63,12 @@ const capitalizeChannelName = (name: string) => {
     .join(' ');
 };
 
-// Color palette options
-const colorPalette = [
-  { id: "white", color: "#FFFFFF", label: "White" },
-  { id: "lime", color: "#C5D86D", label: "Lime" },
-  { id: "tan", color: "#8B7355", label: "Tan" },
-  { id: "gray", color: "#2C2C2C", label: "Gray" },
-  { id: "black", color: "#000000", label: "Black" },
-];
 
 export default function MarketTrendPage() {
   const router = useRouter();
   const params = useParams();
   const id = params.id as string;
 
-  const [selectedColor, setSelectedColor] = useState("#000000");
   const [promptInput, setPromptInput] = useState("");
   const [industryUpdate, setIndustryUpdate] = useState<IndustryUpdate | null>(null);
   const [loading, setLoading] = useState(true);
@@ -86,8 +77,44 @@ export default function MarketTrendPage() {
   const [isGeneratingPrompt, setIsGeneratingPrompt] = useState(false);
   const [generatedForIndex, setGeneratedForIndex] = useState<number | null>(null);
 
+  // Carousel ref for channel cards
+  const channelSliderRef = useRef<HTMLDivElement>(null);
+
+  // Textarea ref for auto-resize
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+
   // Get API client
   const api = useApiClient();
+
+  // Scroll function for carousel
+  const scrollChannels = (direction: "left" | "right") => {
+    if (channelSliderRef.current) {
+      const scrollAmount = 400;
+      channelSliderRef.current.scrollBy({
+        left: direction === "left" ? -scrollAmount : scrollAmount,
+        behavior: "smooth",
+      });
+    }
+  };
+
+  // Auto-resize textarea based on content
+  const handleTextareaChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setPromptInput(e.target.value);
+  };
+
+  // Resize textarea whenever promptInput changes (including autosuggest)
+  useEffect(() => {
+    if (textareaRef.current) {
+      textareaRef.current.style.height = 'auto';
+
+      // Calculate new height (max 4 lines ~80px)
+      const scrollHeight = textareaRef.current.scrollHeight;
+      const maxHeight = 80; // 4 lines
+      const newHeight = Math.min(scrollHeight, maxHeight);
+
+      textareaRef.current.style.height = `${newHeight}px`;
+    }
+  }, [promptInput]);
 
   // Fetch sessions for sidebar
   const { sessions } = useGenerations();
@@ -121,10 +148,6 @@ export default function MarketTrendPage() {
     setSelectedBulletIndex(selectedBulletIndex === index ? null : index);
   };
 
-  const handleColorSelect = (color: string) => {
-    setSelectedColor(color);
-  };
-
   const handleAutosuggest = async () => {
     if (selectedBulletIndex === null || !id) return;
 
@@ -154,7 +177,7 @@ export default function MarketTrendPage() {
     );
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
       handleSubmitPrompt();
@@ -197,8 +220,7 @@ export default function MarketTrendPage() {
   return (
     <AppShell sessions={sessions} onSessionClick={handleSessionClick}>
       <div
-        className="flex-1 overflow-y-auto transition-colors duration-300"
-        style={{ backgroundColor: selectedColor }}
+        className="flex-1 overflow-y-auto bg-[#3A3A3A]"
       >
         <div className="relative flex flex-col w-full h-full">
           {/* Header with Back Button */}
@@ -214,7 +236,7 @@ export default function MarketTrendPage() {
 
           {/* Main Content Area - Scrollable */}
           <div className="flex-1 overflow-y-auto pb-32">
-            <div className="mx-auto max-w-7xl px-6 py-6 sm:px-10">
+            <div className="mx-auto max-w-4xl px-6 pt-2 pb-6 sm:px-10">
               {/* Full Width Content Box */}
               <div className="rounded-lg bg-[#3A3A3A] p-6">
                 {/* ICP Insights Section */}
@@ -264,44 +286,66 @@ export default function MarketTrendPage() {
                   )}
                 </div>
 
-                {/* Dynamic Channel Cards - Render ALL channels with data */}
+                {/* Channels Carousel */}
                 {channelsWithData.length > 0 ? (
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {channelsWithData.map(([channelName, details]) => (
-                      <div key={channelName} className="rounded-lg bg-[#2A2A2A] p-5 flex flex-col min-h-[200px]">
-                        <div className="flex items-center gap-2 mb-4">
-                          {getChannelIcon(channelName)}
-                          <h4
-                            className="text-sm font-semibold capitalize"
-                            style={{ color: getChannelColor(channelName) }}
-                          >
-                            {capitalizeChannelName(channelName)}
-                          </h4>
-                        </div>
-                        <div className="space-y-3 overflow-y-auto max-h-64 custom-scrollbar flex-1">
-                          {details.slice(0, 4).map((detail, index) => {
-                            // Truncate long quotes
-                            const truncatedText = detail.filtered_detail.length > 200
-                              ? detail.filtered_detail.substring(0, 200) + "..."
-                              : detail.filtered_detail;
-
-                            return (
-                              <a
-                                key={index}
-                                href={detail.link}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="block group"
-                              >
-                                <blockquote className="text-xs text-white/80 italic group-hover:text-white transition-colors cursor-pointer text-left">
-                                  &ldquo;{truncatedText}&rdquo;
-                                </blockquote>
-                              </a>
-                            );
-                          })}
-                        </div>
+                  <div>
+                    <div className="flex items-center justify-between mb-6">
+                      <h3 className="text-lg font-medium text-white">Channels</h3>
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() => scrollChannels("left")}
+                          className="w-8 h-8 rounded-full bg-transparent border border-white/20 flex items-center justify-center text-white transition-colors hover:bg-black/40"
+                        >
+                          <ChevronLeftIcon className="w-4 h-4" />
+                        </button>
+                        <button
+                          onClick={() => scrollChannels("right")}
+                          className="w-8 h-8 rounded-full bg-transparent border border-white/20 flex items-center justify-center text-white transition-colors hover:bg-black/40"
+                        >
+                          <ChevronRightIcon className="w-4 h-4" />
+                        </button>
                       </div>
-                    ))}
+                    </div>
+                    <div
+                      ref={channelSliderRef}
+                      className="flex gap-4 overflow-x-auto scrollbar-hide scroll-smooth pb-2"
+                    >
+                      {channelsWithData.map(([channelName, details]) => (
+                        <div key={channelName} className="rounded-lg bg-[#2A2A2A] p-5 flex flex-col min-w-[320px] max-w-[320px] h-[400px]">
+                          <div className="flex items-center gap-2 mb-4">
+                            {getChannelIcon(channelName)}
+                            <h4
+                              className="text-sm font-semibold capitalize"
+                              style={{ color: getChannelColor(channelName) }}
+                            >
+                              {capitalizeChannelName(channelName)}
+                            </h4>
+                          </div>
+                          <div className="space-y-3 overflow-y-auto scrollbar-hide flex-1">
+                            {details.slice(0, 4).map((detail, index) => {
+                              // Truncate long quotes
+                              const truncatedText = detail.filtered_detail.length > 200
+                                ? detail.filtered_detail.substring(0, 200) + "..."
+                                : detail.filtered_detail;
+
+                              return (
+                                <a
+                                  key={index}
+                                  href={detail.link}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="block group"
+                                >
+                                  <blockquote className="text-xs text-white/80 italic group-hover:text-white transition-colors cursor-pointer text-left">
+                                    &ldquo;{truncatedText}&rdquo;
+                                  </blockquote>
+                                </a>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 ) : (
                   <div className="rounded-lg bg-[#2A2A2A] p-6 text-center">
@@ -312,71 +356,55 @@ export default function MarketTrendPage() {
             </div>
           </div>
 
-          {/* Chat Input - Centered and Fixed at Bottom */}
-          <div className="absolute bottom-6 left-0 right-0 z-40">
-            <div className="flex flex-col items-center">
-              {/* Color Picker and Autosuggest Row */}
-              <div className="w-full max-w-2xl flex items-center justify-between mb-3 px-6">
-                {/* Color Picker - Left Side */}
-                <div className="flex items-center gap-0 bg-white/10 backdrop-blur-sm rounded-full p-1 shadow-lg">
-                  {colorPalette.map((colorOption, index) => (
+          {/* Chat Input - Fixed at Bottom */}
+          <div className="absolute bottom-0 left-0 right-0 z-40">
+            {/* Backdrop with Gradient */}
+            <div className="w-full bg-gradient-to-b from-transparent via-[#3A3A3A]/80 to-[#3A3A3A] py-6">
+              <div className="flex flex-col items-center">
+                {/* Chat Input - Centered */}
+                <div className="w-full max-w-4xl px-6">
+                  <div className="rounded-full bg-[#2a2a2a] shadow-2xl py-3 px-4 flex items-center gap-3">
+                    {/* Brain Icon - Autosuggest */}
                     <button
-                      key={colorOption.id}
-                      onClick={() => handleColorSelect(colorOption.color)}
-                      className={`w-6 h-6 transition-all hover:scale-110 focus:outline-none ${
-                        selectedColor === colorOption.color ? "ring-1 ring-white scale-110" : ""
-                      } ${
-                        index === 0 ? "rounded-l-full" : index === colorPalette.length - 1 ? "rounded-r-full" : ""
+                      onClick={handleAutosuggest}
+                      disabled={selectedBulletIndex === null || isGeneratingPrompt}
+                      className={`w-8 h-8 flex items-center justify-center flex-shrink-0 transition-colors ${
+                        selectedBulletIndex === null || isGeneratingPrompt
+                          ? "text-gray-500 opacity-50 cursor-not-allowed"
+                          : "text-[#C5D86D] hover:text-[#d4e479] cursor-pointer"
                       }`}
-                      style={{ backgroundColor: colorOption.color }}
-                      title={colorOption.label}
-                      aria-label={`Select ${colorOption.label} color`}
+                      title="Autosuggest prompt"
+                      aria-label="Autosuggest prompt"
+                    >
+                      {isGeneratingPrompt ? (
+                        <div className="w-4 h-4 border-2 border-[#C5D86D] border-t-transparent rounded-full animate-spin" />
+                      ) : (
+                        <MagicWandIcon className="w-5 h-5" />
+                      )}
+                    </button>
+
+                    {/* Textarea Field */}
+                    <textarea
+                      ref={textareaRef}
+                      value={promptInput}
+                      onChange={handleTextareaChange}
+                      onKeyDown={handleKeyDown}
+                      placeholder="Describe the post you want to generate"
+                      className="flex-1 bg-transparent text-white text-sm placeholder:text-white/40 focus:outline-none resize-none overflow-y-auto scrollbar-hide transition-all duration-200 min-h-[40px] max-h-[80px] py-2"
+                      rows={1}
+                      style={{ lineHeight: '20px' }}
                     />
-                  ))}
-                </div>
 
-                {/* Autosuggest Button - Right Side */}
-                <button
-                  onClick={handleAutosuggest}
-                  disabled={selectedBulletIndex === null || isGeneratingPrompt}
-                  className="flex items-center gap-2 px-4 py-2 bg-[#1a1a1a] text-[#C5D86D] rounded-full hover:bg-[#252525] transition-colors font-medium text-sm shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {isGeneratingPrompt ? (
-                    <>
-                      <div className="w-4 h-4 border-2 border-[#C5D86D] border-t-transparent rounded-full animate-spin" />
-                      Generating...
-                    </>
-                  ) : (
-                    <>
-                      Autosuggest prompt
-                      <ArrowUpIcon className="w-4 h-4" />
-                    </>
-                  )}
-                </button>
-              </div>
-
-              {/* Chat Input - Centered */}
-              <div className="w-full max-w-2xl px-6">
-                <div className="rounded-full bg-[#2a2a2a] shadow-2xl py-3 px-5 flex items-center gap-3">
-                  {/* Input Field */}
-                  <input
-                    type="text"
-                    value={promptInput}
-                    onChange={(e) => setPromptInput(e.target.value)}
-                    onKeyDown={handleKeyDown}
-                    placeholder="Describe the post you want to generate"
-                    className="flex-1 bg-transparent text-white text-sm placeholder:text-white/40 focus:outline-none"
-                  />
-
-                  {/* Submit Button */}
-                  <button
-                    onClick={handleSubmitPrompt}
-                    disabled={!promptInput.trim()}
-                    className="w-10 h-10 flex items-center justify-center bg-gray-600 hover:bg-gray-500 rounded-full transition-colors shadow-md flex-shrink-0 disabled:opacity-50 disabled:cursor-not-allowed"
-                    aria-label="Submit"
-                  >
-                    <ArrowUpIcon className="w-4 h-4 text-white" />
-                  </button>
+                    {/* Submit Button */}
+                    <button
+                      onClick={handleSubmitPrompt}
+                      disabled={!promptInput.trim()}
+                      className="w-10 h-10 flex items-center justify-center bg-gray-600 hover:bg-gray-500 rounded-full transition-colors shadow-md flex-shrink-0 disabled:opacity-50 disabled:cursor-not-allowed"
+                      aria-label="Submit"
+                    >
+                      <ArrowUpIcon className="w-4 h-4 text-white" />
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
