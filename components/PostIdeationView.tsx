@@ -14,11 +14,11 @@ export default function PostIdeationView({
   conversation,
 }: PostIdeationViewProps) {
   return (
-    <div className="min-h-screen bg-[#1a1a1a] text-white">
+    <div className="min-h-screen bg-[#3A3A3A] text-white">
       <div className="mx-auto max-w-5xl px-8 py-8 space-y-6">
         {/* User Prompt - Right-aligned chat bubble */}
         <div className="flex justify-end">
-          <div className="max-w-[80%] bg-[#252525] rounded-xl p-5 border border-white/5 shadow-lg">
+          <div className="max-w-[80%] bg-[#2A2A2A] rounded-2xl p-5">
             <p className="text-white/90 text-sm leading-relaxed whitespace-pre-wrap">
               {userPrompt}
             </p>
@@ -48,7 +48,7 @@ export default function PostIdeationView({
               </div>
             ) : ideation ? (
               <>
-                <div className="bg-[#252525] rounded-xl p-6 border border-white/5 shadow-lg">
+                <div className="">
                   <h2 className="text-xl font-semibold text-white mb-4">
                     {ideation.remix_topic}
                   </h2>
@@ -62,7 +62,7 @@ export default function PostIdeationView({
                   </div>
                 </div>
 
-                <div className="bg-[#252525] rounded-xl p-6 border border-white/5 shadow-lg">
+                <div className="">
                   <h3 className="text-white/50 font-medium text-xs uppercase tracking-wide mb-3">
                     Text Recommendation
                   </h3>
@@ -77,13 +77,13 @@ export default function PostIdeationView({
                   </h3>
 
                   {ideation.image_recommendations.map((rec) => (
-                    <div key={`${index}-${rec.recommendation_number}`} className="bg-[#252525] rounded-xl border border-white/5 shadow-lg overflow-hidden">
-                      <div className="p-5 space-y-4">
+                    <div key={`${index}-${rec.recommendation_number}`} className="overflow-hidden">
+                      <div className="space-y-4">
                         <div className="flex items-start gap-3">
-                          <div className="flex-shrink-0 w-7 h-7 rounded-full bg-white/10 text-white flex items-center justify-center font-semibold text-sm">
-                            {rec.recommendation_number}
+                          <div className="w-7 h-7 text-white flex items-center justify-center font-semibold text-sm">
+                            {rec.recommendation_number}.
                           </div>
-                          <p className="text-white/70 text-sm leading-relaxed pt-0.5">
+                          <p className="text-white/90 text-sm leading-relaxed pt-0.5">
                             {rec.explanation}
                           </p>
                         </div>
@@ -96,12 +96,12 @@ export default function PostIdeationView({
                             taskTitle={rec.suggested_task.task_title}
                             detailedPrompt={rec.suggested_task.detailed_prompt}
                           >
-                            <div className="bg-[#2a2a2a] hover:bg-[#303030] transition-all duration-200 rounded-lg p-4 cursor-pointer border border-white/5 hover:border-white/10 group">
+                            <div className="hover:bg-[#303030] transition-all duration-200 rounded-xl mx-7 p-4 cursor-pointer border border-[#FFFFFF]/20 hover:border-white/10 group">
                               <div className="flex items-center justify-between">
                                 <h4 className="text-white/90 font-medium text-sm group-hover:text-white transition-colors">
                                   {rec.suggested_task.task_title}
                                 </h4>
-                                <button className="flex items-center gap-2 px-3 py-1.5 bg-white/5 hover:bg-white/10 rounded-md transition-all text-white/70 hover:text-white text-xs font-medium">
+                                <button className="flex items-center gap-2 px-3 py-1.5 border border-[#FFFFFF]/20 hover:bg-white/10 rounded-full transition-all text-white/70 hover:text-white text-xs font-medium">
                                   Start task
                                   <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 16 16">
                                     <path d="M3 3.732a1.5 1.5 0 012.305-1.265l6.706 4.267a1.5 1.5 0 010 2.531l-6.706 4.268A1.5 1.5 0 013 12.267V3.732z" />
