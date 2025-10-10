@@ -236,7 +236,7 @@ export default function MarketTrendPage() {
 
           {/* Main Content Area - Scrollable */}
           <div className="flex-1 overflow-y-auto pb-32">
-            <div className="mx-auto max-w-4xl px-6 py-6 sm:px-10">
+            <div className="mx-auto max-w-4xl px-6 pt-2 pb-6 sm:px-10">
               {/* Full Width Content Box */}
               <div className="rounded-lg bg-[#3A3A3A] p-6">
                 {/* ICP Insights Section */}
