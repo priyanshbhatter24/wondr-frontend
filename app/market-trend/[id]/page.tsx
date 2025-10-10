@@ -82,6 +82,9 @@ export default function MarketTrendPage() {
   const [industryUpdate, setIndustryUpdate] = useState<IndustryUpdate | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [selectedBulletIndex, setSelectedBulletIndex] = useState<number | null>(null);
+  const [isGeneratingPrompt, setIsGeneratingPrompt] = useState(false);
+  const [generatedForIndex, setGeneratedForIndex] = useState<number | null>(null);
 
   // Get API client
   const api = useApiClient();
@@ -113,19 +116,49 @@ export default function MarketTrendPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
-  const handleRemixClick = (index: number) => {
-    if (id) {
-      router.push(`/post-ideation?id=${id}&index=${index}`);
-    }
+  const handleBulletClick = (index: number) => {
+    // Toggle selection
+    setSelectedBulletIndex(selectedBulletIndex === index ? null : index);
   };
 
   const handleColorSelect = (color: string) => {
     setSelectedColor(color);
   };
 
-  const handleAutosuggest = () => {
-    // TODO: Implement autosuggest functionality
-    console.log("Autosuggest clicked");
+  const handleAutosuggest = async () => {
+    if (selectedBulletIndex === null || !id) return;
+
+    try {
+      setIsGeneratingPrompt(true);
+      const data = await api.postIdeation.generatePrompt({
+        industry_update_id: id,
+        post_suggestion_index: selectedBulletIndex,
+      });
+      setPromptInput(data.generated_prompt);
+      setGeneratedForIndex(selectedBulletIndex); // Remember which bullet this was for
+      setSelectedBulletIndex(null); // Clear selection after generating
+    } catch (error) {
+      console.error("Failed to generate prompt:", error);
+      setError("Failed to generate prompt");
+    } finally {
+      setIsGeneratingPrompt(false);
+    }
+  };
+
+  const handleSubmitPrompt = () => {
+    if (!promptInput.trim() || !id || generatedForIndex === null) return;
+
+    // Navigate to post ideation with the pre-generated prompt
+    router.push(
+      `/post-ideation?id=${id}&index=${generatedForIndex}&prompt=${encodeURIComponent(promptInput)}`
+    );
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleSubmitPrompt();
+    }
   };
 
   // Get channels with data
@@ -206,11 +239,23 @@ export default function MarketTrendPage() {
                       {industryUpdate.post_suggestions.slice(0, 3).map((option, index) => (
                         <div
                           key={index}
-                          onClick={() => handleRemixClick(index)}
-                          className="flex items-start gap-3 cursor-pointer group"
+                          onClick={() => handleBulletClick(index)}
+                          className={`flex items-start gap-3 cursor-pointer group rounded-lg p-2 transition-all ${
+                            selectedBulletIndex === index
+                              ? "bg-[#C5D86D]/20 border border-[#C5D86D]/40"
+                              : "hover:bg-white/5"
+                          }`}
                         >
-                          <LightningBoltIcon className="w-4 h-4 mt-0.5 flex-shrink-0 text-white/70 group-hover:text-[#C5D86D] transition-colors" />
-                          <p className="text-sm text-white/80 group-hover:text-white transition-colors text-left">
+                          <LightningBoltIcon className={`w-4 h-4 mt-0.5 flex-shrink-0 transition-colors ${
+                            selectedBulletIndex === index
+                              ? "text-[#C5D86D]"
+                              : "text-white/70 group-hover:text-[#C5D86D]"
+                          }`} />
+                          <p className={`text-sm transition-colors text-left ${
+                            selectedBulletIndex === index
+                              ? "text-white font-medium"
+                              : "text-white/80 group-hover:text-white"
+                          }`}>
                             {option.suggestion}
                           </p>
                         </div>
@@ -293,10 +338,20 @@ export default function MarketTrendPage() {
                 {/* Autosuggest Button - Right Side */}
                 <button
                   onClick={handleAutosuggest}
-                  className="flex items-center gap-2 px-4 py-2 bg-[#1a1a1a] text-[#C5D86D] rounded-full hover:bg-[#252525] transition-colors font-medium text-sm shadow-md"
+                  disabled={selectedBulletIndex === null || isGeneratingPrompt}
+                  className="flex items-center gap-2 px-4 py-2 bg-[#1a1a1a] text-[#C5D86D] rounded-full hover:bg-[#252525] transition-colors font-medium text-sm shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  Autosuggest prompt
-                  <ArrowUpIcon className="w-4 h-4" />
+                  {isGeneratingPrompt ? (
+                    <>
+                      <div className="w-4 h-4 border-2 border-[#C5D86D] border-t-transparent rounded-full animate-spin" />
+                      Generating...
+                    </>
+                  ) : (
+                    <>
+                      Autosuggest prompt
+                      <ArrowUpIcon className="w-4 h-4" />
+                    </>
+                  )}
                 </button>
               </div>
 
@@ -308,13 +363,16 @@ export default function MarketTrendPage() {
                     type="text"
                     value={promptInput}
                     onChange={(e) => setPromptInput(e.target.value)}
+                    onKeyDown={handleKeyDown}
                     placeholder="Describe the post you want to generate"
                     className="flex-1 bg-transparent text-white text-sm placeholder:text-white/40 focus:outline-none"
                   />
 
                   {/* Submit Button */}
                   <button
-                    className="w-10 h-10 flex items-center justify-center bg-gray-600 hover:bg-gray-500 rounded-full transition-colors shadow-md flex-shrink-0"
+                    onClick={handleSubmitPrompt}
+                    disabled={!promptInput.trim()}
+                    className="w-10 h-10 flex items-center justify-center bg-gray-600 hover:bg-gray-500 rounded-full transition-colors shadow-md flex-shrink-0 disabled:opacity-50 disabled:cursor-not-allowed"
                     aria-label="Submit"
                   >
                     <ArrowUpIcon className="w-4 h-4 text-white" />
