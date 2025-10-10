@@ -319,7 +319,7 @@ export default function MarketTrendPage() {
                               {capitalizeChannelName(channelName)}
                             </h4>
                           </div>
-                          <div className="space-y-3 overflow-y-auto custom-scrollbar flex-1">
+                          <div className="space-y-3 overflow-y-auto scrollbar-hide flex-1">
                             {details.slice(0, 4).map((detail, index) => {
                               // Truncate long quotes
                               const truncatedText = detail.filtered_detail.length > 200
@@ -356,12 +356,12 @@ export default function MarketTrendPage() {
 
           {/* Chat Input - Fixed at Bottom */}
           <div className="absolute bottom-0 left-0 right-0 z-40">
-            {/* Black Backdrop */}
-            <div className="w-full bg-[#000000] py-6">
+            {/* Black Backdrop with Gradient */}
+            <div className="w-full bg-gradient-to-b from-transparent via-black/80 to-black py-6">
               <div className="flex flex-col items-center">
                 {/* Chat Input - Centered */}
                 <div className="w-full max-w-2xl px-6">
-                  <div className="rounded-2xl bg-[#2a2a2a] shadow-2xl py-2 px-4 flex items-end gap-3">
+                  <div className="rounded-2xl bg-[#2a2a2a] shadow-2xl py-2 px-4 flex items-center gap-3">
                     {/* Brain Icon - Autosuggest */}
                     <button
                       onClick={handleAutosuggest}
@@ -388,7 +388,7 @@ export default function MarketTrendPage() {
                       onChange={handleTextareaChange}
                       onKeyDown={handleKeyDown}
                       placeholder="Describe the post you want to generate"
-                      className="flex-1 bg-transparent text-white text-sm placeholder:text-white/40 focus:outline-none resize-none overflow-y-auto transition-all duration-200 min-h-[40px] max-h-[80px] py-2"
+                      className="flex-1 bg-transparent text-white text-sm placeholder:text-white/40 focus:outline-none resize-none overflow-y-auto scrollbar-hide transition-all duration-200 min-h-[40px] max-h-[80px] py-2"
                       rows={1}
                       style={{ lineHeight: '20px' }}
                     />
