@@ -4,11 +4,10 @@ import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import AppShell from "@/components/AppShell";
 import InsightCard from "@/components/InsightCard";
-import InsightModal from "@/components/InsightModal";
 import CompetitorCard from "@/components/CompetitorCard";
 import { ChevronLeftIcon, ChevronRightIcon, FileIcon } from "@radix-ui/react-icons";
 import { useApiClient } from "@/lib/api-client";
-import { ChannelDetail, IndustryUpdate } from "@/types/industry-updates";
+import { IndustryUpdate } from "@/types/industry-updates";
 import { getChannelSourcesLabel } from "@/utils/date";
 import { useGenerations } from "@/lib/use-generations";
 
@@ -18,9 +17,6 @@ interface InsightData {
   topic: string;
   description: string;
   remixOptions: { text: string; reasoning?: string }[];
-  fullContent?: string;
-  channels?: Record<string, ChannelDetail[]>;
-  created_at?: string;
 }
 
 type CompetitorType = "Meta" | "Alphabet" | "Microsoft";
@@ -40,8 +36,6 @@ interface CompetitorInsightData extends InsightData {
 
 export default function IdeaHubPage() {
   const router = useRouter();
-  const [selectedInsight, setSelectedInsight] = useState<InsightData | null>(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [activeCompetitor, setActiveCompetitor] = useState<CompetitorType>("Meta");
 
   // API state for industry updates
@@ -233,9 +227,8 @@ export default function IdeaHubPage() {
     ],
   };
 
-  const handleCardClick = (insight: InsightData) => {
-    setSelectedInsight(insight);
-    setIsModalOpen(true);
+  const handleCardClick = (insightId: string) => {
+    router.push(`/market-trend/${insightId}`);
   };
 
   const industrySliderRef = useRef<HTMLDivElement | null>(null);
@@ -331,8 +324,6 @@ export default function IdeaHubPage() {
                         text: s.suggestion,
                         reasoning: s.reasoning,
                       })),
-                      channels: update.channels,
-                      created_at: update.created_at,
                     };
                     return (
                       <InsightCard
@@ -343,7 +334,7 @@ export default function IdeaHubPage() {
                         description={update.description}
                         remixOptions={insightData.remixOptions}
                         createdAt={update.created_at}
-                        onClick={() => handleCardClick(insightData)}
+                        onClick={() => handleCardClick(update.id)}
                       />
                     );
                   })
@@ -357,7 +348,7 @@ export default function IdeaHubPage() {
                       topic={insight.topic}
                       description={insight.description}
                       remixOptions={insight.remixOptions}
-                      onClick={() => handleCardClick(insight)}
+                      onClick={() => handleCardClick(insight.id)}
                     />
                   ))
                 )}
@@ -419,27 +410,12 @@ export default function IdeaHubPage() {
                   metrics={insight.metrics}
                   ctaLabel={insight.ctaLabel}
                   ctaHref={insight.ctaHref}
-                  onClick={() => handleCardClick(insight)}
+                  onClick={() => handleCardClick(insight.id)}
                 />
               ))}
             </div>
           </div>
         </div>
-
-        {/* Modal */}
-        {selectedInsight && (
-          <InsightModal
-            isOpen={isModalOpen}
-            onClose={() => setIsModalOpen(false)}
-            source={selectedInsight.source}
-            topic={selectedInsight.topic}
-            description={selectedInsight.description}
-            remixOptions={selectedInsight.remixOptions}
-            channels={selectedInsight.channels}
-            fullContent={selectedInsight.fullContent}
-            industryUpdateId={selectedInsight.id}
-          />
-        )}
       </div>
     </AppShell>
   );
