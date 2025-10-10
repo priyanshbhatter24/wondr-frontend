@@ -122,7 +122,7 @@ function PostIdeationPageContent() {
         <div className="flex-shrink-0 p-6 border-b border-white/10">
           <Link
             href="/idea-hub"
-            className="inline-flex items-center gap-2 text-white/70 hover:text-white transition-colors text-sm"
+            className="inline-flex items-center gap-2 text-white/70 hover:text-white transition-colors text-sm ml-4"
           >
             <ArrowLeftIcon className="w-4 h-4" />
             Back to Idea Hub
