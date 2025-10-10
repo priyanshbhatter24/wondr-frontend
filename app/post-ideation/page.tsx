@@ -37,6 +37,7 @@ function PostIdeationPageContent() {
   const [activeSuggestionIndex, setActiveSuggestionIndex] = useState<number | null>(suggestionIndex);
   const [conversationId, setConversationId] = useState<string | null>(null);  // Track conversation ID
   const hasFetchedRef = useRef(false);
+  const isGeneratingRef = useRef(false);  // Prevent concurrent generations
 
   const api = useApiClient();
 
@@ -59,11 +60,12 @@ function PostIdeationPageContent() {
     let isMounted = true;
 
     async function loadIdeation() {
-      if (hasFetchedRef.current) {
-        console.log("[post-ideation] Skipping load; already fetched once for this param set");
+      if (hasFetchedRef.current || isGeneratingRef.current) {
+        console.log("[post-ideation] Skipping load; already fetched/generating");
         return;
       }
       hasFetchedRef.current = true;
+      isGeneratingRef.current = true;
 
       setStatus("loading");
       setError(null);
@@ -81,11 +83,15 @@ function PostIdeationPageContent() {
             console.log("[post-ideation] Found existing ideation in conversation; skipping generate", ideationId);
             setActiveSuggestionIndex(existingTurn.ideation.post_suggestion_index);
             setStatus("ready");
+            isGeneratingRef.current = false;
             return;
           }
           console.log("[post-ideation] Loading conversation from history", ideationId);
           const conversationTurns = await api.postIdeation.getById(updateId, ideationId);  // Returns array of all turns
-          if (!isMounted) return;
+          if (!isMounted) {
+            isGeneratingRef.current = false;
+            return;
+          }
 
           // Convert array of responses to conversation turns
           const existingConversation: ConversationTurn[] = conversationTurns.map(turn => ({
@@ -100,6 +106,7 @@ function PostIdeationPageContent() {
           setConversationId(conversationTurns[0]?.conversation_id || null);  // Store conversation ID
           setInputPrompt("");
           setStatus("ready");
+          isGeneratingRef.current = false;
           return;
         }
 
@@ -126,7 +133,10 @@ function PostIdeationPageContent() {
         });
         console.log("[post-ideation] Generated ideation", generatedIdeation.ideation_id, "conversation_id", generatedIdeation.conversation_id);
 
-        if (!isMounted) return;
+        if (!isMounted) {
+          isGeneratingRef.current = false;
+          return;
+        }
 
         const initialConversation: ConversationTurn[] = [{ prompt: promptToUse, ideation: generatedIdeation }];
         conversationRef.current = initialConversation;
@@ -136,6 +146,7 @@ function PostIdeationPageContent() {
         setConversationId(generatedIdeation.conversation_id);  // Store conversation ID
         setInputPrompt("");
         setStatus("ready");
+        isGeneratingRef.current = false;
 
         if (!ideationId) {
           const params = new URLSearchParams();
@@ -145,11 +156,15 @@ function PostIdeationPageContent() {
         }
       } catch (err) {
         console.error("Failed to load ideation:", err);
-        if (!isMounted) return;
+        if (!isMounted) {
+          isGeneratingRef.current = false;
+          return;
+        }
         setError(
           err instanceof Error ? err.message : "Unable to load post ideation"
         );
         setStatus("error");
+        isGeneratingRef.current = false;
       }
     }
 
