@@ -6,7 +6,7 @@ import { ArrowLeftIcon, LightningBoltIcon, ArrowUpIcon, FileIcon, ChevronLeftIco
 import AppShell from "@/components/AppShell";
 import { useApiClient } from "@/lib/api-client";
 import { useGenerations } from "@/lib/use-generations";
-import { IndustryUpdate, ChannelDetail } from "@/types/industry-updates";
+import { IndustryUpdate } from "@/types/industry-updates";
 
 // Helper function to get channel icon
 const getChannelIcon = (channelName: string) => {
@@ -227,7 +227,7 @@ export default function MarketTrendPage() {
           <div className="p-6 pb-4">
             <button
               onClick={() => router.push('/idea-hub')}
-              className="flex items-center gap-2 text-white/70 hover:text-white transition-colors"
+              className="flex items-center gap-2 text-white/70 hover:text-white transition-colors ml-4"
             >
               <ArrowLeftIcon className="w-5 h-5" />
               <span className="text-sm font-medium">Back to Idea Hub</span>
