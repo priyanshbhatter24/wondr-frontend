@@ -2,11 +2,13 @@
 
 import { useState, useEffect, useRef } from "react";
 import { useRouter, useParams } from "next/navigation";
-import { ArrowLeftIcon, LightningBoltIcon, ArrowUpIcon, FileIcon, ChevronLeftIcon, ChevronRightIcon, MagicWandIcon } from "@radix-ui/react-icons";
+import { ArrowLeftIcon, LightningBoltIcon, ArrowUpIcon, ChevronLeftIcon, ChevronRightIcon, MagicWandIcon } from "@radix-ui/react-icons";
 import AppShell from "@/components/AppShell";
 import { useApiClient } from "@/lib/api-client";
 import { useGenerations } from "@/lib/use-generations";
 import { IndustryUpdate } from "@/types/industry-updates";
+import { PostIdeationHistoryItem } from "@/types/post-ideation";
+import { formatRelativeTime } from "@/utils/date";
 
 // Helper function to get channel icon
 const getChannelIcon = (channelName: string) => {
@@ -76,6 +78,7 @@ export default function MarketTrendPage() {
   const [selectedBulletIndex, setSelectedBulletIndex] = useState<number | null>(null);
   const [isGeneratingPrompt, setIsGeneratingPrompt] = useState(false);
   const [generatedForIndex, setGeneratedForIndex] = useState<number | null>(null);
+  const [ideationHistory, setIdeationHistory] = useState<PostIdeationHistoryItem[]>([]);
 
   // Carousel ref for channel cards
   const channelSliderRef = useRef<HTMLDivElement>(null);
@@ -139,6 +142,23 @@ export default function MarketTrendPage() {
     }
     if (id) {
       fetchUpdate();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id]);
+
+  // Fetch ideation history for this market trend
+  useEffect(() => {
+    async function fetchHistory() {
+      try {
+        const history = await api.postIdeation.getHistory(id);
+        setIdeationHistory(history);
+      } catch (error) {
+        console.error("Failed to fetch ideation history:", error);
+        // Don't set error state, just log it (history is optional)
+      }
+    }
+    if (id) {
+      fetchHistory();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
@@ -352,6 +372,42 @@ export default function MarketTrendPage() {
                     <p className="text-white/60 text-sm">No channel insights available</p>
                   </div>
                 )}
+
+                {/* Ideation History Section */}
+                <div className="mt-8">
+                  <h3 className="text-lg font-medium text-white mb-4">
+                    Ideation History
+                  </h3>
+
+                  {ideationHistory.length > 0 ? (
+                    <div className="space-y-3">
+                      {ideationHistory.map((item) => (
+                        <button
+                          key={item.id}
+                          onClick={() =>
+                            router.push(
+                              `/post-ideation?id=${id}&ideationId=${item.id}&index=${item.post_suggestion_index}`
+                            )
+                          }
+                          className="w-full text-left bg-[#2A2A2A] hover:bg-[#3A3A3A] rounded-lg p-4 transition-colors border border-white/10"
+                        >
+                          <p className="text-white/90 text-sm line-clamp-2 mb-2">
+                            &ldquo;{item.user_prompt.length > 100 ? item.user_prompt.substring(0, 100) + "..." : item.user_prompt}&rdquo;
+                          </p>
+                          <p className="text-white/50 text-xs">
+                            {formatRelativeTime(item.created_at)}
+                          </p>
+                        </button>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="bg-[#2A2A2A] rounded-lg p-6 text-center border border-white/10">
+                      <p className="text-white/60 text-sm">
+                        No ideations yet. Select a remix idea above to get started.
+                      </p>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           </div>

@@ -85,7 +85,6 @@ export default function IdeaHubPage() {
         { text: "Google integration with meta glasses" },
         { text: "Need for smaller form factor to enable tech" },
       ],
-      fullContent: "During Mark Zuckerberg's live demonstration of the Meta Ray-Ban smart glasses, a critical error occurred that highlighted the ongoing challenges in AR/VR technology...",
     },
     {
       id: "industry-2",
@@ -99,7 +98,6 @@ export default function IdeaHubPage() {
         { text: "Google integration with meta glasses" },
         { text: "Need for smaller form factor to enable tech" },
       ],
-      fullContent: "Another detailed analysis of the Meta Ray-Ban glasses demo failure...",
     },
     {
       id: "industry-3",
@@ -113,7 +111,6 @@ export default function IdeaHubPage() {
         { text: "Google integration with meta glasses" },
         { text: "Need for smaller form factor to enable tech" },
       ],
-      fullContent: "Third perspective on the Meta Ray-Ban glasses demonstration issues...",
     },
   ];
 
@@ -132,7 +129,6 @@ export default function IdeaHubPage() {
           { text: "Google integration with meta glasses" },
           { text: "Need for smaller form factor to enable tech" },
         ],
-        fullContent: "Meta's strategic analysis...",
         heroImageUrl:
           "https://cdn.mos.cms.futurecdn.net/uBLE9FqeNG6j3kX2DowuXD.jpg",
         heroImageAlt: "Person holding modern wearable earbuds",
@@ -157,7 +153,6 @@ export default function IdeaHubPage() {
           { text: "Google integration with meta glasses" },
           { text: "Need for smaller form factor to enable tech" },
         ],
-        fullContent: "Additional Meta insights...",
         heroImageUrl:
           "https://cdn.mos.cms.futurecdn.net/uBLE9FqeNG6j3kX2DowuXD.jpg",
         heroImageAlt: "Augmented reality glasses on display",
@@ -184,7 +179,6 @@ export default function IdeaHubPage() {
           { text: "Google integration with meta glasses" },
           { text: "Need for smaller form factor to enable tech" },
         ],
-        fullContent: "Alphabet insights...",
         heroImageUrl:
           "https://cdn.mos.cms.futurecdn.net/uBLE9FqeNG6j3kX2DowuXD.jpg",
         heroImageAlt: "Person testing futuristic wearable display",
@@ -211,7 +205,6 @@ export default function IdeaHubPage() {
           { text: "Google integration with meta glasses" },
           { text: "Need for smaller form factor to enable tech" },
         ],
-        fullContent: "Microsoft analysis...",
         heroImageUrl:
           "https://cdn.mos.cms.futurecdn.net/uBLE9FqeNG6j3kX2DowuXD.jpg",
         heroImageAlt: "Smart speaker with ambient lighting",
