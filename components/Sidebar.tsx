@@ -14,6 +14,7 @@ import { useMemo, useState } from "react";
 import { useClerk, useUser } from "@clerk/nextjs";
 import { SidebarSessionItem } from "@/types/image-generation";
 import { formatRelativeTime } from "@/utils/date";
+import { usePathname } from "next/navigation";
 
 interface SidebarProps {
   sessions: SidebarSessionItem[];
@@ -33,6 +34,25 @@ export default function Sidebar({
   const { user } = useUser();
   const { openUserProfile } = useClerk();
   const [searchTerm, setSearchTerm] = useState("");
+  const pathname = usePathname();
+
+  const navItems = [
+    {
+      href: "/generate-post",
+      label: "Generate Post",
+      icon: ImageIcon,
+    },
+    {
+      href: "/idea-hub",
+      label: "Idea Hub",
+      icon: LightningBoltIcon,
+    },
+    {
+      href: "/icp-settings",
+      label: "ICP Settings",
+      icon: GearIcon,
+    },
+  ];
 
   const displayName =
     user?.fullName ??
@@ -52,7 +72,7 @@ export default function Sidebar({
   }, [sessions, searchTerm]);
 
   return (
-    <div className="w-full bg-black text-white h-full flex flex-col">
+    <div className="w-full bg-[#2A2A2A] text-white h-full flex flex-col">
       {/* Header */}
       <div
         className={`px-3 py-4 flex items-center ${
@@ -90,7 +110,7 @@ export default function Sidebar({
         <button
           type="button"
           onClick={onToggle}
-          className={`w-9 h-9 rounded-md bg-black/60 flex items-center justify-center text-white transition-colors hover:bg-black/40 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/40 ${
+          className={`w-9 h-9 rounded-md bg-white/10 flex items-center justify-center text-white transition-colors hover:bg-white/20 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/40 ${
             isOpen ? "ml-auto" : ""
           }`}
           title={isOpen ? "Hide sidebar (⌘B)" : "Show sidebar (⌘B)"}
@@ -106,91 +126,97 @@ export default function Sidebar({
             value={searchTerm}
             onChange={(event) => setSearchTerm(event.target.value)}
             placeholder="Search sessions"
-            className="w-full bg-black/60 border border-white/20 rounded-md py-2 px-3 text-xs text-white placeholder:text-white/40 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/30"
+            className="w-full bg-white/10 border border-white/10 rounded-md py-2 px-3 text-xs text-white placeholder:text-white/40 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/30"
           />
         </div>
       )}
 
       {/* Navigation Items */}
+      <div className={`${isOpen ? "px-4 py-2 space-y-1" : "px-2 py-2 space-y-2"}`}>
+        {navItems.map(({ href, label, icon: Icon }) => {
+          const isActive = pathname?.startsWith(href);
+          const itemClasses = `${
+            isOpen
+              ? "w-full px-3 py-2 gap-3 justify-start text-sm"
+              : "w-full py-2.5 justify-center"
+          } flex items-center rounded-md transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-white/40 ${
+            isActive ? "bg-white/20 text-white" : "text-white/80 hover:bg-white/10 hover:text-white"
+          }`;
+
+          return (
+            <Link
+              href={href}
+              key={href}
+              className={itemClasses}
+              aria-label={!isOpen ? label : undefined}
+            >
+              <Icon className="w-5 h-5" />
+              {isOpen && <span>{label}</span>}
+            </Link>
+          );
+        })}
+      </div>
+
+      {isOpen && <Separator.Root className="bg-white/10 h-px my-2" />}
+
+      {/* Generations Section */}
       {isOpen && (
-        <>
-          <div className="px-4 py-2 space-y-1">
-            <Link
-              href="/generate-post"
-              className="w-full text-left px-3 py-2 rounded-md transition-colors flex items-center gap-3 text-sm hover:bg-black/40 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/40"
-            >
-              <ImageIcon className="w-4 h-4" />
-              <span>Generate Post</span>
-            </Link>
-            <Link
-              href="/idea-hub"
-              className="w-full text-left px-3 py-2 rounded-md bg-black/60 transition-colors flex items-center gap-3 text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-white/40"
-            >
-              <LightningBoltIcon className="w-4 h-4" />
-              <span>Idea Hub</span>
-            </Link>
-            <Link
-              href="/icp-settings"
-              className="w-full text-left px-3 py-2 rounded-md transition-colors flex items-center gap-3 text-sm hover:bg-black/40 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/40"
-            >
-              <GearIcon className="w-4 h-4" />
-              <span>ICP Settings</span>
-            </Link>
+        <div className="px-4 flex-1 min-h-0">
+          <div className="text-xs font-medium text-white/70 mb-3 px-3">
+            Generations
           </div>
-
-          <Separator.Root className="bg-black/50 h-px my-2" />
-
-          {/* Generations Section */}
-          <div className="px-4 flex-1 min-h-0">
-            <div className="text-xs font-medium text-white/70 mb-3 px-3">
-              Generations
-            </div>
-            <ScrollArea.Root className="w-full h-full overflow-hidden">
-              <ScrollArea.Viewport className="w-full h-full [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none']">
-                <div className="space-y-2">
-                  {filteredSessions.map((session) => (
+          <ScrollArea.Root className="w-full h-full overflow-hidden">
+            <ScrollArea.Viewport className="w-full h-full [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none']">
+              <div className="space-y-2">
+                {filteredSessions.map((session) => {
+                  const isActive = activeSessionId === session.session_id;
+                  return (
                     <button
                       key={session.session_id}
                       type="button"
                       onClick={() => onItemClick?.(session.session_id)}
                       title={session.full_prompt}
-                      className={`w-full text-left px-3 py-2.5 rounded-md transition-colors text-xs hover:bg-black/40 ${
-                        activeSessionId === session.session_id ? "bg-black/60" : ""
+                      className={`w-full text-left px-3 py-2.5 rounded-md transition-colors text-xs ${
+                        isActive
+                          ? "bg-white/20 text-white"
+                          : "text-white hover:bg-white/10"
                       }`}
                     >
-                      <div className="font-normal truncate text-white">{session.name}</div>
-                      <div className="text-white/50 text-xs mt-1">
+                      <div className="font-normal truncate">{session.name}</div>
+                      <div className="text-white/60 text-xs mt-1">
                         {formatRelativeTime(session.created_at)}
                       </div>
                     </button>
-                  ))}
-                  {filteredSessions.length === 0 && (
-                    <div className="text-white/50 text-xs px-3 py-2">No sessions found.</div>
-                  )}
-                </div>
-              </ScrollArea.Viewport>
-              <ScrollArea.Scrollbar
-                className="flex select-none touch-none p-0.5 bg-transparent transition-colors duration-150 ease-out data-[orientation=vertical]:w-2"
-                orientation="vertical"
-              >
-                <ScrollArea.Thumb className="flex-1 bg-white/20 rounded-full" />
-              </ScrollArea.Scrollbar>
-            </ScrollArea.Root>
-          </div>
+                  );
+                })}
+                {filteredSessions.length === 0 && (
+                  <div className="text-white/60 text-xs px-3 py-2">No sessions found.</div>
+                )}
+              </div>
+            </ScrollArea.Viewport>
+            <ScrollArea.Scrollbar
+              className="flex select-none touch-none p-0.5 bg-transparent transition-colors duration-150 ease-out data-[orientation=vertical]:w-2"
+              orientation="vertical"
+            >
+              <ScrollArea.Thumb className="flex-1 bg-white/20 rounded-full" />
+            </ScrollArea.Scrollbar>
+          </ScrollArea.Root>
+        </div>
+      )}
 
-          {/* View Plans Footer */}
-          <div className="p-4 border-t border-black/50 bg-black">
-            <div className="flex items-center gap-2 text-sm">
-              <div className="w-5 h-5 bg-white rounded-sm flex items-center justify-center">
-                <span className="text-black text-xs font-bold">W</span>
-              </div>
-              <div>
-                <div className="text-white font-medium">View plans</div>
-                <div className="text-white/60 text-xs">Unlimited access</div>
-              </div>
+      {/* View Plans Footer */}
+      {isOpen && (
+        <div className="p-4 border-t border-white/10 bg-[#242424]">
+          <div className="flex items-center gap-2 text-sm">
+            <div className="w-5 h-5 bg-white rounded-sm flex items-center justify-center">
+              <span className="text-black text-xs font-bold">W</span>
+            </div>
+            <div>
+              <div className="text-white font-medium">View plans</div>
+              <div className="text-white/60 text-xs">Unlimited access</div>
             </div>
           </div>
-        </>
+        </div>
       )}
     </div>
   );

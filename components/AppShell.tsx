@@ -16,7 +16,18 @@ export default function AppShell({
   activeSessionId,
   onSessionClick
 }: AppShellProps) {
-  const [isOpen, setIsOpen] = useState(true);
+  const [isOpen, setIsOpen] = useState(() => {
+    if (typeof window === "undefined") {
+      return true;
+    }
+
+    const saved = window.localStorage.getItem("wondr-sidebar-collapsed");
+    if (saved === null) {
+      return true;
+    }
+
+    return saved === "false";
+  });
 
   // Load sidebar state from localStorage
   useEffect(() => {
