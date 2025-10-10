@@ -256,7 +256,7 @@ export default function IdeaHubPage() {
       sessions={sessions}
       onSessionClick={handleSessionClick}
     >
-      <div className="flex-1 overflow-y-auto bg-[color:var(--color-gray-dark)]">
+      <div className="flex-1 overflow-y-auto bg-[#3A3A3A]">
         <div className="p-8">
           {/* Header */}
           <div className="mb-10 flex items-center gap-3">
