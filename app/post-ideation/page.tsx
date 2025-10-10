@@ -18,9 +18,10 @@ function PostIdeationPageContent() {
   const router = useRouter();
   const updateId = searchParams.get("id");
   const suggestionIndex = searchParams.get("index");
+  const preGeneratedPrompt = searchParams.get("prompt"); // Check if prompt was pre-generated
 
-  const [stage, setStage] = useState<Stage>('loading-prompt');
-  const [userPrompt, setUserPrompt] = useState('');
+  const [stage, setStage] = useState<Stage>(preGeneratedPrompt ? 'loading-recommendations' : 'loading-prompt');
+  const [userPrompt, setUserPrompt] = useState(preGeneratedPrompt || '');
   const [contextPreview, setContextPreview] = useState('');
   const [recommendations, setRecommendations] = useState<PostIdeationResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -35,15 +36,35 @@ function PostIdeationPageContent() {
     router.push(`/generate-post?session=${sessionId}`);
   };
 
-  // Step 1: Generate initial prompt on mount
+  // Step 1: Generate initial prompt on mount OR auto-generate recommendations if prompt provided
   useEffect(() => {
-    async function fetchInitialPrompt() {
+    async function initializePage() {
       if (!updateId || !suggestionIndex) {
         setError("Missing required parameters");
         setStage('editing-prompt');
         return;
       }
 
+      // If we have a pre-generated prompt, skip to recommendations
+      if (preGeneratedPrompt) {
+        try {
+          setStage('loading-recommendations');
+          const data = await api.postIdeation.generate({
+            industry_update_id: updateId,
+            post_suggestion_index: parseInt(suggestionIndex),
+            user_prompt: preGeneratedPrompt,
+          });
+          setRecommendations(data);
+          setStage('showing-recommendations');
+        } catch (err) {
+          console.error("Failed to generate recommendations:", err);
+          setError("Failed to generate recommendations");
+          setStage('editing-prompt');
+        }
+        return;
+      }
+
+      // Otherwise, generate initial prompt as before
       try {
         setStage('loading-prompt');
         const data = await api.postIdeation.generatePrompt({
@@ -60,9 +81,9 @@ function PostIdeationPageContent() {
       }
     }
 
-    fetchInitialPrompt();
+    initializePage();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [updateId, suggestionIndex]);
+  }, [updateId, suggestionIndex, preGeneratedPrompt]);
 
   // Step 2: Generate recommendations from user's edited prompt
   const handleGenerateRecommendations = async () => {
