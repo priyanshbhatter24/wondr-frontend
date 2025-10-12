@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useApiClient } from "@/lib/api-client";
 import { UserICPConfig, Competitor } from "@/types/industry-updates";
 import AppShell from "@/components/AppShell";
-import { GearIcon, PlusIcon, TrashIcon, CheckIcon } from "@radix-ui/react-icons";
+import { GearIcon, PlusIcon, TrashIcon, CheckIcon, ArrowLeftIcon } from "@radix-ui/react-icons";
 import { useGenerations } from "@/lib/use-generations";
 
 export default function ICPSettingsPage() {
@@ -199,357 +199,432 @@ export default function ICPSettingsPage() {
 
   if (loading) {
     return (
-      <AppShell
-        sessions={sessions}
-        onSessionClick={handleSessionClick}
-      >
-        <div className="flex-1 flex items-center justify-center bg-[color:var(--color-gray-dark)]">
-          <div className="text-white">Loading configuration...</div>
+      <AppShell sessions={sessions} onSessionClick={handleSessionClick}>
+        <div className="flex-1 flex items-center justify-center bg-[#3A3A3A]">
+          <div className="text-white text-lg">Loading configuration...</div>
         </div>
       </AppShell>
     );
   }
 
   return (
-    <AppShell
-      sessions={sessions}
-      onSessionClick={handleSessionClick}
-    >
-      <div className="flex-1 overflow-y-auto bg-[color:var(--color-gray-dark)]">
-        <div className="p-8 max-w-4xl">
+    <AppShell sessions={sessions} onSessionClick={handleSessionClick}>
+      <div className="flex-1 overflow-y-auto bg-[#3A3A3A]">
+        <div className="relative flex flex-col w-full h-full">
           {/* Header */}
-          <div className="mb-10 flex items-center gap-3">
-            <GearIcon className="w-8 h-8 text-white" />
-            <h1 className="text-2xl font-semibold text-white">ICP Settings</h1>
+          <div className="p-6 pb-4">
+            <div className="flex items-center justify-between">
+              <button
+                onClick={() => router.push('/idea-hub')}
+                className="flex items-center gap-2 text-white/70 hover:text-white transition-colors"
+              >
+                <ArrowLeftIcon className="w-5 h-5" />
+                <span className="text-sm font-medium">Back to Idea Hub</span>
+              </button>
+            </div>
           </div>
 
-          {/* Error Message */}
-          {error && (
-            <div className="mb-6 p-4 bg-red-900/20 border border-red-500/50 rounded-md text-red-400">
-              {error}
-            </div>
-          )}
-
-          {/* Success Message */}
-          {saveSuccess && (
-            <div className="mb-6 p-4 bg-[color:var(--color-lime)]/20 border border-[color:var(--color-lime)]/50 rounded-md text-[color:var(--color-lime)] flex items-center gap-2">
-              <CheckIcon className="w-5 h-5" />
-              <span>Configuration saved successfully!</span>
-            </div>
-          )}
-
-          {/* Form */}
-          <div className="space-y-8">
-            {/* ICP Section */}
-            <section>
-              <h2 className="text-xl font-medium text-white mb-4">Ideal Customer Profile (ICP)</h2>
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm text-white/70 mb-2">Industry</label>
-                  <input
-                    type="text"
-                    value={formData.ICP.industry || ''}
-                    onChange={(e) => setFormData({
-                      ...formData,
-                      ICP: { ...formData.ICP, industry: e.target.value }
-                    })}
-                    className="w-full px-4 py-2 bg-black/40 border border-white/20 rounded-md text-white placeholder:text-white/40 focus:outline-none focus:border-[color:var(--color-lime)]"
-                    placeholder="e.g., AI Marketing Tools"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm text-white/70 mb-2">Target Audience</label>
-                  <input
-                    type="text"
-                    value={formData.ICP.target_audience || ''}
-                    onChange={(e) => setFormData({
-                      ...formData,
-                      ICP: { ...formData.ICP, target_audience: e.target.value }
-                    })}
-                    className="w-full px-4 py-2 bg-black/40 border border-white/20 rounded-md text-white placeholder:text-white/40 focus:outline-none focus:border-[color:var(--color-lime)]"
-                    placeholder="e.g., Founders and marketing leads at Series A–B startups"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm text-white/70 mb-2">Region</label>
-                  <input
-                    type="text"
-                    value={formData.ICP.region || ''}
-                    onChange={(e) => setFormData({
-                      ...formData,
-                      ICP: { ...formData.ICP, region: e.target.value }
-                    })}
-                    className="w-full px-4 py-2 bg-black/40 border border-white/20 rounded-md text-white placeholder:text-white/40 focus:outline-none focus:border-[color:var(--color-lime)]"
-                    placeholder="e.g., United States"
-                  />
-                </div>
-              </div>
-            </section>
-
-            {/* Persona Section */}
-            <section>
-              <h2 className="text-xl font-medium text-white mb-4">Persona (Influencers/YouTubers)</h2>
-              <div className="space-y-3">
-                {formData.persona.youtubers.map((youtuber, index) => (
-                  <div key={index} className="flex items-center gap-2">
-                    <div className="flex-1 px-4 py-2 bg-black/40 border border-white/20 rounded-md text-white">
-                      {youtuber}
-                    </div>
-                    <button
-                      onClick={() => removeYoutuber(index)}
-                      className="p-2 bg-[color:var(--color-brown)]/20 hover:bg-[color:var(--color-brown)]/30 border border-[color:var(--color-brown)]/50 rounded-md text-[color:var(--color-brown)] transition-colors"
-                    >
-                      <TrashIcon className="w-4 h-4" />
-                    </button>
+          <div className="flex-1 overflow-y-auto pb-20">
+            <div className="mx-auto max-w-4xl px-6 pt-2 pb-12 sm:px-10">
+              <div className="rounded-xl bg-[#2A2A2A] border border-white/5 shadow-xl">
+                <div className="flex items-center gap-3 border-b border-white/5 px-6 py-5">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white/10">
+                    <GearIcon className="w-5 h-5 text-white" />
                   </div>
-                ))}
-                <div className="flex items-center gap-2">
-                  <input
-                    type="text"
-                    value={newYoutuber}
-                    onChange={(e) => setNewYoutuber(e.target.value)}
-                    onKeyPress={(e) => e.key === 'Enter' && addYoutuber()}
-                    className="flex-1 px-4 py-2 bg-black/40 border border-white/20 rounded-md text-white placeholder:text-white/40 focus:outline-none focus:border-[color:var(--color-lime)]"
-                    placeholder="Add YouTuber/Influencer name"
-                  />
-                  <button
-                    onClick={addYoutuber}
-                    className="p-2 bg-[color:var(--color-lime)]/20 hover:bg-[color:var(--color-lime)]/30 border border-[color:var(--color-lime)]/50 rounded-md text-[color:var(--color-lime)] transition-colors"
-                  >
-                    <PlusIcon className="w-4 h-4" />
-                  </button>
+                  <div>
+                    <p className="text-xs uppercase tracking-wide text-white/50">Configuration</p>
+                    <h1 className="text-xl font-semibold text-white">ICP Settings</h1>
+                  </div>
                 </div>
-              </div>
-            </section>
 
-            {/* Industry Focus Section */}
-            <section>
-              <h2 className="text-xl font-medium text-white mb-4">Industry Focus</h2>
-              <div className="space-y-3">
-                <div className="flex flex-wrap gap-2">
-                  {formData.industry.map((ind, index) => (
-                    <div key={index} className="flex items-center gap-2 px-3 py-1 bg-[color:var(--color-lime)]/20 border border-[color:var(--color-lime)]/50 rounded-full">
-                      <span className="text-sm text-[color:var(--color-lime)]">{ind}</span>
-                      <button
-                        onClick={() => removeIndustry(index)}
-                        className="text-[color:var(--color-lime)] hover:text-white transition-colors"
-                      >
-                        <TrashIcon className="w-3 h-3" />
-                      </button>
+                <div className="px-6 py-6 space-y-8">
+                  {error && (
+                    <div className="rounded-lg border border-red-500/40 bg-red-500/10 px-4 py-3 text-sm text-red-200">
+                      {error}
                     </div>
-                  ))}
-                </div>
-                <div className="flex items-center gap-2">
-                  <input
-                    type="text"
-                    value={newIndustry}
-                    onChange={(e) => setNewIndustry(e.target.value)}
-                    onKeyPress={(e) => e.key === 'Enter' && addIndustry()}
-                    className="flex-1 px-4 py-2 bg-black/40 border border-white/20 rounded-md text-white placeholder:text-white/40 focus:outline-none focus:border-[color:var(--color-lime)]"
-                    placeholder="Add industry tag (e.g., Artificial Intelligence)"
-                  />
-                  <button
-                    onClick={addIndustry}
-                    className="p-2 bg-[color:var(--color-lime)]/20 hover:bg-[color:var(--color-lime)]/30 border border-[color:var(--color-lime)]/50 rounded-md text-[color:var(--color-lime)] transition-colors"
-                  >
-                    <PlusIcon className="w-4 h-4" />
-                  </button>
-                </div>
-              </div>
-            </section>
+                  )}
 
-            {/* Competitors Section */}
-            <section>
-              <h2 className="text-xl font-medium text-white mb-4">Competitors</h2>
-              <div className="space-y-3">
-                {formData.competitors.map((comp, index) => (
-                  <div key={index} className="flex items-center gap-2">
-                    <div className="flex-1 grid grid-cols-2 gap-2">
-                      <div className="px-4 py-2 bg-black/40 border border-white/20 rounded-md text-white">
-                        {comp.name}
+                  {saveSuccess && (
+                    <div className="flex items-center gap-2 rounded-lg border border-[#C5D86D]/40 bg-[#C5D86D]/10 px-4 py-3 text-sm text-[#C5D86D]">
+                      <CheckIcon className="h-4 w-4" />
+                      <span>Configuration saved successfully!</span>
+                    </div>
+                  )}
+
+                  {/* ICP Section */}
+                  <section className="space-y-4">
+                    <div>
+                      <h2 className="text-sm font-semibold uppercase tracking-wider text-white/60">Ideal Customer Profile</h2>
+                      <p className="mt-1 text-sm text-white/50">
+                        Define the foundational details of the companies you want to monitor.
+                      </p>
+                    </div>
+                    <div className="grid gap-4 sm:grid-cols-3">
+                      <div className="space-y-2">
+                        <label className="text-xs uppercase tracking-wide text-white/50">Industry</label>
+                        <input
+                          type="text"
+                          value={formData.ICP.industry || ''}
+                          onChange={(e) =>
+                            setFormData({
+                              ...formData,
+                              ICP: { ...formData.ICP, industry: e.target.value }
+                            })
+                          }
+                          className="w-full rounded-lg border border-white/10 bg-black/40 px-4 py-3 text-sm text-white placeholder:text-white/40 focus:border-[#C5D86D] focus:outline-none"
+                          placeholder="e.g., AI Marketing Tools"
+                        />
                       </div>
-                      <div className="px-4 py-2 bg-black/40 border border-white/20 rounded-md text-white text-sm truncate">
-                        {comp.landing_page}
+                      <div className="space-y-2 sm:col-span-2">
+                        <label className="text-xs uppercase tracking-wide text-white/50">Target Audience</label>
+                        <input
+                          type="text"
+                          value={formData.ICP.target_audience || ''}
+                          onChange={(e) =>
+                            setFormData({
+                              ...formData,
+                              ICP: { ...formData.ICP, target_audience: e.target.value }
+                            })
+                          }
+                          className="w-full rounded-lg border border-white/10 bg-black/40 px-4 py-3 text-sm text-white placeholder:text-white/40 focus:border-[#C5D86D] focus:outline-none"
+                          placeholder="e.g., Founders and marketing leads at Series A–B startups"
+                        />
+                      </div>
+                      <div className="space-y-2 sm:col-span-3 md:col-span-1">
+                        <label className="text-xs uppercase tracking-wide text-white/50">Region</label>
+                        <input
+                          type="text"
+                          value={formData.ICP.region || ''}
+                          onChange={(e) =>
+                            setFormData({
+                              ...formData,
+                              ICP: { ...formData.ICP, region: e.target.value }
+                            })
+                          }
+                          className="w-full rounded-lg border border-white/10 bg-black/40 px-4 py-3 text-sm text-white placeholder:text-white/40 focus:border-[#C5D86D] focus:outline-none"
+                          placeholder="e.g., United States"
+                        />
                       </div>
                     </div>
-                    <button
-                      onClick={() => removeCompetitor(index)}
-                      className="p-2 bg-[color:var(--color-brown)]/20 hover:bg-[color:var(--color-brown)]/30 border border-[color:var(--color-brown)]/50 rounded-md text-[color:var(--color-brown)] transition-colors"
-                    >
-                      <TrashIcon className="w-4 h-4" />
-                    </button>
-                  </div>
-                ))}
-                <div className="flex items-center gap-2">
-                  <div className="flex-1 grid grid-cols-2 gap-2">
-                    <input
-                      type="text"
-                      value={newCompetitor.name}
-                      onChange={(e) => setNewCompetitor({ ...newCompetitor, name: e.target.value })}
-                      className="px-4 py-2 bg-black/40 border border-white/20 rounded-md text-white placeholder:text-white/40 focus:outline-none focus:border-[color:var(--color-lime)]"
-                      placeholder="Competitor name"
-                    />
-                    <input
-                      type="url"
-                      value={newCompetitor.landing_page}
-                      onChange={(e) => setNewCompetitor({ ...newCompetitor, landing_page: e.target.value })}
-                      className="px-4 py-2 bg-black/40 border border-white/20 rounded-md text-white placeholder:text-white/40 focus:outline-none focus:border-[color:var(--color-lime)]"
-                      placeholder="https://example.com"
-                    />
-                  </div>
-                  <button
-                    onClick={addCompetitor}
-                    className="p-2 bg-[color:var(--color-lime)]/20 hover:bg-[color:var(--color-lime)]/30 border border-[color:var(--color-lime)]/50 rounded-md text-[color:var(--color-lime)] transition-colors"
-                  >
-                    <PlusIcon className="w-4 h-4" />
-                  </button>
-                </div>
-              </div>
-            </section>
+                  </section>
 
-            {/* Channels Section */}
-            <section>
-              <h2 className="text-xl font-medium text-white mb-4">Channels to Monitor</h2>
-
-              {/* Default Channels */}
-              <div className="flex flex-wrap gap-4 mb-4">
-                {['Reddit', 'X', 'LinkedIn', 'YouTube'].map((channel) => (
-                  <label key={channel} className="flex items-center gap-2 cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={formData.channels.includes(channel)}
-                      onChange={() => toggleChannel(channel)}
-                      className="w-5 h-5 rounded border-white/20 bg-black/40 checked:bg-[color:var(--color-lime)] focus:ring-[color:var(--color-lime)]"
-                    />
-                    <span className="text-white">{channel}</span>
-                  </label>
-                ))}
-              </div>
-
-              {/* Custom Channels */}
-              <div>
-                <h3 className="text-sm text-white/70 mb-3">Custom Channels</h3>
-                <div className="space-y-3 mb-3">
-                  {formData.channels.filter(ch => !['Reddit', 'X', 'LinkedIn', 'YouTube'].includes(ch)).map((channel, index) => (
-                    <div key={index} className="flex items-center gap-2 px-4 py-2 bg-black/40 border border-white/20 rounded-md">
-                      <span className="flex-1 text-white">{channel}</span>
-                      <button
-                        onClick={() => toggleChannel(channel)}
-                        className="text-red-400 hover:text-red-300 transition-colors"
-                        type="button"
-                      >
-                        <TrashIcon className="w-4 h-4" />
-                      </button>
-                    </div>
-                  ))}
-                </div>
-                <div className="flex gap-2">
-                  <input
-                    type="text"
-                    value={newCustomChannel}
-                    onChange={(e) => setNewCustomChannel(e.target.value)}
-                    onKeyPress={(e) => e.key === 'Enter' && addCustomChannel()}
-                    className="flex-1 px-4 py-2 bg-black/40 border border-white/20 rounded-md text-white placeholder:text-white/40 focus:outline-none focus:border-[color:var(--color-lime)]"
-                    placeholder="Add custom channel (e.g., Hacker News, Product Hunt)"
-                  />
-                  <button
-                    onClick={addCustomChannel}
-                    className="px-4 py-2 bg-[color:var(--color-lime)] text-black rounded-md hover:bg-[color:var(--color-lime)]/90 transition-colors flex items-center gap-2"
-                    type="button"
-                  >
-                    <PlusIcon className="w-4 h-4" />
-                    Add
-                  </button>
-                </div>
-              </div>
-            </section>
-
-            {/* Company Content Section */}
-            <section>
-              <h2 className="text-xl font-medium text-white mb-4">Company Content</h2>
-
-              {/* Recent Blog Titles */}
-              <div className="mb-6">
-                <h3 className="text-sm text-white/70 mb-3">Recent Blog Titles</h3>
-                <div className="space-y-3">
-                  {formData.company_content.recent_blog_titles?.map((title, index) => (
-                    <div key={index} className="flex items-center gap-2">
-                      <div className="flex-1 px-4 py-2 bg-black/40 border border-white/20 rounded-md text-white">
-                        {title}
+                  {/* Persona Section */}
+                  <section className="space-y-4">
+                    <div className="flex items-start justify-between gap-4">
+                      <div>
+                        <h2 className="text-sm font-semibold uppercase tracking-wider text-white/60">Persona Insights</h2>
+                        <p className="mt-1 text-sm text-white/50">
+                          Track influential voices your ICP is likely to follow.
+                        </p>
                       </div>
-                      <button
-                        onClick={() => removeBlogTitle(index)}
-                        className="p-2 bg-[color:var(--color-brown)]/20 hover:bg-[color:var(--color-brown)]/30 border border-[color:var(--color-brown)]/50 rounded-md text-[color:var(--color-brown)] transition-colors"
-                      >
-                        <TrashIcon className="w-4 h-4" />
-                      </button>
                     </div>
-                  ))}
-                  <div className="flex items-center gap-2">
-                    <input
-                      type="text"
-                      value={newBlogTitle}
-                      onChange={(e) => setNewBlogTitle(e.target.value)}
-                      onKeyPress={(e) => e.key === 'Enter' && addBlogTitle()}
-                      className="flex-1 px-4 py-2 bg-black/40 border border-white/20 rounded-md text-white placeholder:text-white/40 focus:outline-none focus:border-[color:var(--color-lime)]"
-                      placeholder="Add blog title"
-                    />
-                    <button
-                      onClick={addBlogTitle}
-                      className="p-2 bg-[color:var(--color-lime)]/20 hover:bg-[color:var(--color-lime)]/30 border border-[color:var(--color-lime)]/50 rounded-md text-[color:var(--color-lime)] transition-colors"
-                    >
-                      <PlusIcon className="w-4 h-4" />
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-              {/* Keywords */}
-              <div>
-                <h3 className="text-sm text-white/70 mb-3">Keywords</h3>
-                <div className="space-y-3">
-                  <div className="flex flex-wrap gap-2">
-                    {formData.company_content.keywords?.map((keyword, index) => (
-                      <div key={index} className="flex items-center gap-2 px-3 py-1 bg-[color:var(--color-brown)]/20 border border-[color:var(--color-brown)]/50 rounded-full">
-                        <span className="text-sm text-[color:var(--color-brown)]">{keyword}</span>
+                    <div className="space-y-3">
+                      {formData.persona.youtubers.map((youtuber, index) => (
+                        <div key={index} className="flex items-center gap-2 rounded-lg border border-white/10 bg-black/40 px-4 py-3">
+                          <div className="flex-1 text-sm text-white">{youtuber}</div>
+                          <button
+                            onClick={() => removeYoutuber(index)}
+                            className="rounded-md border border-red-500/50 bg-red-500/10 p-2 text-red-300 transition-colors hover:bg-red-500/20"
+                            type="button"
+                          >
+                            <TrashIcon className="h-4 w-4" />
+                          </button>
+                        </div>
+                      ))}
+                      <div className="flex flex-col gap-3 sm:flex-row">
+                        <input
+                          type="text"
+                          value={newYoutuber}
+                          onChange={(e) => setNewYoutuber(e.target.value)}
+                          onKeyPress={(e) => e.key === 'Enter' && addYoutuber()}
+                          className="flex-1 rounded-lg border border-white/10 bg-black/40 px-4 py-3 text-sm text-white placeholder:text-white/40 focus:border-[#C5D86D] focus:outline-none"
+                          placeholder="Add YouTuber/Influencer name"
+                        />
                         <button
-                          onClick={() => removeKeyword(index)}
-                          className="text-[color:var(--color-brown)] hover:text-white transition-colors"
+                          onClick={addYoutuber}
+                          className="inline-flex items-center justify-center gap-2 rounded-lg border border-[#C5D86D]/40 bg-[#C5D86D]/10 px-4 py-3 text-sm font-medium text-[#C5D86D] transition-colors hover:bg-[#C5D86D]/20"
+                          type="button"
                         >
-                          <TrashIcon className="w-3 h-3" />
+                          <PlusIcon className="h-4 w-4" />
+                          Add Persona
                         </button>
                       </div>
-                    ))}
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <input
-                      type="text"
-                      value={newKeyword}
-                      onChange={(e) => setNewKeyword(e.target.value)}
-                      onKeyPress={(e) => e.key === 'Enter' && addKeyword()}
-                      className="flex-1 px-4 py-2 bg-black/40 border border-white/20 rounded-md text-white placeholder:text-white/40 focus:outline-none focus:border-[color:var(--color-lime)]"
-                      placeholder="Add keyword"
-                    />
+                    </div>
+                  </section>
+
+                  {/* Industry Focus Section */}
+                  <section className="space-y-4">
+                    <div>
+                      <h2 className="text-sm font-semibold uppercase tracking-wider text-white/60">Industry Focus</h2>
+                      <p className="mt-1 text-sm text-white/50">
+                        Highlight the industry segments you care about most.
+                      </p>
+                    </div>
+                    <div className="space-y-3">
+                      <div className="flex flex-wrap gap-2">
+                        {formData.industry.map((ind, index) => (
+                          <div
+                            key={index}
+                            className="flex items-center gap-2 rounded-full border border-[#C5D86D]/40 bg-[#C5D86D]/10 px-3 py-1"
+                          >
+                            <span className="text-xs font-medium uppercase tracking-wide text-[#C5D86D]">{ind}</span>
+                            <button
+                              onClick={() => removeIndustry(index)}
+                              className="text-[#C5D86D] transition-colors hover:text-white"
+                              type="button"
+                            >
+                              <TrashIcon className="h-3 w-3" />
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                      <div className="flex flex-col gap-3 sm:flex-row">
+                        <input
+                          type="text"
+                          value={newIndustry}
+                          onChange={(e) => setNewIndustry(e.target.value)}
+                          onKeyPress={(e) => e.key === 'Enter' && addIndustry()}
+                          className="flex-1 rounded-lg border border-white/10 bg-black/40 px-4 py-3 text-sm text-white placeholder:text-white/40 focus:border-[#C5D86D] focus:outline-none"
+                          placeholder="Add industry tag (e.g., Artificial Intelligence)"
+                        />
+                        <button
+                          onClick={addIndustry}
+                          className="inline-flex items-center justify-center gap-2 rounded-lg border border-[#C5D86D]/40 bg-[#C5D86D]/10 px-4 py-3 text-sm font-medium text-[#C5D86D] transition-colors hover:bg-[#C5D86D]/20"
+                          type="button"
+                        >
+                          <PlusIcon className="h-4 w-4" />
+                          Add Industry
+                        </button>
+                      </div>
+                    </div>
+                  </section>
+
+                  {/* Competitors Section */}
+                  <section className="space-y-4">
+                    <div>
+                      <h2 className="text-sm font-semibold uppercase tracking-wider text-white/60">Competitors</h2>
+                      <p className="mt-1 text-sm text-white/50">
+                        Keep tabs on the companies your ICP compares you against.
+                      </p>
+                    </div>
+                    <div className="space-y-3">
+                      {formData.competitors.map((comp, index) => (
+                        <div
+                          key={index}
+                          className="flex flex-col gap-3 rounded-lg border border-white/10 bg-black/40 px-4 py-4 sm:flex-row sm:items-center"
+                        >
+                          <div className="flex-1">
+                            <p className="text-sm font-medium text-white">{comp.name}</p>
+                            <p className="mt-1 truncate text-xs text-white/60">{comp.landing_page}</p>
+                          </div>
+                          <button
+                            onClick={() => removeCompetitor(index)}
+                            className="self-start rounded-md border border-red-500/50 bg-red-500/10 p-2 text-red-300 transition-colors hover:bg-red-500/20"
+                            type="button"
+                          >
+                            <TrashIcon className="h-4 w-4" />
+                          </button>
+                        </div>
+                      ))}
+                      <div className="flex flex-col gap-3 sm:grid sm:grid-cols-2 sm:items-end">
+                        <input
+                          type="text"
+                          value={newCompetitor.name}
+                          onChange={(e) => setNewCompetitor({ ...newCompetitor, name: e.target.value })}
+                          className="rounded-lg border border-white/10 bg-black/40 px-4 py-3 text-sm text-white placeholder:text-white/40 focus:border-[#C5D86D] focus:outline-none"
+                          placeholder="Competitor name"
+                        />
+                        <div className="flex flex-col gap-3 sm:flex-row sm:gap-2">
+                          <input
+                            type="url"
+                            value={newCompetitor.landing_page}
+                            onChange={(e) => setNewCompetitor({ ...newCompetitor, landing_page: e.target.value })}
+                            className="flex-1 rounded-lg border border-white/10 bg-black/40 px-4 py-3 text-sm text-white placeholder:text-white/40 focus:border-[#C5D86D] focus:outline-none"
+                            placeholder="https://example.com"
+                          />
+                          <button
+                            onClick={addCompetitor}
+                            className="inline-flex items-center justify-center gap-2 rounded-lg border border-[#C5D86D]/40 bg-[#C5D86D]/10 px-4 py-3 text-sm font-medium text-[#C5D86D] transition-colors hover:bg-[#C5D86D]/20"
+                            type="button"
+                          >
+                            <PlusIcon className="h-4 w-4" />
+                            Add Competitor
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </section>
+
+                  {/* Channels Section */}
+                  <section className="space-y-4">
+                    <div>
+                      <h2 className="text-sm font-semibold uppercase tracking-wider text-white/60">Channels to Monitor</h2>
+                      <p className="mt-1 text-sm text-white/50">
+                        Choose the spaces where we should surface updates from.
+                      </p>
+                    </div>
+                    <div className="space-y-4">
+                      <div className="flex flex-wrap gap-3">
+                        {['Reddit', 'X', 'LinkedIn', 'YouTube'].map((channel) => (
+                          <label
+                            key={channel}
+                            className="flex items-center gap-2 rounded-full border border-white/10 bg-black/30 px-4 py-2 text-sm text-white transition-colors hover:border-white/20"
+                          >
+                            <input
+                              type="checkbox"
+                              checked={formData.channels.includes(channel)}
+                              onChange={() => toggleChannel(channel)}
+                              className="h-4 w-4 rounded border-white/30 bg-black/60 text-[#C5D86D] focus:ring-[#C5D86D]"
+                            />
+                            {channel}
+                          </label>
+                        ))}
+                      </div>
+
+                      <div className="space-y-3">
+                        <h3 className="text-xs uppercase tracking-wide text-white/50">Custom Channels</h3>
+                        <div className="space-y-2">
+                          {formData.channels
+                            .filter((ch) => !['Reddit', 'X', 'LinkedIn', 'YouTube'].includes(ch))
+                            .map((channel, index) => (
+                              <div
+                                key={index}
+                                className="flex items-center gap-3 rounded-lg border border-white/10 bg-black/40 px-4 py-3"
+                              >
+                                <span className="flex-1 text-sm text-white">{channel}</span>
+                                <button
+                                  onClick={() => toggleChannel(channel)}
+                                  className="rounded-md border border-red-500/50 bg-red-500/10 p-2 text-red-300 transition-colors hover:bg-red-500/20"
+                                  type="button"
+                                >
+                                  <TrashIcon className="h-4 w-4" />
+                                </button>
+                              </div>
+                            ))}
+                        </div>
+                        <div className="flex flex-col gap-3 sm:flex-row">
+                          <input
+                            type="text"
+                            value={newCustomChannel}
+                            onChange={(e) => setNewCustomChannel(e.target.value)}
+                            onKeyPress={(e) => e.key === 'Enter' && addCustomChannel()}
+                            className="flex-1 rounded-lg border border-white/10 bg-black/40 px-4 py-3 text-sm text-white placeholder:text-white/40 focus:border-[#C5D86D] focus:outline-none"
+                            placeholder="Add custom channel (e.g., Hacker News, Product Hunt)"
+                          />
+                          <button
+                            onClick={addCustomChannel}
+                            className="inline-flex items-center justify-center gap-2 rounded-lg border border-[#C5D86D]/40 bg-[#C5D86D]/10 px-4 py-3 text-sm font-medium text-[#C5D86D] transition-colors hover:bg-[#C5D86D]/20"
+                            type="button"
+                          >
+                            <PlusIcon className="h-4 w-4" />
+                            Add Channel
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </section>
+
+                  {/* Company Content Section */}
+                  <section className="space-y-4">
+                    <div>
+                      <h2 className="text-sm font-semibold uppercase tracking-wider text-white/60">Company Content</h2>
+                      <p className="mt-1 text-sm text-white/50">
+                        Share what you are already producing to inform future insights.
+                      </p>
+                    </div>
+
+                    <div className="space-y-6">
+                      <div className="space-y-3">
+                        <h3 className="text-xs uppercase tracking-wide text-white/50">Recent Blog Titles</h3>
+                        <div className="space-y-2">
+                          {formData.company_content.recent_blog_titles?.map((title, index) => (
+                            <div
+                              key={index}
+                              className="flex items-center gap-2 rounded-lg border border-white/10 bg-black/40 px-4 py-3"
+                            >
+                              <div className="flex-1 text-sm text-white">{title}</div>
+                              <button
+                                onClick={() => removeBlogTitle(index)}
+                                className="rounded-md border border-red-500/50 bg-red-500/10 p-2 text-red-300 transition-colors hover:bg-red-500/20"
+                                type="button"
+                              >
+                                <TrashIcon className="h-4 w-4" />
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                        <div className="flex flex-col gap-3 sm:flex-row">
+                          <input
+                            type="text"
+                            value={newBlogTitle}
+                            onChange={(e) => setNewBlogTitle(e.target.value)}
+                            onKeyPress={(e) => e.key === 'Enter' && addBlogTitle()}
+                            className="flex-1 rounded-lg border border-white/10 bg-black/40 px-4 py-3 text-sm text-white placeholder:text-white/40 focus:border-[#C5D86D] focus:outline-none"
+                            placeholder="Add blog title"
+                          />
+                          <button
+                            onClick={addBlogTitle}
+                            className="inline-flex items-center justify-center gap-2 rounded-lg border border-[#C5D86D]/40 bg-[#C5D86D]/10 px-4 py-3 text-sm font-medium text-[#C5D86D] transition-colors hover:bg-[#C5D86D]/20"
+                            type="button"
+                          >
+                            <PlusIcon className="h-4 w-4" />
+                            Add Title
+                          </button>
+                        </div>
+                      </div>
+
+                      <div className="space-y-3">
+                        <h3 className="text-xs uppercase tracking-wide text-white/50">Keywords</h3>
+                        <div className="flex flex-wrap gap-2">
+                          {formData.company_content.keywords?.map((keyword, index) => (
+                            <div
+                              key={index}
+                              className="flex items-center gap-2 rounded-full border border-white/10 bg-black/30 px-3 py-1"
+                            >
+                              <span className="text-xs font-medium uppercase tracking-wide text-white/70">{keyword}</span>
+                              <button
+                                onClick={() => removeKeyword(index)}
+                                className="text-white/50 transition-colors hover:text-white"
+                                type="button"
+                              >
+                                <TrashIcon className="h-3 w-3" />
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                        <div className="flex flex-col gap-3 sm:flex-row">
+                          <input
+                            type="text"
+                            value={newKeyword}
+                            onChange={(e) => setNewKeyword(e.target.value)}
+                            onKeyPress={(e) => e.key === 'Enter' && addKeyword()}
+                            className="flex-1 rounded-lg border border-white/10 bg-black/40 px-4 py-3 text-sm text-white placeholder:text-white/40 focus:border-[#C5D86D] focus:outline-none"
+                            placeholder="Add keyword"
+                          />
+                          <button
+                            onClick={addKeyword}
+                            className="inline-flex items-center justify-center gap-2 rounded-lg border border-[#C5D86D]/40 bg-[#C5D86D]/10 px-4 py-3 text-sm font-medium text-[#C5D86D] transition-colors hover:bg-[#C5D86D]/20"
+                            type="button"
+                          >
+                            <PlusIcon className="h-4 w-4" />
+                            Add Keyword
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </section>
+
+                  <div className="flex items-center justify-end pt-4">
                     <button
-                      onClick={addKeyword}
-                      className="p-2 bg-[color:var(--color-lime)]/20 hover:bg-[color:var(--color-lime)]/30 border border-[color:var(--color-lime)]/50 rounded-md text-[color:var(--color-lime)] transition-colors"
+                      onClick={handleSave}
+                      disabled={saving}
+                      className="inline-flex items-center gap-2 rounded-full bg-[#C5D86D] px-6 py-3 text-sm font-semibold text-black shadow-lg transition-colors hover:bg-[#d4e479] disabled:cursor-not-allowed disabled:opacity-60"
                     >
-                      <PlusIcon className="w-4 h-4" />
+                      {saving ? 'Saving...' : 'Save Configuration'}
                     </button>
                   </div>
                 </div>
               </div>
-            </section>
-
-            {/* Save Button */}
-            <div className="flex gap-4 pt-6">
-              <button
-                onClick={handleSave}
-                disabled={saving}
-                className="px-6 py-3 bg-[color:var(--color-lime)] text-black font-medium rounded-md hover:bg-[color:var(--color-lime)]/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {saving ? 'Saving...' : 'Save Configuration'}
-              </button>
             </div>
           </div>
         </div>
