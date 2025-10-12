@@ -25,7 +25,7 @@ export default function ICPSettingsPage() {
     persona: { youtubers: [] },
     industry: [],
     competitors: [],
-    channels: ['Reddit', 'X', 'BBC'],
+    channels: ['Reddit', 'X', 'LinkedIn', 'YouTube'],
     company_content: { recent_blog_titles: [], keywords: [] }
   });
 
@@ -40,6 +40,7 @@ export default function ICPSettingsPage() {
   const [newCompetitor, setNewCompetitor] = useState<Competitor>({ name: '', landing_page: '' });
   const [newBlogTitle, setNewBlogTitle] = useState('');
   const [newKeyword, setNewKeyword] = useState('');
+  const [newCustomChannel, setNewCustomChannel] = useState('');
 
   // Fetch existing config on mount
   useEffect(() => {
@@ -182,6 +183,17 @@ export default function ICPSettingsPage() {
         ...formData,
         channels: [...formData.channels, channel]
       });
+    }
+  };
+
+  const addCustomChannel = () => {
+    const trimmed = newCustomChannel.trim();
+    if (trimmed && !formData.channels.includes(trimmed)) {
+      setFormData({
+        ...formData,
+        channels: [...formData.channels, trimmed]
+      });
+      setNewCustomChannel('');
     }
   };
 
@@ -398,8 +410,10 @@ export default function ICPSettingsPage() {
             {/* Channels Section */}
             <section>
               <h2 className="text-xl font-medium text-white mb-4">Channels to Monitor</h2>
-              <div className="flex gap-4">
-                {['Reddit', 'X', 'BBC'].map((channel) => (
+
+              {/* Default Channels */}
+              <div className="flex flex-wrap gap-4 mb-4">
+                {['Reddit', 'X', 'LinkedIn', 'YouTube'].map((channel) => (
                   <label key={channel} className="flex items-center gap-2 cursor-pointer">
                     <input
                       type="checkbox"
@@ -410,6 +424,43 @@ export default function ICPSettingsPage() {
                     <span className="text-white">{channel}</span>
                   </label>
                 ))}
+              </div>
+
+              {/* Custom Channels */}
+              <div>
+                <h3 className="text-sm text-white/70 mb-3">Custom Channels</h3>
+                <div className="space-y-3 mb-3">
+                  {formData.channels.filter(ch => !['Reddit', 'X', 'LinkedIn', 'YouTube'].includes(ch)).map((channel, index) => (
+                    <div key={index} className="flex items-center gap-2 px-4 py-2 bg-black/40 border border-white/20 rounded-md">
+                      <span className="flex-1 text-white">{channel}</span>
+                      <button
+                        onClick={() => toggleChannel(channel)}
+                        className="text-red-400 hover:text-red-300 transition-colors"
+                        type="button"
+                      >
+                        <TrashIcon className="w-4 h-4" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    value={newCustomChannel}
+                    onChange={(e) => setNewCustomChannel(e.target.value)}
+                    onKeyPress={(e) => e.key === 'Enter' && addCustomChannel()}
+                    className="flex-1 px-4 py-2 bg-black/40 border border-white/20 rounded-md text-white placeholder:text-white/40 focus:outline-none focus:border-[color:var(--color-lime)]"
+                    placeholder="Add custom channel (e.g., Hacker News, Product Hunt)"
+                  />
+                  <button
+                    onClick={addCustomChannel}
+                    className="px-4 py-2 bg-[color:var(--color-lime)] text-black rounded-md hover:bg-[color:var(--color-lime)]/90 transition-colors flex items-center gap-2"
+                    type="button"
+                  >
+                    <PlusIcon className="w-4 h-4" />
+                    Add
+                  </button>
+                </div>
               </div>
             </section>
 
