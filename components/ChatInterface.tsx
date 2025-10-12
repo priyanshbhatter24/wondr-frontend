@@ -15,6 +15,7 @@ interface ChatInterfaceProps {
 export function ChatInterface({ messages, onSendMessage, isGenerating, initialPrompt }: ChatInterfaceProps) {
   const [prompt, setPrompt] = useState(initialPrompt || "");
   const scrollRef = useRef<HTMLDivElement>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   // Update prompt if initialPrompt changes
   useEffect(() => {
@@ -29,6 +30,14 @@ export function ChatInterface({ messages, onSendMessage, isGenerating, initialPr
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
   }, [messages]);
+
+  useEffect(() => {
+    if (!textareaRef.current) return;
+    textareaRef.current.style.height = "auto";
+    const maxHeight = 120;
+    const nextHeight = Math.min(textareaRef.current.scrollHeight, maxHeight);
+    textareaRef.current.style.height = `${nextHeight}px`;
+  }, [prompt]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -49,7 +58,7 @@ export function ChatInterface({ messages, onSendMessage, isGenerating, initialPr
   };
 
   return (
-    <div className="flex flex-col h-full bg-[#000000]">
+    <div className="flex flex-col h-full bg-[#3A3A3A]">
       {/* Chat messages */}
       <ScrollArea.Root className="flex-1 overflow-hidden">
         <ScrollArea.Viewport ref={scrollRef} className="w-full h-full p-4">
@@ -113,24 +122,27 @@ export function ChatInterface({ messages, onSendMessage, isGenerating, initialPr
       </ScrollArea.Root>
 
       {/* Input form */}
-      <div className="border-t border-[#262626] p-4">
-        <form onSubmit={handleSubmit} className="flex gap-2">
-          <input
-            type="text"
-            value={prompt}
-            onChange={(e) => setPrompt(e.target.value)}
-            placeholder="Describe the image you want to generate..."
-            className="flex-1 bg-[#1a1a1a] text-white placeholder:text-white/40 border border-[#262626] rounded-lg px-4 py-3 focus:outline-none focus:border-[#C1D75B] transition-colors"
-            disabled={isGenerating}
-          />
-          <button
-            type="submit"
-            disabled={!prompt.trim() || isGenerating}
-            className="bg-[#C1D75B] text-[#000000] px-6 py-3 rounded-lg font-medium hover:bg-[#d4e479] transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
-          >
-            <PaperPlaneIcon className="w-4 h-4" />
-            Generate
-          </button>
+      <div className="px-4 pb-6 pt-4 bg-gradient-to-b from-transparent via-[#3A3A3A]/90 to-[#3A3A3A]">
+        <form onSubmit={handleSubmit} className="w-full">
+          <div className="rounded-full bg-[#2A2A2A] shadow-2xl px-5 py-3 flex items-end gap-3">
+            <textarea
+              ref={textareaRef}
+              value={prompt}
+              onChange={(e) => setPrompt(e.target.value)}
+              placeholder="Describe the image you want to generate..."
+              className="flex-1 bg-transparent text-white text-sm placeholder:text-white/40 focus:outline-none resize-none leading-5 max-h-[120px] min-h-[28px]"
+              disabled={isGenerating}
+              rows={1}
+            />
+            <button
+              type="submit"
+              disabled={!prompt.trim() || isGenerating}
+              className="w-10 h-10 flex items-center justify-center rounded-full bg-[#C1D75B] text-[#000000] transition-colors hover:bg-[#d4e479] disabled:opacity-50 disabled:cursor-not-allowed"
+              aria-label="Generate image"
+            >
+              <PaperPlaneIcon className="w-4 h-4" />
+            </button>
+          </div>
         </form>
       </div>
     </div>
