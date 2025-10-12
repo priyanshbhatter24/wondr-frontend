@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import AppShell from "@/components/AppShell";
 import { ImageDisplay } from "@/components/ImageDisplay";
@@ -10,7 +10,7 @@ import { ImageGeneration, ChatMessage } from "@/types/image-generation";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import { useGenerations } from "@/lib/use-generations";
 
-export default function GeneratePostPage() {
+function GeneratePostPageContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const initialPrompt = searchParams.get("prompt") || "";
@@ -238,5 +238,26 @@ export default function GeneratePostPage() {
         </div>
       </div>
     </AppShell>
+  );
+}
+
+export default function GeneratePostPage() {
+  return (
+    <Suspense
+      fallback={(
+        <div className="flex items-center justify-center min-h-screen bg-[#000000] text-white">
+          <div className="text-center space-y-3">
+            <div className="flex justify-center gap-1">
+              <span className="w-3 h-3 bg-[#C1D75B] rounded-full animate-bounce" style={{ animationDelay: "0ms" }} />
+              <span className="w-3 h-3 bg-[#C1D75B] rounded-full animate-bounce" style={{ animationDelay: "150ms" }} />
+              <span className="w-3 h-3 bg-[#C1D75B] rounded-full animate-bounce" style={{ animationDelay: "300ms" }} />
+            </div>
+            <p className="text-sm text-white/80">Loading your session...</p>
+          </div>
+        </div>
+      )}
+    >
+      <GeneratePostPageContent />
+    </Suspense>
   );
 }

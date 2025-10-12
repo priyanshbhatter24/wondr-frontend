@@ -93,7 +93,6 @@ export default function PostIdeationView({
                           className="block"
                         >
                           <PromptTooltip
-                            taskTitle={rec.suggested_task.task_title}
                             detailedPrompt={rec.suggested_task.detailed_prompt}
                           >
                             <div className="hover:bg-[#303030] transition-all duration-200 rounded-xl mx-7 p-4 cursor-pointer border border-[#FFFFFF]/20 hover:border-white/10 group">
