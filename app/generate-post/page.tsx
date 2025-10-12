@@ -177,7 +177,7 @@ function GeneratePostPageContent() {
         activeSessionId={sessionId || undefined}
         onSessionClick={handleGenerationClick}
       >
-        <div className="flex items-center justify-center h-screen bg-[#000000] text-white">
+        <div className="flex items-center justify-center h-screen bg-[#3A3A3A] text-white">
           <div className="text-center">
             <div className="flex justify-center gap-1 mb-4">
               <span className="w-3 h-3 bg-[#C1D75B] rounded-full animate-bounce" style={{ animationDelay: "0ms" }} />
@@ -197,7 +197,7 @@ function GeneratePostPageContent() {
       activeSessionId={sessionId || undefined}
       onSessionClick={handleGenerationClick}
     >
-      <div className="flex flex-col h-screen bg-[#000000]">
+      <div className="flex flex-col h-screen bg-[#3A3A3A]">
         {/* Header */}
         <header className="flex items-center justify-between p-4 border-b border-[#262626]">
           <h1 className="text-2xl font-bold text-white">Generate Post</h1>
@@ -245,7 +245,7 @@ export default function GeneratePostPage() {
   return (
     <Suspense
       fallback={(
-        <div className="flex items-center justify-center min-h-screen bg-[#000000] text-white">
+        <div className="flex items-center justify-center min-h-screen bg-[#3A3A3A] text-white">
           <div className="text-center space-y-3">
             <div className="flex justify-center gap-1">
               <span className="w-3 h-3 bg-[#C1D75B] rounded-full animate-bounce" style={{ animationDelay: "0ms" }} />
