@@ -3,13 +3,11 @@
 import * as HoverCard from "@radix-ui/react-hover-card";
 
 interface PromptTooltipProps {
-  taskTitle: string;
   detailedPrompt: string;
   children: React.ReactNode;
 }
 
 export default function PromptTooltip({
-  taskTitle,
   detailedPrompt,
   children,
 }: PromptTooltipProps) {
