@@ -49,7 +49,7 @@ export function ChatInterface({ messages, onSendMessage, isGenerating, initialPr
   };
 
   return (
-    <div className="flex flex-col h-full bg-[#000000]">
+    <div className="flex flex-col h-full bg-[#3A3A3A]">
       {/* Chat messages */}
       <ScrollArea.Root className="flex-1 overflow-hidden">
         <ScrollArea.Viewport ref={scrollRef} className="w-full h-full p-4">
@@ -113,24 +113,27 @@ export function ChatInterface({ messages, onSendMessage, isGenerating, initialPr
       </ScrollArea.Root>
 
       {/* Input form */}
-      <div className="border-t border-[#262626] p-4">
-        <form onSubmit={handleSubmit} className="flex gap-2">
-          <input
-            type="text"
-            value={prompt}
-            onChange={(e) => setPrompt(e.target.value)}
-            placeholder="Describe the image you want to generate..."
-            className="flex-1 bg-[#1a1a1a] text-white placeholder:text-white/40 border border-[#262626] rounded-lg px-4 py-3 focus:outline-none focus:border-[#C1D75B] transition-colors"
-            disabled={isGenerating}
-          />
-          <button
-            type="submit"
-            disabled={!prompt.trim() || isGenerating}
-            className="bg-[#C1D75B] text-[#000000] px-6 py-3 rounded-lg font-medium hover:bg-[#d4e479] transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
-          >
-            <PaperPlaneIcon className="w-4 h-4" />
-            Generate
-          </button>
+      <div className="border-t border-[#2A2A2A] p-6 bg-[#3A3A3A]">
+        <form onSubmit={handleSubmit} className="w-full">
+          <div className="w-full max-w-3xl mx-auto">
+            <div className="rounded-full bg-[#2A2A2A] shadow-2xl py-3 px-4 flex items-center gap-3">
+              <input
+                type="text"
+                value={prompt}
+                onChange={(e) => setPrompt(e.target.value)}
+                placeholder="Describe the image you want to generate..."
+                className="flex-1 bg-transparent text-white text-sm placeholder:text-white/40 focus:outline-none"
+                disabled={isGenerating}
+              />
+              <button
+                type="submit"
+                disabled={!prompt.trim() || isGenerating}
+                className="w-10 h-10 flex items-center justify-center bg-gray-600 hover:bg-gray-500 rounded-full transition-colors shadow-md flex-shrink-0 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <PaperPlaneIcon className="w-4 h-4 text-white" />
+              </button>
+            </div>
+          </div>
         </form>
       </div>
     </div>
