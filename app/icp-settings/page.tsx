@@ -226,7 +226,7 @@ export default function ICPSettingsPage() {
 
           <div className="flex-1 overflow-y-auto pb-20">
             <div className="mx-auto max-w-4xl px-6 pt-2 pb-12 sm:px-10">
-              <div className="rounded-xl bg-[#2A2A2A] border border-white/5 shadow-xl">
+              <div>
                 <div className="flex items-center gap-3 border-b border-white/5 px-6 py-5">
                   <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white/10">
                     <GearIcon className="w-5 h-5 text-white" />
@@ -239,13 +239,13 @@ export default function ICPSettingsPage() {
 
                 <div className="px-6 py-6 space-y-8">
                   {error && (
-                    <div className="rounded-lg border border-red-500/40 bg-red-500/10 px-4 py-3 text-sm text-red-200">
+                    <div className="rounded-full border border-red-500/40 bg-red-500/10 px-4 py-3 text-sm text-red-200">
                       {error}
                     </div>
                   )}
 
                   {saveSuccess && (
-                    <div className="flex items-center gap-2 rounded-lg border border-[#C5D86D]/40 bg-[#C5D86D]/10 px-4 py-3 text-sm text-[#C5D86D]">
+                    <div className="flex items-center gap-2 rounded-full border border-[#C5D86D]/40 bg-[#C5D86D]/10 px-4 py-3 text-sm text-[#C5D86D]">
                       <CheckIcon className="h-4 w-4" />
                       <span>Configuration saved successfully!</span>
                     </div>
@@ -271,7 +271,7 @@ export default function ICPSettingsPage() {
                               ICP: { ...formData.ICP, industry: e.target.value }
                             })
                           }
-                          className="w-full rounded-lg border border-white/10 bg-black/40 px-4 py-3 text-sm text-white placeholder:text-white/40 focus:border-[#C5D86D] focus:outline-none"
+                          className="w-full rounded-full border border-white/10 bg-[#2A2A2A] px-4 py-3 text-sm text-white placeholder:text-white/40 focus:border-[#C5D86D] focus:outline-none"
                           placeholder="e.g., AI Marketing Tools"
                         />
                       </div>
@@ -286,7 +286,7 @@ export default function ICPSettingsPage() {
                               ICP: { ...formData.ICP, target_audience: e.target.value }
                             })
                           }
-                          className="w-full rounded-lg border border-white/10 bg-black/40 px-4 py-3 text-sm text-white placeholder:text-white/40 focus:border-[#C5D86D] focus:outline-none"
+                          className="w-full rounded-full border border-white/10 bg-[#2A2A2A] px-4 py-3 text-sm text-white placeholder:text-white/40 focus:border-[#C5D86D] focus:outline-none"
                           placeholder="e.g., Founders and marketing leads at Series A–B startups"
                         />
                       </div>
@@ -301,7 +301,7 @@ export default function ICPSettingsPage() {
                               ICP: { ...formData.ICP, region: e.target.value }
                             })
                           }
-                          className="w-full rounded-lg border border-white/10 bg-black/40 px-4 py-3 text-sm text-white placeholder:text-white/40 focus:border-[#C5D86D] focus:outline-none"
+                          className="w-full rounded-full border border-white/10 bg-[#2A2A2A] px-4 py-3 text-sm text-white placeholder:text-white/40 focus:border-[#C5D86D] focus:outline-none"
                           placeholder="e.g., United States"
                         />
                       </div>
@@ -320,11 +320,11 @@ export default function ICPSettingsPage() {
                     </div>
                     <div className="space-y-3">
                       {formData.persona.youtubers.map((youtuber, index) => (
-                        <div key={index} className="flex items-center gap-2 rounded-lg border border-white/10 bg-black/40 px-4 py-3">
+                        <div key={index} className="flex items-center gap-2 rounded-full border border-white/10 bg-[#2A2A2A] px-4 py-3">
                           <div className="flex-1 text-sm text-white">{youtuber}</div>
                           <button
                             onClick={() => removeYoutuber(index)}
-                            className="rounded-md border border-red-500/50 bg-red-500/10 p-2 text-red-300 transition-colors hover:bg-red-500/20"
+                            className="rounded-full border border-red-500/50 bg-red-500/10 p-2 text-red-300 transition-colors hover:bg-red-500/20"
                             type="button"
                           >
                             <TrashIcon className="h-4 w-4" />
@@ -337,12 +337,12 @@ export default function ICPSettingsPage() {
                           value={newYoutuber}
                           onChange={(e) => setNewYoutuber(e.target.value)}
                           onKeyPress={(e) => e.key === 'Enter' && addYoutuber()}
-                          className="flex-1 rounded-lg border border-white/10 bg-black/40 px-4 py-3 text-sm text-white placeholder:text-white/40 focus:border-[#C5D86D] focus:outline-none"
+                          className="flex-1 rounded-full border border-white/10 bg-[#2A2A2A] px-4 py-3 text-sm text-white placeholder:text-white/40 focus:border-[#C5D86D] focus:outline-none"
                           placeholder="Add YouTuber/Influencer name"
                         />
                         <button
                           onClick={addYoutuber}
-                          className="inline-flex items-center justify-center gap-2 rounded-lg border border-[#C5D86D]/40 bg-[#C5D86D]/10 px-4 py-3 text-sm font-medium text-[#C5D86D] transition-colors hover:bg-[#C5D86D]/20"
+                          className="inline-flex items-center justify-center gap-2 rounded-full border border-[#C5D86D]/40 bg-[#C5D86D]/10 px-4 py-3 text-sm font-medium text-[#C5D86D] transition-colors hover:bg-[#C5D86D]/20"
                           type="button"
                         >
                           <PlusIcon className="h-4 w-4" />
@@ -384,12 +384,12 @@ export default function ICPSettingsPage() {
                           value={newIndustry}
                           onChange={(e) => setNewIndustry(e.target.value)}
                           onKeyPress={(e) => e.key === 'Enter' && addIndustry()}
-                          className="flex-1 rounded-lg border border-white/10 bg-black/40 px-4 py-3 text-sm text-white placeholder:text-white/40 focus:border-[#C5D86D] focus:outline-none"
+                          className="flex-1 rounded-full border border-white/10 bg-[#2A2A2A] px-4 py-3 text-sm text-white placeholder:text-white/40 focus:border-[#C5D86D] focus:outline-none"
                           placeholder="Add industry tag (e.g., Artificial Intelligence)"
                         />
                         <button
                           onClick={addIndustry}
-                          className="inline-flex items-center justify-center gap-2 rounded-lg border border-[#C5D86D]/40 bg-[#C5D86D]/10 px-4 py-3 text-sm font-medium text-[#C5D86D] transition-colors hover:bg-[#C5D86D]/20"
+                          className="inline-flex items-center justify-center gap-2 rounded-full border border-[#C5D86D]/40 bg-[#C5D86D]/10 px-4 py-3 text-sm font-medium text-[#C5D86D] transition-colors hover:bg-[#C5D86D]/20"
                           type="button"
                         >
                           <PlusIcon className="h-4 w-4" />
@@ -411,7 +411,7 @@ export default function ICPSettingsPage() {
                       {formData.competitors.map((comp, index) => (
                         <div
                           key={index}
-                          className="flex flex-col gap-3 rounded-lg border border-white/10 bg-black/40 px-4 py-4 sm:flex-row sm:items-center"
+                          className="flex flex-col gap-3 rounded-full border border-white/10 bg-[#2A2A2A] px-6 py-4 sm:flex-row sm:items-center"
                         >
                           <div className="flex-1">
                             <p className="text-sm font-medium text-white">{comp.name}</p>
@@ -419,7 +419,7 @@ export default function ICPSettingsPage() {
                           </div>
                           <button
                             onClick={() => removeCompetitor(index)}
-                            className="self-start rounded-md border border-red-500/50 bg-red-500/10 p-2 text-red-300 transition-colors hover:bg-red-500/20"
+                            className="self-start rounded-full border border-red-500/50 bg-red-500/10 p-2 text-red-300 transition-colors hover:bg-red-500/20"
                             type="button"
                           >
                             <TrashIcon className="h-4 w-4" />
@@ -431,7 +431,7 @@ export default function ICPSettingsPage() {
                           type="text"
                           value={newCompetitor.name}
                           onChange={(e) => setNewCompetitor({ ...newCompetitor, name: e.target.value })}
-                          className="rounded-lg border border-white/10 bg-black/40 px-4 py-3 text-sm text-white placeholder:text-white/40 focus:border-[#C5D86D] focus:outline-none"
+                          className="rounded-full border border-white/10 bg-[#2A2A2A] px-4 py-3 text-sm text-white placeholder:text-white/40 focus:border-[#C5D86D] focus:outline-none"
                           placeholder="Competitor name"
                         />
                         <div className="flex flex-col gap-3 sm:flex-row sm:gap-2">
@@ -439,12 +439,12 @@ export default function ICPSettingsPage() {
                             type="url"
                             value={newCompetitor.landing_page}
                             onChange={(e) => setNewCompetitor({ ...newCompetitor, landing_page: e.target.value })}
-                            className="flex-1 rounded-lg border border-white/10 bg-black/40 px-4 py-3 text-sm text-white placeholder:text-white/40 focus:border-[#C5D86D] focus:outline-none"
+                            className="flex-1 rounded-full border border-white/10 bg-[#2A2A2A] px-4 py-3 text-sm text-white placeholder:text-white/40 focus:border-[#C5D86D] focus:outline-none"
                             placeholder="https://example.com"
                           />
                           <button
                             onClick={addCompetitor}
-                            className="inline-flex items-center justify-center gap-2 rounded-lg border border-[#C5D86D]/40 bg-[#C5D86D]/10 px-4 py-3 text-sm font-medium text-[#C5D86D] transition-colors hover:bg-[#C5D86D]/20"
+                            className="inline-flex items-center justify-center gap-2 rounded-full border border-[#C5D86D]/40 bg-[#C5D86D]/10 px-4 py-3 text-sm font-medium text-[#C5D86D] transition-colors hover:bg-[#C5D86D]/20"
                             type="button"
                           >
                             <PlusIcon className="h-4 w-4" />
@@ -489,12 +489,12 @@ export default function ICPSettingsPage() {
                             .map((channel, index) => (
                               <div
                                 key={index}
-                                className="flex items-center gap-3 rounded-lg border border-white/10 bg-black/40 px-4 py-3"
+                                className="flex items-center gap-3 rounded-full border border-white/10 bg-[#2A2A2A] px-4 py-3"
                               >
                                 <span className="flex-1 text-sm text-white">{channel}</span>
                                 <button
                                   onClick={() => toggleChannel(channel)}
-                                  className="rounded-md border border-red-500/50 bg-red-500/10 p-2 text-red-300 transition-colors hover:bg-red-500/20"
+                                  className="rounded-full border border-red-500/50 bg-red-500/10 p-2 text-red-300 transition-colors hover:bg-red-500/20"
                                   type="button"
                                 >
                                   <TrashIcon className="h-4 w-4" />
@@ -508,12 +508,12 @@ export default function ICPSettingsPage() {
                             value={newCustomChannel}
                             onChange={(e) => setNewCustomChannel(e.target.value)}
                             onKeyPress={(e) => e.key === 'Enter' && addCustomChannel()}
-                            className="flex-1 rounded-lg border border-white/10 bg-black/40 px-4 py-3 text-sm text-white placeholder:text-white/40 focus:border-[#C5D86D] focus:outline-none"
+                            className="flex-1 rounded-full border border-white/10 bg-[#2A2A2A] px-4 py-3 text-sm text-white placeholder:text-white/40 focus:border-[#C5D86D] focus:outline-none"
                             placeholder="Add custom channel (e.g., Hacker News, Product Hunt)"
                           />
                           <button
                             onClick={addCustomChannel}
-                            className="inline-flex items-center justify-center gap-2 rounded-lg border border-[#C5D86D]/40 bg-[#C5D86D]/10 px-4 py-3 text-sm font-medium text-[#C5D86D] transition-colors hover:bg-[#C5D86D]/20"
+                            className="inline-flex items-center justify-center gap-2 rounded-full border border-[#C5D86D]/40 bg-[#C5D86D]/10 px-4 py-3 text-sm font-medium text-[#C5D86D] transition-colors hover:bg-[#C5D86D]/20"
                             type="button"
                           >
                             <PlusIcon className="h-4 w-4" />
@@ -540,12 +540,12 @@ export default function ICPSettingsPage() {
                           {formData.company_content.recent_blog_titles?.map((title, index) => (
                             <div
                               key={index}
-                              className="flex items-center gap-2 rounded-lg border border-white/10 bg-black/40 px-4 py-3"
+                              className="flex items-center gap-2 rounded-full border border-white/10 bg-[#2A2A2A] px-4 py-3"
                             >
                               <div className="flex-1 text-sm text-white">{title}</div>
                               <button
                                 onClick={() => removeBlogTitle(index)}
-                                className="rounded-md border border-red-500/50 bg-red-500/10 p-2 text-red-300 transition-colors hover:bg-red-500/20"
+                                className="rounded-full border border-red-500/50 bg-red-500/10 p-2 text-red-300 transition-colors hover:bg-red-500/20"
                                 type="button"
                               >
                                 <TrashIcon className="h-4 w-4" />
@@ -559,12 +559,12 @@ export default function ICPSettingsPage() {
                             value={newBlogTitle}
                             onChange={(e) => setNewBlogTitle(e.target.value)}
                             onKeyPress={(e) => e.key === 'Enter' && addBlogTitle()}
-                            className="flex-1 rounded-lg border border-white/10 bg-black/40 px-4 py-3 text-sm text-white placeholder:text-white/40 focus:border-[#C5D86D] focus:outline-none"
+                            className="flex-1 rounded-full border border-white/10 bg-[#2A2A2A] px-4 py-3 text-sm text-white placeholder:text-white/40 focus:border-[#C5D86D] focus:outline-none"
                             placeholder="Add blog title"
                           />
                           <button
                             onClick={addBlogTitle}
-                            className="inline-flex items-center justify-center gap-2 rounded-lg border border-[#C5D86D]/40 bg-[#C5D86D]/10 px-4 py-3 text-sm font-medium text-[#C5D86D] transition-colors hover:bg-[#C5D86D]/20"
+                            className="inline-flex items-center justify-center gap-2 rounded-full border border-[#C5D86D]/40 bg-[#C5D86D]/10 px-4 py-3 text-sm font-medium text-[#C5D86D] transition-colors hover:bg-[#C5D86D]/20"
                             type="button"
                           >
                             <PlusIcon className="h-4 w-4" />
@@ -598,12 +598,12 @@ export default function ICPSettingsPage() {
                             value={newKeyword}
                             onChange={(e) => setNewKeyword(e.target.value)}
                             onKeyPress={(e) => e.key === 'Enter' && addKeyword()}
-                            className="flex-1 rounded-lg border border-white/10 bg-black/40 px-4 py-3 text-sm text-white placeholder:text-white/40 focus:border-[#C5D86D] focus:outline-none"
+                            className="flex-1 rounded-full border border-white/10 bg-[#2A2A2A] px-4 py-3 text-sm text-white placeholder:text-white/40 focus:border-[#C5D86D] focus:outline-none"
                             placeholder="Add keyword"
                           />
                           <button
                             onClick={addKeyword}
-                            className="inline-flex items-center justify-center gap-2 rounded-lg border border-[#C5D86D]/40 bg-[#C5D86D]/10 px-4 py-3 text-sm font-medium text-[#C5D86D] transition-colors hover:bg-[#C5D86D]/20"
+                            className="inline-flex items-center justify-center gap-2 rounded-full border border-[#C5D86D]/40 bg-[#C5D86D]/10 px-4 py-3 text-sm font-medium text-[#C5D86D] transition-colors hover:bg-[#C5D86D]/20"
                             type="button"
                           >
                             <PlusIcon className="h-4 w-4" />
