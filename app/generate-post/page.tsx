@@ -177,12 +177,12 @@ function GeneratePostPageContent() {
         activeSessionId={sessionId || undefined}
         onSessionClick={handleGenerationClick}
       >
-        <div className="flex items-center justify-center h-screen bg-[#000000] text-white">
+        <div className="flex items-center justify-center h-screen bg-[#3A3A3A] text-white">
           <div className="text-center">
             <div className="flex justify-center gap-1 mb-4">
-              <span className="w-3 h-3 bg-[#C1D75B] rounded-full animate-bounce" style={{ animationDelay: "0ms" }} />
-              <span className="w-3 h-3 bg-[#C1D75B] rounded-full animate-bounce" style={{ animationDelay: "150ms" }} />
-              <span className="w-3 h-3 bg-[#C1D75B] rounded-full animate-bounce" style={{ animationDelay: "300ms" }} />
+              <span className="w-3 h-3 bg-white/70 rounded-full animate-bounce" style={{ animationDelay: "0ms" }} />
+              <span className="w-3 h-3 bg-white/70 rounded-full animate-bounce" style={{ animationDelay: "150ms" }} />
+              <span className="w-3 h-3 bg-white/70 rounded-full animate-bounce" style={{ animationDelay: "300ms" }} />
             </div>
             <p className="text-lg font-medium">Initializing session...</p>
           </div>
@@ -197,7 +197,7 @@ function GeneratePostPageContent() {
       activeSessionId={sessionId || undefined}
       onSessionClick={handleGenerationClick}
     >
-      <div className="flex flex-col h-screen bg-[#000000]">
+      <div className="flex flex-col h-screen bg-[#3A3A3A]">
         {/* Header */}
         <header className="flex items-center justify-between p-4 border-b border-[#262626]">
           <h1 className="text-2xl font-bold text-white">Generate Post</h1>
@@ -220,11 +220,20 @@ function GeneratePostPageContent() {
                 onSendMessage={handleSendMessage}
                 isGenerating={isGenerating}
                 initialPrompt={initialPrompt}
+                onSelectGeneration={(generationId) => {
+                  const targetIndex = generations.findIndex(
+                    (generation) => generation.generation_id === generationId,
+                  );
+                  if (targetIndex >= 0) {
+                    setCurrentIndex(targetIndex);
+                  }
+                }}
+                selectedGenerationId={generations[currentIndex]?.generation_id}
               />
             </Panel>
 
             {/* Resize handle */}
-            <PanelResizeHandle className="w-1 bg-[#262626] hover:bg-[#C1D75B] transition-colors" />
+            <PanelResizeHandle className="w-1 bg-[#262626] hover:bg-white/30 transition-colors" />
 
             {/* Image panel */}
             <Panel defaultSize={60} minSize={40}>
@@ -248,9 +257,9 @@ export default function GeneratePostPage() {
         <div className="flex items-center justify-center min-h-screen bg-[#000000] text-white">
           <div className="text-center space-y-3">
             <div className="flex justify-center gap-1">
-              <span className="w-3 h-3 bg-[#C1D75B] rounded-full animate-bounce" style={{ animationDelay: "0ms" }} />
-              <span className="w-3 h-3 bg-[#C1D75B] rounded-full animate-bounce" style={{ animationDelay: "150ms" }} />
-              <span className="w-3 h-3 bg-[#C1D75B] rounded-full animate-bounce" style={{ animationDelay: "300ms" }} />
+              <span className="w-3 h-3 bg-white/70 rounded-full animate-bounce" style={{ animationDelay: "0ms" }} />
+              <span className="w-3 h-3 bg-white/70 rounded-full animate-bounce" style={{ animationDelay: "150ms" }} />
+              <span className="w-3 h-3 bg-white/70 rounded-full animate-bounce" style={{ animationDelay: "300ms" }} />
             </div>
             <p className="text-sm text-white/80">Loading your session...</p>
           </div>
