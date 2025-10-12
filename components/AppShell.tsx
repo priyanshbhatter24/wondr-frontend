@@ -16,28 +16,27 @@ export default function AppShell({
   activeSessionId,
   onSessionClick
 }: AppShellProps) {
-  // Initialize state from localStorage to prevent auto-opening on navigation
-  const [isOpen, setIsOpen] = useState<boolean>(() => {
-    if (typeof window === "undefined") {
-      return true;
-    }
+  // Initialize state to true (default open) - will be synced with localStorage after mount
+  const [isOpen, setIsOpen] = useState<boolean>(true);
+  const [mounted, setMounted] = useState(false);
 
+  // Sync with localStorage after mount to prevent hydration mismatch
+  useEffect(() => {
+    setMounted(true);
     const saved = window.localStorage.getItem("wondr-sidebar-collapsed");
-    if (saved === null) {
-      return true;
+    if (saved !== null) {
+      setIsOpen(saved === "false");
     }
-
-    return saved === "false";
-  });
+  }, []);
 
   // Save sidebar state to localStorage
   useEffect(() => {
-    if (typeof window === "undefined") {
+    if (!mounted) {
       return;
     }
 
     window.localStorage.setItem("wondr-sidebar-collapsed", String(!isOpen));
-  }, [isOpen]);
+  }, [isOpen, mounted]);
 
   // Keyboard shortcut: Cmd/Ctrl + B
   useEffect(() => {
