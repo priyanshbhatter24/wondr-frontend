@@ -75,17 +75,18 @@ export function ChatInterface({
             ) : (
               messages.map((msg) => {
                 if (msg.role === "assistant" && msg.generation_id) {
+                  const generationId = msg.generation_id;
                   const versionIndex = generationMessages.findIndex(
-                    (generationMessage) => generationMessage.generation_id === msg.generation_id,
+                    (generationMessage) => generationMessage.generation_id === generationId,
                   );
                   const versionLabel = versionIndex >= 0 ? `v${versionIndex + 1}` : null;
-                  const isSelected = selectedGenerationId === msg.generation_id;
+                  const isSelected = selectedGenerationId === generationId;
 
                   return (
                     <div key={msg.message_id} className="flex justify-start">
                       <button
                         type="button"
-                        onClick={() => onSelectGeneration?.(msg.generation_id)}
+                        onClick={() => onSelectGeneration?.(generationId)}
                         className={`w-full max-w-[85%] text-left transition-all rounded-xl border px-5 py-4 shadow-lg bg-[#252525] border-white/10 hover:bg-[#303030] hover:border-white/20 focus:outline-none focus:ring-2 focus:ring-white/20 ${
                           isSelected ? "border-white/40 bg-[#303030]" : ""
                         }`}
