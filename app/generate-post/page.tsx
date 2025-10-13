@@ -5,8 +5,10 @@ import { useSearchParams, useRouter } from "next/navigation";
 import AppShell from "@/components/AppShell";
 import { ImageDisplay } from "@/components/ImageDisplay";
 import { ChatInterface } from "@/components/ChatInterface";
+import BrandColorsBar from "@/components/BrandColorsBar";
 import { useApiClient } from "@/lib/api-client";
 import { ImageGeneration, ChatMessage } from "@/types/image-generation";
+import { BrandColor } from "@/types/industry-updates";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import { useGenerations } from "@/lib/use-generations";
 
@@ -26,6 +28,7 @@ function GeneratePostPageContent() {
   const [generations, setGenerations] = useState<ImageGeneration[]>([]);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [brandColors, setBrandColors] = useState<BrandColor[]>([]);
 
   // UI state
   const [isGenerating, setIsGenerating] = useState(false);
@@ -105,6 +108,25 @@ function GeneratePostPageContent() {
 
     loadHistory();
   }, [imageGeneration, sessionId]);
+
+  // Fetch brand colors from ICP config
+  useEffect(() => {
+    const fetchBrandColors = async () => {
+      try {
+        const api = useApiClient();
+        const config = await api.userConfig.getIcp();
+        if (config.brand_colors) {
+          setBrandColors(config.brand_colors);
+        }
+      } catch (err) {
+        console.error("Failed to fetch brand colors:", err);
+        // Silently fail - brand colors are optional
+      }
+    };
+
+    fetchBrandColors();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleSendMessage = async (prompt: string) => {
     if (!sessionId || isGenerating) return;
@@ -215,21 +237,26 @@ function GeneratePostPageContent() {
           <PanelGroup direction="horizontal">
             {/* Chat panel */}
             <Panel defaultSize={40} minSize={30}>
-              <ChatInterface
-                messages={messages}
-                onSendMessage={handleSendMessage}
-                isGenerating={isGenerating}
-                initialPrompt={initialPrompt}
-                onSelectGeneration={(generationId) => {
-                  const targetIndex = generations.findIndex(
-                    (generation) => generation.generation_id === generationId,
-                  );
-                  if (targetIndex >= 0) {
-                    setCurrentIndex(targetIndex);
-                  }
-                }}
-                selectedGenerationId={generations[currentIndex]?.generation_id}
-              />
+              <div className="flex h-full flex-col">
+                <BrandColorsBar colors={brandColors} />
+                <div className="flex-1">
+                  <ChatInterface
+                    messages={messages}
+                    onSendMessage={handleSendMessage}
+                    isGenerating={isGenerating}
+                    initialPrompt={initialPrompt}
+                    onSelectGeneration={(generationId) => {
+                      const targetIndex = generations.findIndex(
+                        (generation) => generation.generation_id === generationId,
+                      );
+                      if (targetIndex >= 0) {
+                        setCurrentIndex(targetIndex);
+                      }
+                    }}
+                    selectedGenerationId={generations[currentIndex]?.generation_id}
+                  />
+                </div>
+              </div>
             </Panel>
 
             {/* Resize handle */}
