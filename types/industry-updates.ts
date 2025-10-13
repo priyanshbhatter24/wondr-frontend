@@ -30,7 +30,6 @@ export interface Competitor {
 
 export interface BrandColor {
   hex_code: string; // Format: #RRGGBB
-  weight: number; // 1-5, represents importance/proportion
 }
 
 export interface UserICPConfig {
