@@ -3,8 +3,9 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useApiClient } from "@/lib/api-client";
-import { UserICPConfig, Competitor } from "@/types/industry-updates";
+import { UserICPConfig, Competitor, BrandColor } from "@/types/industry-updates";
 import AppShell from "@/components/AppShell";
+import BrandColorPicker from "@/components/BrandColorPicker";
 import { GearIcon, PlusIcon, TrashIcon, CheckIcon, ArrowLeftIcon } from "@radix-ui/react-icons";
 import { useGenerations } from "@/lib/use-generations";
 
@@ -26,7 +27,10 @@ export default function ICPSettingsPage() {
     industry: [],
     competitors: [],
     channels: ['Reddit', 'X', 'LinkedIn', 'YouTube'],
-    company_content: { recent_blog_titles: [], keywords: [] }
+    company_content: { recent_blog_titles: [], keywords: [] },
+    company_name: '',
+    company_website: '',
+    brand_colors: []
   });
 
   const [loading, setLoading] = useState(true);
@@ -250,6 +254,60 @@ export default function ICPSettingsPage() {
                       <span>Configuration saved successfully!</span>
                     </div>
                   )}
+
+                  {/* Company Branding Section */}
+                  <section className="space-y-4">
+                    <div>
+                      <h2 className="text-sm font-semibold uppercase tracking-wider text-white/60">Company Branding</h2>
+                      <p className="mt-1 text-sm text-white/50">
+                        Define your company identity and brand colors for AI-generated content.
+                      </p>
+                    </div>
+                    <div className="grid gap-4 sm:grid-cols-2">
+                      <div className="space-y-2">
+                        <label className="text-xs uppercase tracking-wide text-white/50">Company Name *</label>
+                        <input
+                          type="text"
+                          value={formData.company_name || ''}
+                          onChange={(e) =>
+                            setFormData({
+                              ...formData,
+                              company_name: e.target.value
+                            })
+                          }
+                          className="w-full rounded-full border border-white/10 bg-[#2A2A2A] px-4 py-3 text-sm text-white placeholder:text-white/40 focus:border-[#C5D86D] focus:outline-none"
+                          placeholder="e.g., Wondr Marketing"
+                          required
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <label className="text-xs uppercase tracking-wide text-white/50">Company Website</label>
+                        <input
+                          type="url"
+                          value={formData.company_website || ''}
+                          onChange={(e) =>
+                            setFormData({
+                              ...formData,
+                              company_website: e.target.value
+                            })
+                          }
+                          className="w-full rounded-full border border-white/10 bg-[#2A2A2A] px-4 py-3 text-sm text-white placeholder:text-white/40 focus:border-[#C5D86D] focus:outline-none"
+                          placeholder="https://example.com"
+                        />
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-xs uppercase tracking-wide text-white/50">Brand Colors</label>
+                      <p className="text-xs text-white/40 mb-3">
+                        Select up to 5 brand colors with their importance weights (1-5). These colors will be used in AI-generated images.
+                      </p>
+                      <BrandColorPicker
+                        colors={formData.brand_colors || []}
+                        onChange={(colors) => setFormData({ ...formData, brand_colors: colors })}
+                        maxColors={5}
+                      />
+                    </div>
+                  </section>
 
                   {/* ICP Section */}
                   <section className="space-y-4">
