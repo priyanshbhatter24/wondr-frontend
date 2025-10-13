@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { HexColorPicker } from "react-colorful";
 import * as Popover from "@radix-ui/react-popover";
-import * as HoverCard from "@radix-ui/react-hover-card";
 import { PlusIcon, TrashIcon } from "@radix-ui/react-icons";
 import { BrandColor } from "@/types/industry-updates";
 
@@ -22,7 +21,8 @@ export default function BrandColorPicker({
 
   const addColor = () => {
     if (colors.length >= maxColors) return;
-    onChange([...colors, { hex_code: "#C1D75B", weight: 3 }]);
+    // Default to black, user can change to any color
+    onChange([...colors, { hex_code: "#000000" }]);
   };
 
   const removeColor = (index: number) => {
@@ -31,21 +31,8 @@ export default function BrandColorPicker({
 
   const updateColor = (index: number, hex_code: string) => {
     const updated = [...colors];
-    updated[index] = { ...updated[index], hex_code };
+    updated[index] = { hex_code };
     onChange(updated);
-  };
-
-  const updateWeight = (index: number, weight: number) => {
-    const updated = [...colors];
-    updated[index] = { ...updated[index], weight };
-    onChange(updated);
-  };
-
-  // Calculate proportional widths for visual preview
-  const totalWeight = colors.reduce((sum, c) => sum + c.weight, 0);
-  const getProportionalWidth = (weight: number) => {
-    if (totalWeight === 0) return 0;
-    return (weight / totalWeight) * 100;
   };
 
   return (
@@ -55,7 +42,7 @@ export default function BrandColorPicker({
         {colors.map((color, index) => (
           <div
             key={index}
-            className="flex items-center gap-4 rounded-2xl border border-white/10 bg-[#2A2A2A] p-4"
+            className="flex items-center gap-3 rounded-2xl border border-white/10 bg-[#2A2A2A] p-3"
           >
             {/* Color Preview with Picker */}
             <Popover.Root
@@ -63,30 +50,18 @@ export default function BrandColorPicker({
               onOpenChange={(open) => setEditingIndex(open ? index : null)}
             >
               <Popover.Trigger asChild>
-                <HoverCard.Root>
-                  <HoverCard.Trigger asChild>
-                    <button
-                      type="button"
-                      className="h-12 w-12 shrink-0 rounded-full border-2 border-white/20 transition-all hover:scale-110 hover:border-white/40"
-                      style={{ backgroundColor: color.hex_code }}
-                      aria-label={`Edit color ${index + 1}`}
-                    />
-                  </HoverCard.Trigger>
-                  <HoverCard.Portal>
-                    <HoverCard.Content
-                      side="top"
-                      className="rounded-lg bg-black/90 px-3 py-2 text-xs text-white shadow-lg"
-                    >
-                      {color.hex_code.toUpperCase()}
-                      <HoverCard.Arrow className="fill-black/90" />
-                    </HoverCard.Content>
-                  </HoverCard.Portal>
-                </HoverCard.Root>
+                <button
+                  type="button"
+                  className="h-12 w-12 shrink-0 rounded-full border-2 border-white/20 transition-all hover:scale-110 hover:border-white/40 cursor-pointer"
+                  style={{ backgroundColor: color.hex_code }}
+                  aria-label={`Edit color ${index + 1}: ${color.hex_code}`}
+                />
               </Popover.Trigger>
               <Popover.Portal>
                 <Popover.Content
                   side="right"
-                  className="rounded-xl border border-white/10 bg-[#2A2A2A] p-4 shadow-xl"
+                  sideOffset={10}
+                  className="z-50 rounded-xl border border-white/10 bg-[#2A2A2A] p-4 shadow-xl"
                 >
                   <HexColorPicker
                     color={color.hex_code}
@@ -107,26 +82,14 @@ export default function BrandColorPicker({
               </Popover.Portal>
             </Popover.Root>
 
-            {/* Weight Slider */}
+            {/* Hex Code Display */}
             <div className="flex-1">
-              <div className="flex items-center justify-between mb-2">
-                <label className="text-xs uppercase tracking-wide text-white/50">
-                  Weight
-                </label>
-                <span className="text-sm font-medium text-white">
-                  {color.weight}
-                </span>
+              <div className="text-sm font-mono font-medium text-white">
+                {color.hex_code.toUpperCase()}
               </div>
-              <input
-                type="range"
-                min="1"
-                max="5"
-                value={color.weight}
-                onChange={(e) =>
-                  updateWeight(index, parseInt(e.target.value))
-                }
-                className="w-full h-2 bg-white/10 rounded-full appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-[#C5D86D] [&::-webkit-slider-thumb]:cursor-pointer [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-[#C5D86D] [&::-moz-range-thumb]:border-0 [&::-moz-range-thumb]:cursor-pointer"
-              />
+              <div className="text-xs text-white/50">
+                Click circle to edit
+              </div>
             </div>
 
             {/* Delete Button */}
@@ -154,11 +117,11 @@ export default function BrandColorPicker({
         </button>
       )}
 
-      {/* Visual Preview */}
+      {/* Equal-width Preview */}
       {colors.length > 0 && (
         <div className="space-y-2">
           <label className="text-xs uppercase tracking-wide text-white/50">
-            Proportional Preview
+            Color Palette Preview
           </label>
           <div className="flex h-12 overflow-hidden rounded-full border border-white/10">
             {colors.map((color, index) => (
@@ -166,10 +129,10 @@ export default function BrandColorPicker({
                 key={index}
                 style={{
                   backgroundColor: color.hex_code,
-                  width: `${getProportionalWidth(color.weight)}%`,
+                  width: `${100 / colors.length}%`,
                 }}
                 className="transition-all duration-300"
-                title={`${color.hex_code} (weight: ${color.weight})`}
+                title={color.hex_code.toUpperCase()}
               />
             ))}
           </div>
