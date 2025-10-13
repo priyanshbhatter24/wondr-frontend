@@ -672,13 +672,18 @@ export default function ICPSettingsPage() {
                     </div>
                   </section>
 
-                  <div className="flex items-center justify-end pt-4">
+                  <div className="flex items-center justify-center pt-4">
                     <button
                       onClick={handleSave}
-                      disabled={saving}
-                      className="inline-flex items-center gap-2 rounded-full bg-[#C5D86D] px-6 py-3 text-sm font-semibold text-black shadow-lg transition-colors hover:bg-[#d4e479] disabled:cursor-not-allowed disabled:opacity-60"
+                      disabled={saving || saveSuccess}
+                      className={`inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-semibold shadow-lg transition-all ${
+                        saveSuccess
+                          ? 'bg-green-500/20 border-2 border-green-500/50 text-green-400'
+                          : 'bg-[#C5D86D] text-black hover:bg-[#d4e479]'
+                      } disabled:cursor-not-allowed disabled:opacity-60`}
                     >
-                      {saving ? 'Saving...' : 'Save Configuration'}
+                      {saveSuccess && <CheckIcon className="h-4 w-4" />}
+                      {saving ? 'Saving...' : saveSuccess ? 'Configuration Saved!' : 'Save Configuration'}
                     </button>
                   </div>
                 </div>
