@@ -28,6 +28,11 @@ export interface Competitor {
   landing_page: string;
 }
 
+export interface BrandColor {
+  hex_code: string; // Format: #RRGGBB
+  weight: number; // 1-5, represents importance/proportion
+}
+
 export interface UserICPConfig {
   user_id?: string;
   ICP: {
@@ -47,6 +52,9 @@ export interface UserICPConfig {
     keywords?: string[];
     [key: string]: string | string[] | undefined;
   };
+  company_name?: string;
+  company_website?: string;
+  brand_colors?: BrandColor[];
   updated_at?: string;
 }
 
