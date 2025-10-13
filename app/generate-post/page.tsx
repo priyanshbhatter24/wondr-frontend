@@ -18,7 +18,7 @@ function GeneratePostPageContent() {
   const initialPrompt = searchParams.get("prompt") || "";
   const sessionIdFromUrl = searchParams.get("session");
 
-  const { imageGeneration } = useApiClient();
+  const { imageGeneration, userConfig } = useApiClient();
   const { sessions: sidebarSessions, refetch } = useGenerations();
 
   // Session state
@@ -113,8 +113,7 @@ function GeneratePostPageContent() {
   useEffect(() => {
     const fetchBrandColors = async () => {
       try {
-        const api = useApiClient();
-        const config = await api.userConfig.getIcp();
+        const config = await userConfig.getIcp();
         if (config.brand_colors) {
           setBrandColors(config.brand_colors);
         }
@@ -125,8 +124,7 @@ function GeneratePostPageContent() {
     };
 
     fetchBrandColors();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [userConfig]);
 
   const handleSendMessage = async (prompt: string) => {
     if (!sessionId || isGenerating) return;
