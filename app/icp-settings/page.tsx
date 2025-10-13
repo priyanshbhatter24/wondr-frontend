@@ -3,8 +3,9 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useApiClient } from "@/lib/api-client";
-import { UserICPConfig, Competitor } from "@/types/industry-updates";
+import { UserICPConfig, Competitor, BrandColor } from "@/types/industry-updates";
 import AppShell from "@/components/AppShell";
+import BrandColorPicker from "@/components/BrandColorPicker";
 import { GearIcon, PlusIcon, TrashIcon, CheckIcon, ArrowLeftIcon } from "@radix-ui/react-icons";
 import { useGenerations } from "@/lib/use-generations";
 
@@ -26,7 +27,10 @@ export default function ICPSettingsPage() {
     industry: [],
     competitors: [],
     channels: ['Reddit', 'X', 'LinkedIn', 'YouTube'],
-    company_content: { recent_blog_titles: [], keywords: [] }
+    company_content: { recent_blog_titles: [], keywords: [] },
+    company_name: '',
+    company_website: '',
+    brand_colors: []
   });
 
   const [loading, setLoading] = useState(true);
@@ -251,6 +255,60 @@ export default function ICPSettingsPage() {
                     </div>
                   )}
 
+                  {/* Company Branding Section */}
+                  <section className="space-y-4">
+                    <div>
+                      <h2 className="text-sm font-semibold uppercase tracking-wider text-white/60">Company Branding</h2>
+                      <p className="mt-1 text-sm text-white/50">
+                        Define your company identity and brand colors for AI-generated content.
+                      </p>
+                    </div>
+                    <div className="grid gap-4 sm:grid-cols-2">
+                      <div className="space-y-2">
+                        <label className="text-xs uppercase tracking-wide text-white/50">Company Name *</label>
+                        <input
+                          type="text"
+                          value={formData.company_name || ''}
+                          onChange={(e) =>
+                            setFormData({
+                              ...formData,
+                              company_name: e.target.value
+                            })
+                          }
+                          className="w-full rounded-full border border-white/10 bg-[#2A2A2A] px-4 py-3 text-sm text-white placeholder:text-white/40 focus:border-[#C5D86D] focus:outline-none"
+                          placeholder="e.g., Wondr Marketing"
+                          required
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <label className="text-xs uppercase tracking-wide text-white/50">Company Website</label>
+                        <input
+                          type="url"
+                          value={formData.company_website || ''}
+                          onChange={(e) =>
+                            setFormData({
+                              ...formData,
+                              company_website: e.target.value
+                            })
+                          }
+                          className="w-full rounded-full border border-white/10 bg-[#2A2A2A] px-4 py-3 text-sm text-white placeholder:text-white/40 focus:border-[#C5D86D] focus:outline-none"
+                          placeholder="https://example.com"
+                        />
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-xs uppercase tracking-wide text-white/50">Brand Colors</label>
+                      <p className="text-xs text-white/40 mb-3">
+                        Select up to 5 brand colors with their importance weights (1-5). These colors will be used in AI-generated images.
+                      </p>
+                      <BrandColorPicker
+                        colors={formData.brand_colors || []}
+                        onChange={(colors) => setFormData({ ...formData, brand_colors: colors })}
+                        maxColors={5}
+                      />
+                    </div>
+                  </section>
+
                   {/* ICP Section */}
                   <section className="space-y-4">
                     <div>
@@ -331,22 +389,22 @@ export default function ICPSettingsPage() {
                           </button>
                         </div>
                       ))}
-                      <div className="flex flex-col gap-3 sm:flex-row">
+                      <div className="relative">
                         <input
                           type="text"
                           value={newYoutuber}
                           onChange={(e) => setNewYoutuber(e.target.value)}
                           onKeyPress={(e) => e.key === 'Enter' && addYoutuber()}
-                          className="flex-1 rounded-full border border-white/10 bg-[#2A2A2A] px-4 py-3 text-sm text-white placeholder:text-white/40 focus:border-[#C5D86D] focus:outline-none"
+                          className="w-full rounded-full border border-white/10 bg-[#2A2A2A] px-4 py-3 pr-12 text-sm text-white placeholder:text-white/40 focus:border-[#C5D86D] focus:outline-none"
                           placeholder="Add YouTuber/Influencer name"
                         />
                         <button
                           onClick={addYoutuber}
-                          className="inline-flex items-center justify-center gap-2 rounded-full border border-[#C5D86D]/40 bg-[#C5D86D]/10 px-4 py-3 text-sm font-medium text-[#C5D86D] transition-colors hover:bg-[#C5D86D]/20"
+                          className="absolute right-2 top-1/2 -translate-y-1/2 flex h-8 w-8 items-center justify-center rounded-full border border-[#C5D86D]/40 bg-[#C5D86D]/10 text-[#C5D86D] transition-colors hover:bg-[#C5D86D]/20"
                           type="button"
+                          aria-label="Add persona"
                         >
                           <PlusIcon className="h-4 w-4" />
-                          Add Persona
                         </button>
                       </div>
                     </div>
@@ -378,22 +436,22 @@ export default function ICPSettingsPage() {
                           </div>
                         ))}
                       </div>
-                      <div className="flex flex-col gap-3 sm:flex-row">
+                      <div className="relative">
                         <input
                           type="text"
                           value={newIndustry}
                           onChange={(e) => setNewIndustry(e.target.value)}
                           onKeyPress={(e) => e.key === 'Enter' && addIndustry()}
-                          className="flex-1 rounded-full border border-white/10 bg-[#2A2A2A] px-4 py-3 text-sm text-white placeholder:text-white/40 focus:border-[#C5D86D] focus:outline-none"
+                          className="w-full rounded-full border border-white/10 bg-[#2A2A2A] px-4 py-3 pr-12 text-sm text-white placeholder:text-white/40 focus:border-[#C5D86D] focus:outline-none"
                           placeholder="Add industry tag (e.g., Artificial Intelligence)"
                         />
                         <button
                           onClick={addIndustry}
-                          className="inline-flex items-center justify-center gap-2 rounded-full border border-[#C5D86D]/40 bg-[#C5D86D]/10 px-4 py-3 text-sm font-medium text-[#C5D86D] transition-colors hover:bg-[#C5D86D]/20"
+                          className="absolute right-2 top-1/2 -translate-y-1/2 flex h-8 w-8 items-center justify-center rounded-full border border-[#C5D86D]/40 bg-[#C5D86D]/10 text-[#C5D86D] transition-colors hover:bg-[#C5D86D]/20"
                           type="button"
+                          aria-label="Add industry"
                         >
                           <PlusIcon className="h-4 w-4" />
-                          Add Industry
                         </button>
                       </div>
                     </div>
@@ -426,7 +484,7 @@ export default function ICPSettingsPage() {
                           </button>
                         </div>
                       ))}
-                      <div className="flex flex-col gap-3 sm:grid sm:grid-cols-2 sm:items-end">
+                      <div className="grid gap-3 sm:grid-cols-2">
                         <input
                           type="text"
                           value={newCompetitor.name}
@@ -434,21 +492,21 @@ export default function ICPSettingsPage() {
                           className="rounded-full border border-white/10 bg-[#2A2A2A] px-4 py-3 text-sm text-white placeholder:text-white/40 focus:border-[#C5D86D] focus:outline-none"
                           placeholder="Competitor name"
                         />
-                        <div className="flex flex-col gap-3 sm:flex-row sm:gap-2">
+                        <div className="relative">
                           <input
                             type="url"
                             value={newCompetitor.landing_page}
                             onChange={(e) => setNewCompetitor({ ...newCompetitor, landing_page: e.target.value })}
-                            className="flex-1 rounded-full border border-white/10 bg-[#2A2A2A] px-4 py-3 text-sm text-white placeholder:text-white/40 focus:border-[#C5D86D] focus:outline-none"
+                            className="w-full rounded-full border border-white/10 bg-[#2A2A2A] px-4 py-3 pr-12 text-sm text-white placeholder:text-white/40 focus:border-[#C5D86D] focus:outline-none"
                             placeholder="https://example.com"
                           />
                           <button
                             onClick={addCompetitor}
-                            className="inline-flex items-center justify-center gap-2 rounded-full border border-[#C5D86D]/40 bg-[#C5D86D]/10 px-4 py-3 text-sm font-medium text-[#C5D86D] transition-colors hover:bg-[#C5D86D]/20"
+                            className="absolute right-2 top-1/2 -translate-y-1/2 flex h-8 w-8 items-center justify-center rounded-full border border-[#C5D86D]/40 bg-[#C5D86D]/10 text-[#C5D86D] transition-colors hover:bg-[#C5D86D]/20"
                             type="button"
+                            aria-label="Add competitor"
                           >
                             <PlusIcon className="h-4 w-4" />
-                            Add Competitor
                           </button>
                         </div>
                       </div>
@@ -502,22 +560,22 @@ export default function ICPSettingsPage() {
                               </div>
                             ))}
                         </div>
-                        <div className="flex flex-col gap-3 sm:flex-row">
+                        <div className="relative">
                           <input
                             type="text"
                             value={newCustomChannel}
                             onChange={(e) => setNewCustomChannel(e.target.value)}
                             onKeyPress={(e) => e.key === 'Enter' && addCustomChannel()}
-                            className="flex-1 rounded-full border border-white/10 bg-[#2A2A2A] px-4 py-3 text-sm text-white placeholder:text-white/40 focus:border-[#C5D86D] focus:outline-none"
+                            className="w-full rounded-full border border-white/10 bg-[#2A2A2A] px-4 py-3 pr-12 text-sm text-white placeholder:text-white/40 focus:border-[#C5D86D] focus:outline-none"
                             placeholder="Add custom channel (e.g., Hacker News, Product Hunt)"
                           />
                           <button
                             onClick={addCustomChannel}
-                            className="inline-flex items-center justify-center gap-2 rounded-full border border-[#C5D86D]/40 bg-[#C5D86D]/10 px-4 py-3 text-sm font-medium text-[#C5D86D] transition-colors hover:bg-[#C5D86D]/20"
+                            className="absolute right-2 top-1/2 -translate-y-1/2 flex h-8 w-8 items-center justify-center rounded-full border border-[#C5D86D]/40 bg-[#C5D86D]/10 text-[#C5D86D] transition-colors hover:bg-[#C5D86D]/20"
                             type="button"
+                            aria-label="Add channel"
                           >
                             <PlusIcon className="h-4 w-4" />
-                            Add Channel
                           </button>
                         </div>
                       </div>
@@ -553,22 +611,22 @@ export default function ICPSettingsPage() {
                             </div>
                           ))}
                         </div>
-                        <div className="flex flex-col gap-3 sm:flex-row">
+                        <div className="relative">
                           <input
                             type="text"
                             value={newBlogTitle}
                             onChange={(e) => setNewBlogTitle(e.target.value)}
                             onKeyPress={(e) => e.key === 'Enter' && addBlogTitle()}
-                            className="flex-1 rounded-full border border-white/10 bg-[#2A2A2A] px-4 py-3 text-sm text-white placeholder:text-white/40 focus:border-[#C5D86D] focus:outline-none"
+                            className="w-full rounded-full border border-white/10 bg-[#2A2A2A] px-4 py-3 pr-12 text-sm text-white placeholder:text-white/40 focus:border-[#C5D86D] focus:outline-none"
                             placeholder="Add blog title"
                           />
                           <button
                             onClick={addBlogTitle}
-                            className="inline-flex items-center justify-center gap-2 rounded-full border border-[#C5D86D]/40 bg-[#C5D86D]/10 px-4 py-3 text-sm font-medium text-[#C5D86D] transition-colors hover:bg-[#C5D86D]/20"
+                            className="absolute right-2 top-1/2 -translate-y-1/2 flex h-8 w-8 items-center justify-center rounded-full border border-[#C5D86D]/40 bg-[#C5D86D]/10 text-[#C5D86D] transition-colors hover:bg-[#C5D86D]/20"
                             type="button"
+                            aria-label="Add title"
                           >
                             <PlusIcon className="h-4 w-4" />
-                            Add Title
                           </button>
                         </div>
                       </div>
@@ -592,35 +650,40 @@ export default function ICPSettingsPage() {
                             </div>
                           ))}
                         </div>
-                        <div className="flex flex-col gap-3 sm:flex-row">
+                        <div className="relative">
                           <input
                             type="text"
                             value={newKeyword}
                             onChange={(e) => setNewKeyword(e.target.value)}
                             onKeyPress={(e) => e.key === 'Enter' && addKeyword()}
-                            className="flex-1 rounded-full border border-white/10 bg-[#2A2A2A] px-4 py-3 text-sm text-white placeholder:text-white/40 focus:border-[#C5D86D] focus:outline-none"
+                            className="w-full rounded-full border border-white/10 bg-[#2A2A2A] px-4 py-3 pr-12 text-sm text-white placeholder:text-white/40 focus:border-[#C5D86D] focus:outline-none"
                             placeholder="Add keyword"
                           />
                           <button
                             onClick={addKeyword}
-                            className="inline-flex items-center justify-center gap-2 rounded-full border border-[#C5D86D]/40 bg-[#C5D86D]/10 px-4 py-3 text-sm font-medium text-[#C5D86D] transition-colors hover:bg-[#C5D86D]/20"
+                            className="absolute right-2 top-1/2 -translate-y-1/2 flex h-8 w-8 items-center justify-center rounded-full border border-[#C5D86D]/40 bg-[#C5D86D]/10 text-[#C5D86D] transition-colors hover:bg-[#C5D86D]/20"
                             type="button"
+                            aria-label="Add keyword"
                           >
                             <PlusIcon className="h-4 w-4" />
-                            Add Keyword
                           </button>
                         </div>
                       </div>
                     </div>
                   </section>
 
-                  <div className="flex items-center justify-end pt-4">
+                  <div className="flex items-center justify-center pt-4">
                     <button
                       onClick={handleSave}
-                      disabled={saving}
-                      className="inline-flex items-center gap-2 rounded-full bg-[#C5D86D] px-6 py-3 text-sm font-semibold text-black shadow-lg transition-colors hover:bg-[#d4e479] disabled:cursor-not-allowed disabled:opacity-60"
+                      disabled={saving || saveSuccess}
+                      className={`inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-semibold shadow-lg transition-all ${
+                        saveSuccess
+                          ? 'bg-green-500/20 border-2 border-green-500/50 text-green-400'
+                          : 'bg-[#C5D86D] text-black hover:bg-[#d4e479]'
+                      } disabled:cursor-not-allowed disabled:opacity-60`}
                     >
-                      {saving ? 'Saving...' : 'Save Configuration'}
+                      {saveSuccess && <CheckIcon className="h-4 w-4" />}
+                      {saving ? 'Saving...' : saveSuccess ? 'Configuration Saved!' : 'Save Configuration'}
                     </button>
                   </div>
                 </div>
