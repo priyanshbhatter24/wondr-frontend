@@ -4,7 +4,7 @@ import { useMemo } from "react";
 import { useAuth } from "@clerk/nextjs";
 
 import { GenerateImageRequest, GenerateImageResponse, ImageGeneration, ImageGenerationSession, ChatMessage, UserSessionsResponse, PlanModeChatRequest, PlanModeChatResponse, UpdateSessionRequest } from "@/types/image-generation";
-import { IndustryUpdate, IndustryUpdatesListResponse, UserICPConfig } from "@/types/industry-updates";
+import { IndustryUpdate, IndustryUpdatesListResponse, UpdateIcpResponse, UserICPConfig } from "@/types/industry-updates";
 import { InitialPromptRequest, InitialPromptResponse, PostIdeationRequest, PostIdeationResponse, PostIdeationHistoryItem } from "@/types/post-ideation";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
@@ -96,7 +96,7 @@ export function useApiClient() {
       userConfig: {
         getIcp: () => apiClient<UserICPConfig>("/api/user-config/icp"),
         updateIcp: (data: UserICPConfig) =>
-          apiClient<UserICPConfig>("/api/user-config/icp", {
+          apiClient<UpdateIcpResponse>("/api/user-config/icp", {
             method: "POST",
             body: JSON.stringify(data),
           }),

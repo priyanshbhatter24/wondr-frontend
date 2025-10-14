@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useApiClient } from "@/lib/api-client";
-import { UserICPConfig, Competitor, BrandColor } from "@/types/industry-updates";
+import { UserICPConfig, Competitor } from "@/types/industry-updates";
 import AppShell from "@/components/AppShell";
 import BrandColorPicker from "@/components/BrandColorPicker";
 import { GearIcon, PlusIcon, TrashIcon, CheckIcon, ArrowLeftIcon } from "@radix-ui/react-icons";

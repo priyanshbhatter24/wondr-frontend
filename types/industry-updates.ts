@@ -70,6 +70,11 @@ export interface UserICPConfig {
   updated_at?: string;
 }
 
+export interface UpdateIcpResponse extends UserICPConfig {
+  company_analysis_triggered?: boolean;
+  company_analysis_success?: boolean;
+}
+
 export interface IndustryUpdatesListResponse {
   updates: IndustryUpdate[];
   total: number;
