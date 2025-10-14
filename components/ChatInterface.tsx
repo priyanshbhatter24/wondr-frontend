@@ -128,11 +128,11 @@ export function ChatInterface({
                     className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
                   >
                     <div
-                      className={`max-w-[80%] rounded-2xl px-4 py-3 ${
+                      className={`max-w-[90%] rounded-2xl px-4 py-3 ${
                         msg.role === "user"
                           ? "bg-[#2A2A2A] text-white"
-                          : "bg-[#252525] text-white/80"
-                      } border border-white/5 shadow-lg`}
+                          : "bg-[#2A2A2A] text-white/80"
+                      }  `}
                     >
                       <div className="whitespace-pre-wrap break-words leading-relaxed">
                         {formatMessageContent(msg)}
@@ -169,10 +169,10 @@ export function ChatInterface({
       </ScrollArea.Root>
 
       {/* Input form */}
-      <div className="border-t border-[#2A2A2A] p-6 bg-[#3A3A3A] flex-shrink-0">
+      <div className="px-4 py-2 bg-[#3A3A3A] flex-shrink-0">
         <form onSubmit={handleSubmit} className="w-full">
           <div className="w-full max-w-3xl mx-auto">
-            <div className="rounded-full bg-[#252525] shadow-2xl py-3 px-4 flex items-center gap-3 border border-white/5">
+            <div className="rounded-full bg-[#252525] py-2 pr-2.5 pl-4 flex items-center gap-3">
               <input
                 type="text"
                 value={prompt}
@@ -188,7 +188,7 @@ export function ChatInterface({
               <button
                 type="submit"
                 disabled={!prompt.trim() || isGenerating}
-                className="w-10 h-10 flex items-center justify-center bg-white/10 hover:bg-white/15 rounded-full transition-colors shadow-md flex-shrink-0 disabled:opacity-40 disabled:cursor-not-allowed"
+                className="w-10 h-10 flex items-center justify-center bg-white/10 hover:bg-white/15 rounded-full transition-colors flex-shrink-0 disabled:opacity-40 disabled:cursor-not-allowed"
               >
                 <ArrowLeftIcon className="w-4 h-4 text-white transform rotate-90" />
               </button>

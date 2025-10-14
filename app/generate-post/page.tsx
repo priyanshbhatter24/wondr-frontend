@@ -11,7 +11,6 @@ import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import { useGenerations } from "@/lib/use-generations";
 import { ModeToggle } from "@/components/ModeToggle";
 import { ChannelSelector } from "@/components/ChannelSelector";
-import { ReadyBanner } from "@/components/ReadyBanner";
 
 function GeneratePostPageContent() {
   const searchParams = useSearchParams();
@@ -38,7 +37,6 @@ function GeneratePostPageContent() {
   // Mode and channel state
   const [mode, setMode] = useState<"plan" | "generate">("plan");
   const [channel, setChannel] = useState<"instagram" | "linkedin" | "x">("instagram");
-  const [showReadyBanner, setShowReadyBanner] = useState(false);
 
   // Initialize or load session
   useEffect(() => {
@@ -191,7 +189,6 @@ function GeneratePostPageContent() {
     if (!sessionId) return;
 
     setMode(newMode);
-    setShowReadyBanner(false); // Clear banner when switching modes
 
     try {
       await imageGeneration.updateSession(sessionId, { mode: newMode });
@@ -230,7 +227,7 @@ function GeneratePostPageContent() {
       setMessages(prev => [...prev, userMessage]);
 
       // Call plan mode chat API
-      const response = await planMode.chat({
+      await planMode.chat({
         session_id: sessionId,
         message: prompt,
       });
@@ -238,11 +235,6 @@ function GeneratePostPageContent() {
       // Reload messages from server for consistency
       const messagesData = await imageGeneration.getMessages(sessionId);
       setMessages(messagesData.messages || []);
-
-      // Show ready banner if AI detected readiness
-      if (response.ready_to_generate) {
-        setShowReadyBanner(true);
-      }
     } catch (err) {
       console.error("Failed to chat in plan mode:", err);
       setError("Failed to process message. Please try again.");
@@ -388,13 +380,6 @@ function GeneratePostPageContent() {
             <Panel defaultSize={40} minSize={30}>
               <div className="flex h-full flex-col">
                 <div className="flex-1 flex flex-col min-h-0">
-                  {/* Ready to generate banner */}
-                  {showReadyBanner && mode === "plan" && (
-                    <div className="p-4 pb-3 flex-shrink-0">
-                      <ReadyBanner onDismiss={() => setShowReadyBanner(false)} />
-                    </div>
-                  )}
-
                   <div className="flex-1 min-h-0">
                     <ChatInterface
                       messages={messages}
@@ -416,7 +401,7 @@ function GeneratePostPageContent() {
                 </div>
 
                 {/* Mode and Channel Controls - Below Input */}
-                <div className="p-4 pt-3 border-t border-[#262626] bg-[#3A3A3A] flex-shrink-0">
+                <div className="px-4 pb-2 pt-1 bg-[#3A3A3A] flex-shrink-0">
                   <div className="flex items-center justify-between gap-4">
                     <ModeToggle
                       mode={mode}

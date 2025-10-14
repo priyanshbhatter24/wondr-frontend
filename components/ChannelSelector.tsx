@@ -41,7 +41,7 @@ export function ChannelSelector({
       disabled={disabled}
     >
       <Select.Trigger
-        className="inline-flex items-center gap-2 px-4 py-2 bg-[#252525] rounded-full text-sm font-medium text-white border border-white/5 hover:bg-[#2A2A2A] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+        className="inline-flex items-center gap-2 px-4 py-2 bg-[#252525] rounded-full text-sm font-medium text-white hover:bg-[#2A2A2A] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
         aria-label="Select channel"
       >
         <Select.Value>
@@ -68,17 +68,17 @@ export function ChannelSelector({
               <Select.Item
                 key={option.value}
                 value={option.value}
-                className="relative flex items-center px-8 py-3 text-sm text-white rounded-lg outline-none cursor-pointer hover:bg-white/10 focus:bg-white/10 data-[state=checked]:bg-white/15"
+                className="relative flex items-center px-4 py-3 text-sm text-white rounded-lg outline-none cursor-pointer hover:bg-white/10 focus:bg-white/10 data-[state=checked]:bg-white/15"
               >
                 <Select.ItemText>
-                  <div className="flex flex-col gap-1">
+                  <div className="flex flex-row gap-1">
                     <span className="font-medium">{option.label}</span>
-                    <span className="text-xs text-white/40">
+                    <span className="font-medium text-white/40">
                       {option.aspectRatios.join(", ")}
                     </span>
                   </div>
                 </Select.ItemText>
-                <Select.ItemIndicator className="absolute left-2 top-1/2 -translate-y-1/2 w-2 h-2 bg-white rounded-full" />
+                {/* <Select.ItemIndicator className="absolute left-2 top-1/2 -translate-y-1/2 w-2 h-2 bg-white rounded-full" /> */}
               </Select.Item>
             ))}
           </Select.Viewport>
