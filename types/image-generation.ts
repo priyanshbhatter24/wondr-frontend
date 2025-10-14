@@ -2,6 +2,8 @@ export interface ImageGenerationSession {
   session_id: string;
   user_id: string;
   model_preference: "nano-banana";
+  mode: "plan" | "generate";
+  channel: "instagram" | "linkedin" | "x";
   created_at: string;
 }
 
@@ -31,6 +33,8 @@ export interface GenerateImageRequest {
   session_id: string;
   prompt: string;
   previous_generation_id?: string;
+  aspect_ratio?: string;
+  channel?: string;
 }
 
 export interface GenerateImageResponse {
@@ -51,4 +55,19 @@ export interface SidebarSessionItem {
 export interface UserSessionsResponse {
   sessions: SidebarSessionItem[];
   total: number;
+}
+
+export interface PlanModeChatRequest {
+  session_id: string;
+  message: string;
+}
+
+export interface PlanModeChatResponse {
+  response_text: string;
+  ready_to_generate: boolean;
+}
+
+export interface UpdateSessionRequest {
+  mode?: "plan" | "generate";
+  channel?: "instagram" | "linkedin" | "x";
 }
