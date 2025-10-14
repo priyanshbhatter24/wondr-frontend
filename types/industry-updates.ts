@@ -32,6 +32,17 @@ export interface BrandColor {
   hex_code: string; // Format: #RRGGBB
 }
 
+export interface CompanyDetails {
+  industry: string;
+  what_company_does: string;
+  problem_solved: string;
+  use_cases: string[];
+  target_customers: string;
+  value_proposition: string;
+  raw_summary: string;
+  last_analyzed: string;
+}
+
 export interface UserICPConfig {
   user_id?: string;
   ICP: {
@@ -54,6 +65,8 @@ export interface UserICPConfig {
   company_name?: string;
   company_website?: string;
   brand_colors?: BrandColor[];
+  company_details?: CompanyDetails;
+  company_website_last_crawled?: string;
   updated_at?: string;
 }
 

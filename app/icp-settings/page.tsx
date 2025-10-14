@@ -37,6 +37,7 @@ export default function ICPSettingsPage() {
   const [saving, setSaving] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [companyAnalysisStatus, setCompanyAnalysisStatus] = useState<string | null>(null);
 
   // Temporary input states for dynamic lists
   const [newYoutuber, setNewYoutuber] = useState('');
@@ -67,7 +68,20 @@ export default function ICPSettingsPage() {
     try {
       setSaving(true);
       setError(null);
-      await api.userConfig.updateIcp(formData);
+      setCompanyAnalysisStatus(null);
+
+      const response = await api.userConfig.updateIcp(formData);
+
+      // Check if company analysis was triggered
+      if (response.company_analysis_triggered) {
+        if (response.company_analysis_success) {
+          setCompanyAnalysisStatus("Company website analyzed successfully! AI content will now be tailored to your business.");
+        } else {
+          setCompanyAnalysisStatus("Company website analysis failed, but your config was saved. Try again later or contact support.");
+        }
+        setTimeout(() => setCompanyAnalysisStatus(null), 8000);
+      }
+
       setSaveSuccess(true);
       setTimeout(() => setSaveSuccess(false), 3000);
     } catch (err) {
@@ -672,7 +686,7 @@ export default function ICPSettingsPage() {
                     </div>
                   </section>
 
-                  <div className="flex items-center justify-center pt-4">
+                  <div className="flex flex-col items-center justify-center pt-4 space-y-3">
                     <button
                       onClick={handleSave}
                       disabled={saving || saveSuccess}
@@ -685,6 +699,24 @@ export default function ICPSettingsPage() {
                       {saveSuccess && <CheckIcon className="h-4 w-4" />}
                       {saving ? 'Saving...' : saveSuccess ? 'Configuration Saved!' : 'Save Configuration'}
                     </button>
+
+                    {/* Company Analysis Status Message */}
+                    {companyAnalysisStatus && (
+                      <div className={`text-sm px-4 py-2 rounded-lg ${
+                        companyAnalysisStatus.includes('successfully')
+                          ? 'bg-green-500/10 text-green-400 border border-green-500/30'
+                          : 'bg-yellow-500/10 text-yellow-400 border border-yellow-500/30'
+                      }`}>
+                        {companyAnalysisStatus}
+                      </div>
+                    )}
+
+                    {/* Error Message */}
+                    {error && (
+                      <div className="text-sm px-4 py-2 rounded-lg bg-red-500/10 text-red-400 border border-red-500/30">
+                        {error}
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
