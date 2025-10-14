@@ -12,6 +12,7 @@ interface ChatInterfaceProps {
   initialPrompt?: string;
   onSelectGeneration?: (generationId: string) => void;
   selectedGenerationId?: string;
+  mode?: "plan" | "generate";
 }
 
 export function ChatInterface({
@@ -21,6 +22,7 @@ export function ChatInterface({
   initialPrompt,
   onSelectGeneration,
   selectedGenerationId,
+  mode = "generate",
 }: ChatInterfaceProps) {
   const [prompt, setPrompt] = useState(initialPrompt || "");
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -69,7 +71,9 @@ export function ChatInterface({
               <div className="flex flex-col items-center justify-center h-full text-white/40 text-center py-12">
                 <p className="text-lg font-medium mb-2">Start a conversation</p>
                 <p className="text-sm max-w-md">
-                  Describe the image you want to generate. Be specific about style, colors, composition, and mood.
+                  {mode === "plan"
+                    ? "Share your ideas and brainstorm concepts for your social media post. I'll help you refine and develop them."
+                    : "Describe the image you want to generate. Be specific about style, colors, composition, and mood."}
                 </p>
               </div>
             ) : (
@@ -147,7 +151,9 @@ export function ChatInterface({
                       <span className="w-2 h-2 bg-white/60 rounded-full animate-bounce" style={{ animationDelay: "150ms" }} />
                       <span className="w-2 h-2 bg-white/60 rounded-full animate-bounce" style={{ animationDelay: "300ms" }} />
                     </div>
-                    <span className="text-sm">Generating image...</span>
+                    <span className="text-sm">
+                      {mode === "plan" ? "Brainstorming..." : "Generating image..."}
+                    </span>
                   </div>
                 </div>
               </div>
@@ -171,7 +177,11 @@ export function ChatInterface({
                 type="text"
                 value={prompt}
                 onChange={(e) => setPrompt(e.target.value)}
-                placeholder="Describe the image you want to generate..."
+                placeholder={
+                  mode === "plan"
+                    ? "Share your ideas, ask for suggestions..."
+                    : "Describe the image you want to generate..."
+                }
                 className="flex-1 bg-transparent text-white text-sm placeholder:text-white/40 focus:outline-none"
                 disabled={isGenerating}
               />
