@@ -62,9 +62,9 @@ export function ChatInterface({
   };
 
   return (
-    <div className="flex flex-col h-full bg-[#3A3A3A]">
+    <div className="flex flex-col h-full bg-[#3A3A3A] min-h-0">
       {/* Chat messages */}
-      <ScrollArea.Root className="flex-1 overflow-hidden">
+      <ScrollArea.Root className="flex-1 min-h-0 overflow-hidden">
         <ScrollArea.Viewport ref={scrollRef} className="w-full h-full p-4">
           <div className="space-y-4">
             {messages.length === 0 ? (
@@ -169,7 +169,7 @@ export function ChatInterface({
       </ScrollArea.Root>
 
       {/* Input form */}
-      <div className="border-t border-[#2A2A2A] p-6 bg-[#3A3A3A]">
+      <div className="border-t border-[#2A2A2A] p-6 bg-[#3A3A3A] flex-shrink-0">
         <form onSubmit={handleSubmit} className="w-full">
           <div className="w-full max-w-3xl mx-auto">
             <div className="rounded-full bg-[#252525] shadow-2xl py-3 px-4 flex items-center gap-3 border border-white/5">

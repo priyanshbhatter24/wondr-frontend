@@ -424,15 +424,15 @@ function GeneratePostPageContent() {
 
                 <BrandColorsBar colors={brandColors} />
 
-                <div className="flex-1 flex flex-col">
+                <div className="flex-1 flex flex-col min-h-0">
                   {/* Ready to generate banner */}
                   {showReadyBanner && mode === "plan" && (
-                    <div className="p-4 pt-3">
+                    <div className="p-4 pt-3 flex-shrink-0">
                       <ReadyBanner onDismiss={() => setShowReadyBanner(false)} />
                     </div>
                   )}
 
-                  <div className="flex-1">
+                  <div className="flex-1 min-h-0">
                     <ChatInterface
                       messages={messages}
                       onSendMessage={handleMessage}
