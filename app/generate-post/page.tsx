@@ -5,10 +5,8 @@ import { useSearchParams, useRouter } from "next/navigation";
 import AppShell from "@/components/AppShell";
 import { ImageDisplay } from "@/components/ImageDisplay";
 import { ChatInterface } from "@/components/ChatInterface";
-import BrandColorsBar from "@/components/BrandColorsBar";
 import { useApiClient } from "@/lib/api-client";
 import { ImageGeneration, ChatMessage } from "@/types/image-generation";
-import { BrandColor } from "@/types/industry-updates";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import { useGenerations } from "@/lib/use-generations";
 import { ModeToggle } from "@/components/ModeToggle";
@@ -21,7 +19,7 @@ function GeneratePostPageContent() {
   const initialPrompt = searchParams.get("prompt") || "";
   const sessionIdFromUrl = searchParams.get("session");
 
-  const { imageGeneration, userConfig, planMode } = useApiClient();
+  const { imageGeneration, planMode } = useApiClient();
   const { sessions: sidebarSessions, refetch } = useGenerations();
 
   // Session state
@@ -31,7 +29,6 @@ function GeneratePostPageContent() {
   const [generations, setGenerations] = useState<ImageGeneration[]>([]);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [brandColors, setBrandColors] = useState<BrandColor[]>([]);
 
   // UI state
   const [isGenerating, setIsGenerating] = useState(false);
@@ -117,22 +114,6 @@ function GeneratePostPageContent() {
     loadHistory();
   }, [imageGeneration, sessionId]);
 
-  // Fetch brand colors from ICP config
-  useEffect(() => {
-    const fetchBrandColors = async () => {
-      try {
-        const config = await userConfig.getIcp();
-        if (config.brand_colors) {
-          setBrandColors(config.brand_colors);
-        }
-      } catch (err) {
-        console.error("Failed to fetch brand colors:", err);
-        // Silently fail - brand colors are optional
-      }
-    };
-
-    fetchBrandColors();
-  }, [userConfig]);
 
   const handleSendMessage = async (prompt: string) => {
     if (!sessionId || isGenerating) return;
@@ -406,28 +387,10 @@ function GeneratePostPageContent() {
             {/* Chat panel */}
             <Panel defaultSize={40} minSize={30}>
               <div className="flex h-full flex-col">
-                {/* Mode and Channel Controls */}
-                <div className="p-4 border-b border-[#262626] bg-[#3A3A3A]">
-                  <div className="flex items-center justify-between gap-4">
-                    <ModeToggle
-                      mode={mode}
-                      onModeChange={handleModeChange}
-                      disabled={isGenerating}
-                    />
-                    <ChannelSelector
-                      channel={channel}
-                      onChannelChange={handleChannelChange}
-                      disabled={isGenerating}
-                    />
-                  </div>
-                </div>
-
-                <BrandColorsBar colors={brandColors} />
-
                 <div className="flex-1 flex flex-col min-h-0">
                   {/* Ready to generate banner */}
                   {showReadyBanner && mode === "plan" && (
-                    <div className="p-4 pt-3 flex-shrink-0">
+                    <div className="p-4 pb-3 flex-shrink-0">
                       <ReadyBanner onDismiss={() => setShowReadyBanner(false)} />
                     </div>
                   )}
@@ -448,6 +411,22 @@ function GeneratePostPageContent() {
                       }}
                       selectedGenerationId={generations[currentIndex]?.generation_id}
                       mode={mode}
+                    />
+                  </div>
+                </div>
+
+                {/* Mode and Channel Controls - Below Input */}
+                <div className="p-4 pt-3 border-t border-[#262626] bg-[#3A3A3A] flex-shrink-0">
+                  <div className="flex items-center justify-between gap-4">
+                    <ModeToggle
+                      mode={mode}
+                      onModeChange={handleModeChange}
+                      disabled={isGenerating}
+                    />
+                    <ChannelSelector
+                      channel={channel}
+                      onChannelChange={handleChannelChange}
+                      disabled={isGenerating}
                     />
                   </div>
                 </div>
