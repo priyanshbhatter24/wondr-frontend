@@ -33,9 +33,9 @@ export function ImageDisplay({ generations, currentIndex, onNavigate }: ImageDis
   }
 
   return (
-    <div className="relative h-full bg-[#2A2A2A] flex flex-col">
+    <div className="relative h-full bg-[#2A2A2A] flex flex-col overflow-hidden">
       {/* Header with version info */}
-      <div className="flex items-center justify-between p-4 border-b border-white/5 bg-[#262626]/40">
+      <div className="flex items-center justify-between p-4 border-b border-white/5 bg-[#262626]/40 flex-shrink-0">
         <div className="text-white/70 text-sm">
           <span className="font-medium text-white">Version {currentGeneration.version_number}</span>
           <span className="mx-2 text-white/40">•</span>
@@ -46,44 +46,46 @@ export function ImageDisplay({ generations, currentIndex, onNavigate }: ImageDis
         </div>
       </div>
 
-      {/* Image container */}
-      <div className="flex-1 relative flex items-center justify-center p-8">
-        <div className="relative max-w-full max-h-full">
-          <Image
-            src={currentGeneration.s3_url}
-            alt={currentGeneration.prompt}
-            width={1024}
-            height={1024}
-            className="max-w-full max-h-full object-contain rounded-xl shadow-xl"
-            priority
-          />
+      {/* Image container - scrollable with max height */}
+      <div className="flex-1 relative overflow-y-auto min-h-0">
+        <div className="flex items-center justify-center p-8 min-h-full">
+          <div className="relative max-w-full">
+            <Image
+              src={currentGeneration.s3_url}
+              alt={currentGeneration.prompt}
+              width={1024}
+              height={1024}
+              className="w-auto h-auto max-w-full object-contain rounded-xl shadow-xl"
+              priority
+            />
+          </div>
+
+          {/* Navigation arrows */}
+          {hasPrevious && (
+            <button
+              onClick={() => onNavigate(currentIndex - 1)}
+              className="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-black/30 hover:bg-white/20 text-white rounded-full flex items-center justify-center transition-all"
+              aria-label="Previous version"
+            >
+              <ChevronLeftIcon className="w-6 h-6" />
+            </button>
+          )}
+
+          {hasNext && (
+            <button
+              onClick={() => onNavigate(currentIndex + 1)}
+              className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-black/30 hover:bg-white/20 text-white rounded-full flex items-center justify-center transition-all"
+              aria-label="Next version"
+            >
+              <ChevronRightIcon className="w-6 h-6" />
+            </button>
+          )}
         </div>
-
-        {/* Navigation arrows */}
-        {hasPrevious && (
-          <button
-            onClick={() => onNavigate(currentIndex - 1)}
-            className="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-black/30 hover:bg-white/20 text-white rounded-full flex items-center justify-center transition-all"
-            aria-label="Previous version"
-          >
-            <ChevronLeftIcon className="w-6 h-6" />
-          </button>
-        )}
-
-        {hasNext && (
-          <button
-            onClick={() => onNavigate(currentIndex + 1)}
-            className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-black/30 hover:bg-white/20 text-white rounded-full flex items-center justify-center transition-all"
-            aria-label="Next version"
-          >
-            <ChevronRightIcon className="w-6 h-6" />
-          </button>
-        )}
       </div>
 
       {/* Version timeline */}
       {generations.length > 1 && (
-        <div className="p-4 border-t border-white/5 bg-[#262626]/30">
+        <div className="p-4 border-t border-white/5 bg-[#262626]/30 flex-shrink-0">
           <div className="flex gap-2 overflow-x-auto">
             {generations.map((gen, index) => (
               <button
