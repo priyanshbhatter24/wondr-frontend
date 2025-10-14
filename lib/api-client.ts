@@ -3,7 +3,7 @@
 import { useMemo } from "react";
 import { useAuth } from "@clerk/nextjs";
 
-import { GenerateImageRequest, GenerateImageResponse, ImageGeneration, ImageGenerationSession, ChatMessage, UserSessionsResponse } from "@/types/image-generation";
+import { GenerateImageRequest, GenerateImageResponse, ImageGeneration, ImageGenerationSession, ChatMessage, UserSessionsResponse, PlanModeChatRequest, PlanModeChatResponse, UpdateSessionRequest } from "@/types/image-generation";
 import { IndustryUpdate, IndustryUpdatesListResponse, UserICPConfig } from "@/types/industry-updates";
 import { InitialPromptRequest, InitialPromptResponse, PostIdeationRequest, PostIdeationResponse, PostIdeationHistoryItem } from "@/types/post-ideation";
 
@@ -124,6 +124,11 @@ export function useApiClient() {
           }),
         getSession: (sessionId: string) =>
           apiClient<ImageGenerationSession>(`/api/image-generation/sessions/${sessionId}`),
+        updateSession: (sessionId: string, data: UpdateSessionRequest) =>
+          apiClient<ImageGenerationSession>(`/api/image-generation/sessions/${sessionId}`, {
+            method: "PATCH",
+            body: JSON.stringify(data),
+          }),
         generate: (data: GenerateImageRequest) =>
           apiClient<GenerateImageResponse>("/api/image-generation/generate", {
             method: "POST",
@@ -146,6 +151,13 @@ export function useApiClient() {
           }
           return apiClient<UserSessionsResponse>(endpoint);
         },
+      },
+      planMode: {
+        chat: (data: PlanModeChatRequest) =>
+          apiClient<PlanModeChatResponse>("/api/plan-mode/chat", {
+            method: "POST",
+            body: JSON.stringify(data),
+          }),
       },
     };
   }, [getToken]);
