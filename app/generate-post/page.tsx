@@ -113,61 +113,6 @@ function GeneratePostPageContent() {
   }, [imageGeneration, sessionId]);
 
 
-  const handleSendMessage = async (prompt: string) => {
-    if (!sessionId || isGenerating) return;
-
-    setIsGenerating(true);
-    setError(null);
-
-    try {
-      // Optimistically add user message
-      const userMessage: ChatMessage = {
-        message_id: `temp-${Date.now()}`,
-        session_id: sessionId,
-        role: "user",
-        content: prompt,
-        created_at: new Date().toISOString(),
-      };
-      setMessages(prev => [...prev, userMessage]);
-
-      // Get previous generation ID if iterating
-      const previousGenerationId = generations.length > 0
-        ? generations[generations.length - 1].generation_id
-        : undefined;
-
-      // Generate image
-      await imageGeneration.generate({
-        session_id: sessionId,
-        prompt,
-        previous_generation_id: previousGenerationId,
-      });
-
-      // Reload history and messages
-      const [historyData, messagesData] = await Promise.all([
-        imageGeneration.getHistory(sessionId),
-        imageGeneration.getMessages(sessionId),
-      ]);
-
-      setGenerations(historyData.generations || []);
-      setMessages(messagesData.messages || []);
-
-      // Navigate to the new generation
-      if (historyData.generations?.length > 0) {
-        setCurrentIndex(historyData.generations.length - 1);
-      }
-
-      // Refetch sidebar generations
-      await refetch();
-    } catch (err) {
-      console.error("Failed to generate image:", err);
-      setError("Failed to generate image. Please try again.");
-      // Remove optimistic message on error
-      setMessages(prev => prev.slice(0, -1));
-    } finally {
-      setIsGenerating(false);
-    }
-  };
-
   // Load mode and channel from session
   useEffect(() => {
     if (!sessionId) return;
