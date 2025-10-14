@@ -5,12 +5,12 @@ import { useSearchParams, useRouter } from "next/navigation";
 import AppShell from "@/components/AppShell";
 import { ImageDisplay } from "@/components/ImageDisplay";
 import { ChatInterface } from "@/components/ChatInterface";
-import BrandColorsBar from "@/components/BrandColorsBar";
 import { useApiClient } from "@/lib/api-client";
 import { ImageGeneration, ChatMessage } from "@/types/image-generation";
-import { BrandColor } from "@/types/industry-updates";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import { useGenerations } from "@/lib/use-generations";
+import { ModeToggle } from "@/components/ModeToggle";
+import { ChannelSelector } from "@/components/ChannelSelector";
 
 function GeneratePostPageContent() {
   const searchParams = useSearchParams();
@@ -18,7 +18,7 @@ function GeneratePostPageContent() {
   const initialPrompt = searchParams.get("prompt") || "";
   const sessionIdFromUrl = searchParams.get("session");
 
-  const { imageGeneration, userConfig } = useApiClient();
+  const { imageGeneration, planMode } = useApiClient();
   const { sessions: sidebarSessions, refetch } = useGenerations();
 
   // Session state
@@ -28,12 +28,15 @@ function GeneratePostPageContent() {
   const [generations, setGenerations] = useState<ImageGeneration[]>([]);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [brandColors, setBrandColors] = useState<BrandColor[]>([]);
 
   // UI state
   const [isGenerating, setIsGenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isInitializing, setIsInitializing] = useState(true);
+
+  // Mode and channel state
+  const [mode, setMode] = useState<"plan" | "generate">("plan");
+  const [channel, setChannel] = useState<"instagram" | "linkedin" | "x">("instagram");
 
   // Initialize or load session
   useEffect(() => {
@@ -109,22 +112,6 @@ function GeneratePostPageContent() {
     loadHistory();
   }, [imageGeneration, sessionId]);
 
-  // Fetch brand colors from ICP config
-  useEffect(() => {
-    const fetchBrandColors = async () => {
-      try {
-        const config = await userConfig.getIcp();
-        if (config.brand_colors) {
-          setBrandColors(config.brand_colors);
-        }
-      } catch (err) {
-        console.error("Failed to fetch brand colors:", err);
-        // Silently fail - brand colors are optional
-      }
-    };
-
-    fetchBrandColors();
-  }, [userConfig]);
 
   const handleSendMessage = async (prompt: string) => {
     if (!sessionId || isGenerating) return;
@@ -178,6 +165,162 @@ function GeneratePostPageContent() {
       setMessages(prev => prev.slice(0, -1));
     } finally {
       setIsGenerating(false);
+    }
+  };
+
+  // Load mode and channel from session
+  useEffect(() => {
+    if (!sessionId) return;
+
+    const loadSessionSettings = async () => {
+      try {
+        const session = await imageGeneration.getSession(sessionId);
+        if (session.mode) setMode(session.mode);
+        if (session.channel) setChannel(session.channel);
+      } catch (err) {
+        console.error("Failed to load session settings:", err);
+      }
+    };
+
+    loadSessionSettings();
+  }, [imageGeneration, sessionId]);
+
+  const handleModeChange = async (newMode: "plan" | "generate") => {
+    if (!sessionId) return;
+
+    setMode(newMode);
+
+    try {
+      await imageGeneration.updateSession(sessionId, { mode: newMode });
+    } catch (err) {
+      console.error("Failed to update mode:", err);
+    }
+  };
+
+  const handleChannelChange = async (newChannel: "instagram" | "linkedin" | "x") => {
+    if (!sessionId) return;
+
+    setChannel(newChannel);
+
+    try {
+      await imageGeneration.updateSession(sessionId, { channel: newChannel });
+    } catch (err) {
+      console.error("Failed to update channel:", err);
+    }
+  };
+
+  const handlePlanModeChat = async (prompt: string) => {
+    if (!sessionId || isGenerating) return;
+
+    setIsGenerating(true);
+    setError(null);
+
+    try {
+      // Optimistically add user message
+      const userMessage: ChatMessage = {
+        message_id: `temp-${Date.now()}`,
+        session_id: sessionId,
+        role: "user",
+        content: prompt,
+        created_at: new Date().toISOString(),
+      };
+      setMessages(prev => [...prev, userMessage]);
+
+      // Call plan mode chat API
+      await planMode.chat({
+        session_id: sessionId,
+        message: prompt,
+      });
+
+      // Reload messages from server for consistency
+      const messagesData = await imageGeneration.getMessages(sessionId);
+      setMessages(messagesData.messages || []);
+    } catch (err) {
+      console.error("Failed to chat in plan mode:", err);
+      setError("Failed to process message. Please try again.");
+      // Remove optimistic message on error
+      setMessages(prev => prev.slice(0, -1));
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
+  // Detect aspect ratio from user prompt
+  const detectAspectRatio = (prompt: string): string | undefined => {
+    const lowerPrompt = prompt.toLowerCase();
+
+    // Direct aspect ratio mentions
+    if (lowerPrompt.includes("16:9") || lowerPrompt.includes("16 by 9")) return "16:9";
+    if (lowerPrompt.includes("1:1") || lowerPrompt.includes("square")) return "1:1";
+    if (lowerPrompt.includes("4:5") || lowerPrompt.includes("4 by 5")) return "4:5";
+    if (lowerPrompt.includes("9:16") || lowerPrompt.includes("9 by 16")) return "9:16";
+    if (lowerPrompt.includes("portrait") && !lowerPrompt.includes("16:9")) return "4:5";
+    if (lowerPrompt.includes("landscape")) return "16:9";
+
+    return undefined;
+  };
+
+  const handleMessage = async (prompt: string) => {
+    if (mode === "plan") {
+      await handlePlanModeChat(prompt);
+    } else {
+      // Generate mode - detect aspect ratio override
+      const detectedAspectRatio = detectAspectRatio(prompt);
+
+      if (!sessionId || isGenerating) return;
+
+      setIsGenerating(true);
+      setError(null);
+
+      try {
+        // Optimistically add user message
+        const userMessage: ChatMessage = {
+          message_id: `temp-${Date.now()}`,
+          session_id: sessionId,
+          role: "user",
+          content: prompt,
+          created_at: new Date().toISOString(),
+        };
+        setMessages(prev => [...prev, userMessage]);
+
+        // Get previous generation ID if iterating
+        const previousGenerationId = generations.length > 0
+          ? generations[generations.length - 1].generation_id
+          : undefined;
+
+        // Generate image with optional aspect ratio override
+        await imageGeneration.generate({
+          session_id: sessionId,
+          prompt,
+          previous_generation_id: previousGenerationId,
+          aspect_ratio: detectedAspectRatio,
+          channel: channel,
+        });
+
+        // Reload history and messages
+        const [historyData, messagesData] = await Promise.all([
+          imageGeneration.getHistory(sessionId),
+          imageGeneration.getMessages(sessionId),
+        ]);
+
+        setGenerations(historyData.generations || []);
+        setMessages(messagesData.messages || []);
+
+        // Navigate to the new generation
+        if (historyData.generations?.length > 0) {
+          setCurrentIndex(historyData.generations.length - 1);
+        }
+
+        // Refetch sidebar generations
+        await refetch();
+      } catch (err) {
+        console.error("Failed to generate image:", err);
+        setError("Failed to generate image. Please try again.");
+        // Remove optimistic message on error
+        setMessages(prev => prev.slice(0, -1));
+      } finally {
+        setIsGenerating(false);
+      }
     }
   };
 
@@ -236,23 +379,41 @@ function GeneratePostPageContent() {
             {/* Chat panel */}
             <Panel defaultSize={40} minSize={30}>
               <div className="flex h-full flex-col">
-                <BrandColorsBar colors={brandColors} />
-                <div className="flex-1">
-                  <ChatInterface
-                    messages={messages}
-                    onSendMessage={handleSendMessage}
-                    isGenerating={isGenerating}
-                    initialPrompt={initialPrompt}
-                    onSelectGeneration={(generationId) => {
-                      const targetIndex = generations.findIndex(
-                        (generation) => generation.generation_id === generationId,
-                      );
-                      if (targetIndex >= 0) {
-                        setCurrentIndex(targetIndex);
-                      }
-                    }}
-                    selectedGenerationId={generations[currentIndex]?.generation_id}
-                  />
+                <div className="flex-1 flex flex-col min-h-0">
+                  <div className="flex-1 min-h-0">
+                    <ChatInterface
+                      messages={messages}
+                      onSendMessage={handleMessage}
+                      isGenerating={isGenerating}
+                      initialPrompt={initialPrompt}
+                      onSelectGeneration={(generationId) => {
+                        const targetIndex = generations.findIndex(
+                          (generation) => generation.generation_id === generationId,
+                        );
+                        if (targetIndex >= 0) {
+                          setCurrentIndex(targetIndex);
+                        }
+                      }}
+                      selectedGenerationId={generations[currentIndex]?.generation_id}
+                      mode={mode}
+                    />
+                  </div>
+                </div>
+
+                {/* Mode and Channel Controls - Below Input */}
+                <div className="px-4 pb-2 pt-1 bg-[#3A3A3A] flex-shrink-0">
+                  <div className="flex items-center justify-between gap-4">
+                    <ModeToggle
+                      mode={mode}
+                      onModeChange={handleModeChange}
+                      disabled={isGenerating}
+                    />
+                    <ChannelSelector
+                      channel={channel}
+                      onChannelChange={handleChannelChange}
+                      disabled={isGenerating}
+                    />
+                  </div>
                 </div>
               </div>
             </Panel>

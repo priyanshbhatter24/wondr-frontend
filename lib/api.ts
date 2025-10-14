@@ -1,6 +1,6 @@
 import { auth } from "@clerk/nextjs/server";
 
-import { GenerateImageRequest, GenerateImageResponse, ImageGeneration, ImageGenerationSession, ChatMessage, UserSessionsResponse } from "@/types/image-generation";
+import { GenerateImageRequest, GenerateImageResponse, ImageGeneration, ImageGenerationSession, ChatMessage, UserSessionsResponse, PlanModeChatRequest, PlanModeChatResponse, UpdateSessionRequest } from "@/types/image-generation";
 import { IndustryUpdate, IndustryUpdatesListResponse, UserICPConfig } from "@/types/industry-updates";
 import { InitialPromptRequest, InitialPromptResponse, PostIdeationRequest, PostIdeationResponse, PostIdeationHistoryItem } from "@/types/post-ideation";
 
@@ -103,6 +103,11 @@ export const api = {
       }),
     getSession: (sessionId: string) =>
       apiClient<ImageGenerationSession>(`/api/image-generation/sessions/${sessionId}`),
+    updateSession: (sessionId: string, data: UpdateSessionRequest) =>
+      apiClient<ImageGenerationSession>(`/api/image-generation/sessions/${sessionId}`, {
+        method: "PATCH",
+        body: JSON.stringify(data),
+      }),
     generate: (data: GenerateImageRequest & { model: string }) =>
       apiClient<GenerateImageResponse>("/api/image-generation/generate", {
         method: "POST",
@@ -119,5 +124,12 @@ export const api = {
       const queryString = searchParams.toString();
       return apiClient<UserSessionsResponse>(`/api/image-generation/user-generations${queryString ? `?${queryString}` : ""}`);
     },
+  },
+  planMode: {
+    chat: (data: PlanModeChatRequest) =>
+      apiClient<PlanModeChatResponse>("/api/plan-mode/chat", {
+        method: "POST",
+        body: JSON.stringify(data),
+      }),
   },
 };
