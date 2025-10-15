@@ -60,11 +60,6 @@ export function ChannelSelector({
         </select>
         <ChevronDownIcon className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-white" />
       </div>
-      {selectedOption && (
-        <span className="text-xs text-white/60">
-          Suggested ratios: {selectedOption.aspectRatios.join(", ")}
-        </span>
-      )}
     </div>
   );
 }
