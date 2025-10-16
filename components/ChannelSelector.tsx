@@ -33,7 +33,6 @@ export function ChannelSelector({
   disabled = false,
 }: ChannelSelectorProps) {
   const selectId = useId();
-  const selectedOption = CHANNEL_OPTIONS.find((opt) => opt.value === channel);
 
   const handleChange = (event: ChangeEvent<HTMLSelectElement>) => {
     onChannelChange(event.target.value as "instagram" | "linkedin" | "x");
