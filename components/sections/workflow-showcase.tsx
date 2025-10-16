@@ -8,13 +8,13 @@ const WorkflowShowcase = () => {
         <div className="flex flex-col md:flex-row justify-between items-start gap-8 mb-16 md:mb-24">
           <div className="flex flex-col items-start gap-y-5">
             <div className="inline-block bg-secondary text-secondary-foreground rounded-full px-4 py-1.5 text-[11px] font-semibold uppercase tracking-widest">
-              BADGE
+              WORKFLOW
             </div>
             <h2 className="text-4xl lg:text-[40px] font-semibold tracking-tight leading-[1.2] max-w-lg">
-              Designed to get out of your way.
+              Marketing automation that works while you sleep.
             </h2>
             <p className="text-lg text-text-secondary max-w-md leading-relaxed">
-              Stay organized while writing and improving prompts for your favorite AI tools.
+              Hourly industry scans, automated content generation, and intelligent scheduling — all in one platform.
             </p>
           </div>
           <Link
@@ -27,8 +27,8 @@ const WorkflowShowcase = () => {
 
         <div className="w-full aspect-[16/9] rounded-xl border border-white/10 shadow-2xl shadow-black/30 bg-gradient-to-br from-gray-800 to-gray-900 flex items-center justify-center">
           <div className="text-center">
-            <p className="text-text-secondary text-xl">Application Interface</p>
-            <p className="text-text-tertiary text-sm mt-2">Chat and library features</p>
+            <p className="text-text-secondary text-xl">Idea Hub Dashboard</p>
+            <p className="text-text-tertiary text-sm mt-2">Industry insights and content recommendations</p>
           </div>
         </div>
       </div>

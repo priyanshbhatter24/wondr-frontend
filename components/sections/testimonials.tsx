@@ -2,25 +2,25 @@ const testimonials = [
   {
     name: "Lena H.",
     title: "Content Strategist",
-    quote: "Switching tone used to be a chore. Now it's fun.",
+    quote: "Wondr's industry insights save me 10+ hours of research every week.",
     initial: "LH",
   },
   {
     name: "Raymond K.",
     title: "Growth Marketer",
-    quote: "Wondr makes my writing sharper in half the time.",
+    quote: "The ICP targeting is spot-on. Our content resonates better than ever.",
     initial: "RK",
   },
   {
     name: "Jordan T.",
     title: "Brand Lead",
-    quote: "Perfect for testing voice without overthinking.",
+    quote: "Automated research agent finds trends before our competitors do.",
     initial: "JT",
   },
   {
     name: "Sofia M.",
-    title: "UX Copywriter",
-    quote: "I don't start a landing page without Wondr anymore.",
+    title: "Marketing Director",
+    quote: "From research to post generation — Wondr handles our entire content workflow.",
     initial: "SM",
   },
 ];
@@ -37,10 +37,10 @@ const TestimonialsSection = () => {
               </p>
             </div>
             <h2 className="font-display text-5xl font-semibold leading-tight tracking-tighter text-text-primary">
-              What you can do with Wondr
+              Marketing teams love Wondr
             </h2>
             <p className="mt-5 text-lg text-text-secondary">
-              Design better prompts and keep them ready to use whenever you need them.
+              From research to content creation, see how teams are automating their marketing workflows.
             </p>
           </div>
           <div className="flex-shrink-0">

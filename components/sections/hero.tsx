@@ -16,16 +16,16 @@ export default function HeroSection() {
           <div className="flex flex-col items-center gap-6">
             <div className="border border-white/10 rounded-full bg-black/20 backdrop-blur-sm">
               <p className="px-3.5 py-1.5 text-[11px] font-semibold uppercase tracking-wider text-white">
-                Powerful AI Tool
+                AI-Powered Marketing Platform
               </p>
             </div>
             <h1 className="font-display font-semibold text-white text-5xl md:text-7xl lg:text-[96px] leading-[1.1] tracking-[-0.04em]">
-              Think deeper.
+              Your AI CMO.
               <br />
-              Dream impossible.
+              Always on.
             </h1>
             <p className="max-w-[630px] text-lg md:text-xl text-text-secondary leading-relaxed">
-              Wondr helps you create, optimize, and organize powerful marketing strategies with AI-powered insights.
+              Transform your marketing operations with AI-powered industry insights, automated content ideas, and intelligent campaign strategies.
             </p>
           </div>
           <div className="flex flex-col sm:flex-row items-center gap-4">
@@ -33,16 +33,14 @@ export default function HeroSection() {
               href="/sign-in"
               className="bg-primary text-primary-foreground font-medium rounded-lg px-8 py-3.5 text-base hover:opacity-90 transition-opacity duration-200"
             >
-              Sign In
+              Get Started Free
             </Link>
-            <a
-              href="https://www.youtube.com/@Framer"
-              target="_blank"
-              rel="noopener noreferrer"
+            <Link
+              href="/idea-hub"
               className="bg-interactive-secondary text-primary border border-border-subtle font-medium rounded-lg px-8 py-3.5 text-base hover:bg-white/20 transition-colors duration-200"
             >
-              Watch demo
-            </a>
+              View Idea Hub
+            </Link>
           </div>
         </div>
       </div>

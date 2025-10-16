@@ -27,25 +27,25 @@ type FeatureItem = {
   text: string;
 };
 
-const DesignerFeatures: FeatureItem[] = [
-  { icon: FileText, text: "Instantly optimize short UI copy" },
-  { icon: Shapes, text: "Tone control for different use cases" },
-  { icon: Archive, text: "Save to collections for future prompts" },
-  { icon: Copy, text: "Reuse copy across multiple projects" },
+const ResearchFeatures: FeatureItem[] = [
+  { icon: TrendingUp, text: "Hourly scans of Reddit, LinkedIn, X, and YouTube" },
+  { icon: Target, text: "ICP-based filtering for relevant insights" },
+  { icon: Lightbulb, text: "AI-generated topics with real citations" },
+  { icon: Zap, text: "Automated competitor analysis" },
 ];
 
-const WriterFeatures: FeatureItem[] = [
-  { icon: Smile, text: "Refine tone and structure" },
-  { icon: Star, text: "Save and tag favorite prompts" },
-  { icon: Layers, text: "Access writing-focused templates" },
-  { icon: Lightbulb, text: "Generate multiple takes with 1 click" },
+const ContentFeatures: FeatureItem[] = [
+  { icon: FileText, text: "AI-powered post suggestions with reasoning" },
+  { icon: Layers, text: "Multi-channel content (LinkedIn, X, Instagram)" },
+  { icon: Star, text: "Brand voice integration with company context" },
+  { icon: Copy, text: "One-click image generation with Fal.ai" },
 ];
 
-const MarketerFeatures: FeatureItem[] = [
-  { icon: Target, text: "Create campaign copy that converts" },
-  { icon: TrendingUp, text: "A/B test different messaging angles" },
-  { icon: Users, text: "Tailor voice for target audiences" },
-  { icon: Zap, text: "Speed up ad and email workflows" },
+const CampaignFeatures: FeatureItem[] = [
+  { icon: Users, text: "Define personas and pain points" },
+  { icon: Archive, text: "Track competitors and messaging gaps" },
+  { icon: Shapes, text: "Custom scheduling with timezone support" },
+  { icon: Smile, text: "Usage analytics and monthly limits" },
 ];
 
 const FeatureList = ({ features }: { features: FeatureItem[] }) => (
@@ -62,8 +62,8 @@ const FeatureList = ({ features }: { features: FeatureItem[] }) => (
 );
 
 const CreatorTabs = () => {
-  const [activeTab, setActiveTab] = useState<"Designers" | "Writers" | "Marketers">("Designers");
-  const tabs: Array<"Designers" | "Writers" | "Marketers"> = ["Designers", "Writers", "Marketers"];
+  const [activeTab, setActiveTab] = useState<"Research" | "Content" | "Campaigns">("Research");
+  const tabs: Array<"Research" | "Content" | "Campaigns"> = ["Research", "Content", "Campaigns"];
 
   const handlePrevious = () => {
     const currentIndex = tabs.indexOf(activeTab);
@@ -77,160 +77,136 @@ const CreatorTabs = () => {
     setActiveTab(tabs[nextIndex]);
   };
 
-  const WondrAICard = () => (
+  const WondrConfigCard = () => (
     <div className="bg-card p-8">
-      <h3 className="font-display text-2xl font-medium text-text-primary">Created with Wondr AI</h3>
-      <div className="mt-8 space-y-8">
-        <div>
-          <label className="text-sm font-medium text-text-secondary">Base text size</label>
-          <div className="relative mt-4">
-            <div className="h-1 w-full bg-white/10">
-              <div
-                className="absolute top-1/2 h-1 w-1/2 -translate-y-1/2 bg-white"
-                style={{ left: "25%" }}
-              ></div>
-              <div className="absolute top-1/2 -translate-x-1/2 -translate-y-1/2" style={{ left: "50%" }}>
-                 <div className="h-4 w-4 border-2 border-black bg-white ring-2 ring-white"></div>
-              </div>
-            </div>
-            <div className="mt-3 flex justify-between text-sm text-text-tertiary">
-              <span>12</span>
-              <span>14</span>
-              <span className="text-text-primary">16</span>
-              <span>18</span>
-              <span>20</span>
-            </div>
+      <h3 className="font-display text-2xl font-medium text-text-primary">Your ICP Configuration</h3>
+      <div className="mt-8 space-y-6">
+        <div className="bg-white/5 p-4 rounded border border-white/10">
+          <label className="text-xs font-medium text-text-secondary">Industry</label>
+          <p className="mt-2 text-base text-text-primary">Healthcare SaaS</p>
+        </div>
+
+        <div className="bg-white/5 p-4 rounded border border-white/10">
+          <label className="text-xs font-medium text-text-secondary">Pain Points</label>
+          <div className="mt-2 flex flex-wrap gap-2">
+            <span className="bg-white/10 px-3 py-1 text-sm text-white rounded-full">Compliance</span>
+            <span className="bg-white/10 px-3 py-1 text-sm text-white rounded-full">Security</span>
+            <span className="bg-white/10 px-3 py-1 text-sm text-white rounded-full">Integration</span>
           </div>
         </div>
 
-        <div>
-          <label className="text-sm font-medium text-text-secondary">Theme</label>
-          <div className="mt-3 flex bg-secondary p-1">
-            <button className="flex flex-1 items-center justify-center gap-2 p-2 text-sm text-text-secondary">
-              <Moon className="h-4 w-4" />
-            </button>
-            <button className="flex flex-1 items-center justify-center gap-2 p-2 text-sm text-text-secondary">
-              <Sun className="h-4 w-4" />
-            </button>
-            <button className="flex flex-1 items-center justify-center gap-2 bg-muted p-2 text-sm font-medium text-text-primary">
-              Auto
-            </button>
+        <div className="bg-white/5 p-4 rounded border border-white/10">
+          <label className="text-xs font-medium text-text-secondary">Channels</label>
+          <div className="mt-2 flex flex-wrap gap-2">
+            <span className="bg-white/10 px-3 py-1 text-sm text-white rounded-full">Reddit</span>
+            <span className="bg-white/10 px-3 py-1 text-sm text-white rounded-full">LinkedIn</span>
+            <span className="bg-white/10 px-3 py-1 text-sm text-white rounded-full">X</span>
           </div>
         </div>
 
-        <div>
-          <label className="text-sm font-medium text-text-secondary">Style</label>
-          <div className="mt-3 flex items-center justify-between">
-            <ChevronLeft className="h-5 w-5 text-text-tertiary" />
-            <div className="flex items-center gap-4 text-sm">
-              <span className="text-text-tertiary">Split color</span>
-              <span className="font-medium text-text-primary">Monochromatic</span>
-              <span className="text-text-tertiary">Complimen...</span>
-            </div>
-            <ChevronRight className="h-5 w-5 text-text-tertiary" />
-          </div>
+        <div className="bg-white/5 p-4 rounded border border-white/10">
+          <label className="text-xs font-medium text-text-secondary">Competitors Tracked</label>
+          <p className="mt-2 text-base text-text-primary">3 companies</p>
         </div>
       </div>
     </div>
   );
 
   const renderCards = () => {
-    if (activeTab === "Designers") {
+    if (activeTab === "Research") {
       return [
-        <div key="designers" className="bg-[#3A2D21] p-8">
+        <div key="research" className="bg-[#3A2D21] p-8">
           <div className="flex">
             <p className="bg-white/10 px-4 py-1.5 text-sm font-medium text-white">
-              Badge
+              Industry Insights
             </p>
           </div>
           <h3 className="mt-4 font-display text-2xl font-medium text-text-primary">
-            Craft microcopy and UX text effortlessly.
+            Stay ahead with automated market research.
           </h3>
           <p className="mt-2 text-base text-text-secondary">
-            Get clear, on-brand suggestions for buttons, error states, and onboarding flows — in
-            seconds.
+            Our research agent scans multiple platforms hourly, delivering trending topics and competitor insights directly to your Idea Hub.
           </p>
-          <FeatureList features={DesignerFeatures} />
+          <FeatureList features={ResearchFeatures} />
         </div>,
-        <WondrAICard key="wondr" />,
-        <div key="writers" className="bg-[#3A2D21] p-8">
+        <WondrConfigCard key="wondr" />,
+        <div key="content" className="bg-[#3A2D21] p-8">
           <div className="flex">
             <p className="bg-white/10 px-4 py-1.5 text-sm font-medium text-white">
-              Badge
+              Content Creation
             </p>
           </div>
           <h3 className="mt-4 font-display text-2xl font-medium text-text-primary">
-            Write smarter intros, titles, and more.
+            Generate posts that match your brand voice.
           </h3>
           <p className="mt-2 text-base text-text-secondary">
-            From blog hooks to tweet threads, Wondr helps you ideate and polish in your own voice.
+            AI-powered suggestions with reasoning and citations. Create social media content that resonates with your ICP.
           </p>
-          <FeatureList features={WriterFeatures} />
+          <FeatureList features={ContentFeatures} />
         </div>
       ];
-    } else if (activeTab === "Writers") {
+    } else if (activeTab === "Content") {
       return [
-        <div key="writers" className="bg-[#3A2D21] p-8">
+        <div key="content" className="bg-[#3A2D21] p-8">
           <div className="flex">
             <p className="bg-white/10 px-4 py-1.5 text-sm font-medium text-white">
-              Badge
+              Content Creation
             </p>
           </div>
           <h3 className="mt-4 font-display text-2xl font-medium text-text-primary">
-            Write smarter intros, titles, and more.
+            Generate posts that match your brand voice.
           </h3>
           <p className="mt-2 text-base text-text-secondary">
-            From blog hooks to tweet threads, Wondr helps you ideate and polish in your own voice.
+            AI-powered suggestions with reasoning and citations. Create social media content that resonates with your ICP.
           </p>
-          <FeatureList features={WriterFeatures} />
+          <FeatureList features={ContentFeatures} />
         </div>,
-        <WondrAICard key="wondr" />,
-        <div key="marketers" className="bg-[#3A2D21] p-8">
+        <WondrConfigCard key="wondr" />,
+        <div key="campaigns" className="bg-[#3A2D21] p-8">
           <div className="flex">
             <p className="bg-white/10 px-4 py-1.5 text-sm font-medium text-white">
-              Badge
+              Campaign Management
             </p>
           </div>
           <h3 className="mt-4 font-display text-2xl font-medium text-text-primary">
-            Drive campaigns with clear, persuasive copy.
+            Orchestrate campaigns with intelligent targeting.
           </h3>
           <p className="mt-2 text-base text-text-secondary">
-            Generate high-converting headlines, CTAs, and social posts that resonate with your audience.
+            Define your ICP, track competitors, and manage content schedules. Wondr keeps your marketing operations running smoothly.
           </p>
-          <FeatureList features={MarketerFeatures} />
+          <FeatureList features={CampaignFeatures} />
         </div>
       ];
     } else {
       return [
-        <div key="marketers" className="bg-[#3A2D21] p-8">
+        <div key="campaigns" className="bg-[#3A2D21] p-8">
           <div className="flex">
             <p className="bg-white/10 px-4 py-1.5 text-sm font-medium text-white">
-              Badge
+              Campaign Management
             </p>
           </div>
           <h3 className="mt-4 font-display text-2xl font-medium text-text-primary">
-            Drive campaigns with clear, persuasive copy.
+            Orchestrate campaigns with intelligent targeting.
           </h3>
           <p className="mt-2 text-base text-text-secondary">
-            Generate high-converting headlines, CTAs, and social posts that resonate with your audience.
+            Define your ICP, track competitors, and manage content schedules. Wondr keeps your marketing operations running smoothly.
           </p>
-          <FeatureList features={MarketerFeatures} />
+          <FeatureList features={CampaignFeatures} />
         </div>,
-        <WondrAICard key="wondr" />,
-        <div key="designers" className="bg-[#3A2D21] p-8">
+        <WondrConfigCard key="wondr" />,
+        <div key="research" className="bg-[#3A2D21] p-8">
           <div className="flex">
             <p className="bg-white/10 px-4 py-1.5 text-sm font-medium text-white">
-              Badge
+              Industry Insights
             </p>
           </div>
           <h3 className="mt-4 font-display text-2xl font-medium text-text-primary">
-            Craft microcopy and UX text effortlessly.
+            Stay ahead with automated market research.
           </h3>
           <p className="mt-2 text-base text-text-secondary">
-            Get clear, on-brand suggestions for buttons, error states, and onboarding flows — in
-            seconds.
+            Our research agent scans multiple platforms hourly, delivering trending topics and competitor insights directly to your Idea Hub.
           </p>
-          <FeatureList features={DesignerFeatures} />
+          <FeatureList features={ResearchFeatures} />
         </div>
       ];
     }
@@ -245,21 +221,21 @@ const CreatorTabs = () => {
           <div className="max-w-xl">
             <div className="mb-4 flex">
               <p className="bg-secondary px-4 py-1.5 text-sm font-medium text-foreground">
-                BADGE
+                PLATFORM
               </p>
             </div>
             <h2 className="font-display text-4xl font-semibold leading-tight text-text-primary md:text-5xl">
-              Built for creators of all kinds
+              Built for modern marketing teams
             </h2>
             <p className="mt-4 text-lg text-text-secondary">
-              Easily craft, refine, and manage prompts tailored for ChatGPT and Midjourney.
+              From industry research to content creation, Wondr automates your entire marketing workflow with AI.
             </p>
           </div>
           <a
-            href="/features"
+            href="/sign-in"
             className="flex-shrink-0 bg-secondary px-6 py-3 text-base font-medium text-foreground transition-colors hover:bg-white/20"
           >
-            All features
+            Get Started
           </a>
         </div>
 

@@ -10,23 +10,23 @@ const InteractiveDemo = () => {
       <div className="z-10 flex max-w-[720px] flex-col items-center gap-5 text-center">
         <div className="inline-flex items-center justify-center rounded-full bg-white/10 px-3 py-1">
           <p className="font-semibold uppercase text-text-primary text-[11px] leading-none tracking-[0.05em]">
-            Badge
+            Real-Time Intelligence
           </p>
         </div>
         <h2 className="font-display text-5xl font-semibold leading-[1.2] tracking-[-0.01em] text-text-primary">
-          Try it instantly.
+          Industry insights, delivered hourly.
         </h2>
         <p className="max-w-[560px] text-lg leading-[1.6] text-text-secondary">
-          Build smarter prompts faster — and keep them all in one organized place.
+          Wondr's research agent scans Reddit, LinkedIn, X, and YouTube to surface trending topics and content opportunities tailored to your ICP.
         </p>
       </div>
 
       {/* Interactive Demo Placeholder */}
       <div className="relative z-10 w-full max-w-[1020px]">
         <div className="w-full aspect-[16/9] rounded-2xl bg-gradient-to-br from-gray-800 to-gray-900 border border-white/10 shadow-[0_16px_48px_rgba(0,0,0,0.4)] flex items-center justify-center">
-          <div className="text-center">
-            <p className="text-text-secondary text-lg">Interactive Demo</p>
-            <p className="text-text-tertiary text-sm mt-2">Chat interface mockup</p>
+          <div className="text-center px-8">
+            <p className="text-text-secondary text-lg">Idea Hub Dashboard</p>
+            <p className="text-text-tertiary text-sm mt-2">Real quotes from Reddit, X, BBC with automated post suggestions</p>
           </div>
         </div>
       </div>
