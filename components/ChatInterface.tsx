@@ -136,7 +136,7 @@ export function ChatInterface({
     if (prompt.trim() && !isGenerating) {
       onSendMessage(prompt.trim(), attachedFiles.length > 0 ? attachedFiles : undefined);
       setPrompt("");
-      setAttachedFiles([]);
+      setAttachedFiles([]);  // Clear after sending - will be visible in message history
       setUploadError(null);
     }
   };
