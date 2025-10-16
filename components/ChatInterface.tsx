@@ -5,6 +5,7 @@ import { ChatMessage } from "@/types/image-generation";
 import { ArrowLeftIcon, PlusIcon, Cross2Icon } from "@radix-ui/react-icons";
 import * as ScrollArea from "@radix-ui/react-scroll-area";
 import imageCompression from 'browser-image-compression';
+import { ImageModal } from "./ImageModal";
 
 // File upload constants
 const MAX_FILE_SIZE = 200 * 1024; // 200KB
@@ -48,6 +49,7 @@ export function ChatInterface({
   const [prompt, setPrompt] = useState(initialPrompt || "");
   const [attachedFiles, setAttachedFiles] = useState<File[]>([]);
   const [uploadError, setUploadError] = useState<string | null>(null);
+  const [selectedImage, setSelectedImage] = useState<{ url: string; name: string } | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -232,17 +234,22 @@ export function ChatInterface({
                             // Show thumbnail for images with S3 URL (Generate mode)
                             if (attachment.s3_url && attachment.file_type.startsWith('image/')) {
                               return (
-                                <div key={idx} className="flex items-center gap-2">
+                                <button
+                                  key={idx}
+                                  type="button"
+                                  onClick={() => setSelectedImage({ url: attachment.s3_url!, name: attachment.file_name })}
+                                  className="flex items-center gap-2 group cursor-pointer hover:bg-white/5 rounded-lg p-1 -m-1 transition-colors"
+                                >
                                   <img
                                     src={attachment.s3_url}
                                     alt={attachment.file_name}
-                                    className="w-16 h-16 object-cover rounded-lg border border-white/10"
+                                    className="w-16 h-16 object-cover rounded-lg border border-white/10 group-hover:border-white/30 transition-colors"
                                   />
-                                  <div className="flex-1 min-w-0">
-                                    <div className="text-xs text-white/60 truncate">{attachment.file_name}</div>
-                                    <div className="text-xs text-white/40">{Math.round(attachment.file_size / 1024)}KB</div>
+                                  <div className="flex-1 min-w-0 text-left">
+                                    <div className="text-xs text-white/60 group-hover:text-white/80 truncate transition-colors">{attachment.file_name}</div>
+                                    <div className="text-xs text-white/40">{Math.round(attachment.file_size / 1024)}KB • Click to view</div>
                                   </div>
-                                </div>
+                                </button>
                               );
                             }
 
@@ -371,6 +378,16 @@ export function ChatInterface({
           </div>
         </form>
       </div>
+
+      {/* Image modal for full-size preview */}
+      {selectedImage && (
+        <ImageModal
+          isOpen={!!selectedImage}
+          onClose={() => setSelectedImage(null)}
+          imageUrl={selectedImage.url}
+          fileName={selectedImage.name}
+        />
+      )}
     </div>
   );
 }
