@@ -4,7 +4,6 @@ import { useState, useRef, useEffect, useMemo } from "react";
 import { ChatMessage } from "@/types/image-generation";
 import { ArrowLeftIcon, PlusIcon, Cross2Icon } from "@radix-ui/react-icons";
 import * as ScrollArea from "@radix-ui/react-scroll-area";
-import imageCompression from 'browser-image-compression';
 import { ImageModal } from "./ImageModal";
 
 // File upload constants
@@ -61,12 +60,48 @@ export function ChatInterface({
 
   // Compress image files
   const compressImage = async (file: File): Promise<File> => {
-    const options = {
-      maxSizeMB: 0.15, // 150KB target
-      maxWidthOrHeight: 1920,
-      useWebWorker: true
-    };
-    return await imageCompression(file, options);
+    if (
+      typeof window === "undefined" ||
+      file.size <= MAX_FILE_SIZE ||
+      typeof window.createImageBitmap === "undefined"
+    ) {
+      return file;
+    }
+
+    try {
+      const imageBitmap = await createImageBitmap(file);
+      const scale = Math.min(1, Math.sqrt(MAX_FILE_SIZE / file.size));
+      const canvas = document.createElement("canvas");
+      canvas.width = Math.max(1, Math.floor(imageBitmap.width * scale));
+      canvas.height = Math.max(1, Math.floor(imageBitmap.height * scale));
+
+      const context = canvas.getContext("2d");
+      if (!context) {
+        return file;
+      }
+
+      context.drawImage(imageBitmap, 0, 0, canvas.width, canvas.height);
+
+      const blob = await new Promise<Blob | null>((resolve) =>
+        canvas.toBlob(resolve, file.type, 0.75),
+      );
+
+      if (!blob) {
+        return file;
+      }
+
+      if (blob.size > file.size) {
+        return file;
+      }
+
+      if (blob.size > MAX_FILE_SIZE) {
+        throw new Error(`${file.name} exceeds 200KB limit even after compression`);
+      }
+
+      return new File([blob], file.name, { type: file.type });
+    } catch {
+      return file;
+    }
   };
 
   // Handle file selection

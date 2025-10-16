@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { ChevronDown, Menu } from "lucide-react";
+import { ChevronDownIcon, HamburgerMenuIcon } from "@radix-ui/react-icons";
 
 const navLinks = [
   { name: "Features", href: "/features" },
@@ -12,13 +12,13 @@ const navLinks = [
   { name: "About", href: "/about" },
 ];
 
-const NavLinkComponent = ({link}: {link: {name: string, href: string}}) => (
+const NavLinkComponent = ({ link }: { link: { name: string; href: string } }) => (
   <Link
-      href={link.href}
-      className="flex items-center gap-1 text-base font-medium text-white/70 hover:text-white transition-colors"
+    href={link.href}
+    className="flex items-center gap-1 text-base font-medium text-white/70 transition-colors hover:text-white"
   >
-      {link.name}
-      {link.name === "Use cases" && <ChevronDown className="h-4 w-4" />}
+    {link.name}
+    {link.name === "Use cases" && <ChevronDownIcon className="h-4 w-4" />}
   </Link>
 );
 
@@ -48,7 +48,7 @@ export default function Navigation() {
 
         <nav className="hidden md:flex items-center gap-8">
           {navLinks.map((link) => (
-             <NavLinkComponent key={link.name} link={link} />
+            <NavLinkComponent key={link.name} link={link} />
           ))}
         </nav>
 
@@ -62,26 +62,30 @@ export default function Navigation() {
         </div>
 
         <div className="md:hidden">
-            <button onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} className="text-white p-2" aria-label="Open menu">
-                <Menu size={24} />
-            </button>
+          <button
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            className="p-2 text-white"
+            aria-label="Toggle menu"
+          >
+            <HamburgerMenuIcon className="h-6 w-6" />
+          </button>
         </div>
       </div>
 
       {isMobileMenuOpen && (
         <div className="md:hidden bg-black/80 backdrop-blur-lg pb-6">
             <nav className="flex flex-col items-center gap-6 pt-4">
-                {navLinks.map((link) => (
-                    <NavLinkComponent key={link.name} link={link} />
-                ))}
-                 <div className="flex flex-col items-center gap-4 pt-2 w-full px-6">
-                     <Link
-                        href="/sign-in"
-                        className="bg-white text-black px-5 py-3 text-[15px] font-medium rounded-lg hover:bg-opacity-90 transition-opacity w-full text-center"
-                     >
-                        Sign In
-                     </Link>
-                 </div>
+            {navLinks.map((link) => (
+              <NavLinkComponent key={link.name} link={link} />
+            ))}
+            <div className="flex w-full flex-col items-center gap-4 px-6 pt-2">
+              <Link
+                href="/sign-in"
+                className="w-full rounded-lg bg-white px-5 py-3 text-center text-[15px] font-medium text-black transition-opacity hover:bg-opacity-90"
+              >
+                Sign In
+              </Link>
+            </div>
             </nav>
         </div>
       )}

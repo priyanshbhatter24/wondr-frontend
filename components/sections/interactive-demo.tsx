@@ -17,7 +17,7 @@ const InteractiveDemo = () => {
           Industry insights, delivered hourly.
         </h2>
         <p className="max-w-[560px] text-lg leading-[1.6] text-text-secondary">
-          Wondr's research agent scans Reddit, LinkedIn, X, and YouTube to surface trending topics and content opportunities tailored to your ICP.
+          Wondr&apos;s research agent scans Reddit, LinkedIn, X, and YouTube to surface trending topics and content opportunities tailored to your ICP.
         </p>
       </div>
 

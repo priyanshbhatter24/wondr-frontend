@@ -1,20 +1,18 @@
-import Link from 'next/link';
+import Link from "next/link";
 import {
-  Sparkles,
-  TrendingUp,
-  Search,
-  Lightbulb,
-  Target,
-  Calendar,
-  Image as ImageIcon,
-  Zap
-} from 'lucide-react';
+  BarChartIcon,
+  ImageIcon,
+  LightningBoltIcon,
+  MagicWandIcon,
+  TargetIcon,
+} from "@radix-ui/react-icons";
+import { IdeaIcon } from "@/components/icons/IdeaIcon";
 
 const IndustryUpdatesCard = () => (
   <div className="flex flex-col gap-6">
     <div className="relative h-[320px] bg-card border border-border-subtle p-8 flex flex-col justify-between overflow-hidden">
       <div className="flex flex-col gap-6">
-        <TrendingUp className="h-8 w-8 text-white/10 self-start" strokeWidth={1.5} />
+        <BarChartIcon className="h-8 w-8 text-white/10 self-start" />
         <div className="flex flex-col gap-3">
           <div className="text-sm font-medium text-white/60 bg-white/5 px-3 py-2 rounded">
             &quot;AI regulation in healthcare&quot;
@@ -30,7 +28,7 @@ const IndustryUpdatesCard = () => (
 
       <div className="flex justify-start">
         <div className="bg-white text-black px-3 py-2 flex items-center gap-2 text-sm font-medium shadow-2xl">
-          <Sparkles className="h-4 w-4 text-purple-500" />
+          <MagicWandIcon className="h-4 w-4 text-purple-500" />
           <span>View Insights</span>
         </div>
       </div>
@@ -47,7 +45,7 @@ const PostGenerationCard = () => (
     <div className="relative h-[320px] bg-card border border-border-subtle p-8 overflow-hidden">
       <div className="flex flex-col gap-4 h-full">
         <div className="flex items-center gap-2 text-white/40">
-          <Lightbulb className="h-5 w-5" />
+          <IdeaIcon className="h-5 w-5" />
           <span className="text-xs font-semibold uppercase tracking-wider">AI Generated</span>
         </div>
 
@@ -87,7 +85,7 @@ const ICPTargetingCard = () => (
   <div className="flex flex-col gap-6">
       <div className="h-[320px] bg-card border border-border-subtle p-6 flex flex-col gap-6 overflow-hidden">
           <div className="flex items-center gap-2">
-              <Target className="h-6 w-6 text-white/80" />
+              <TargetIcon className="h-6 w-6 text-white/80" />
           </div>
           <div className="flex flex-col gap-3">
               <div className="bg-white/5 p-3 rounded border border-white/10">
@@ -131,7 +129,7 @@ const ImageGenerationCard = () => (
 
       <div className="flex justify-center gap-2">
         <button className="bg-white/10 border border-white/10 px-4 py-2 flex items-center justify-center gap-2 text-sm font-medium text-white hover:bg-white/15 transition-colors rounded">
-          <Zap className="w-4 h-4" />
+          <LightningBoltIcon className="w-4 h-4" />
           <span>Plan Mode</span>
         </button>
       </div>

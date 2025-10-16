@@ -1,24 +1,23 @@
 "use client";
 
+import Link from "next/link";
 import React, { useState } from "react";
 import {
-  ChevronLeft,
-  ChevronRight,
-  FileText,
-  Shapes,
-  Archive,
-  Copy,
-  Smile,
-  Star,
-  Layers,
-  Lightbulb,
-  Moon,
-  Sun,
-  Target,
-  TrendingUp,
-  Users,
-  Zap,
-} from "lucide-react";
+  ArchiveIcon,
+  BarChartIcon,
+  ChevronLeftIcon,
+  ChevronRightIcon,
+  CopyIcon,
+  CubeIcon,
+  FaceIcon,
+  FileTextIcon,
+  GroupIcon,
+  LayersIcon,
+  LightningBoltIcon,
+  StarIcon,
+  TargetIcon,
+} from "@radix-ui/react-icons";
+import { IdeaIcon } from "@/components/icons/IdeaIcon";
 import { cn } from "@/lib/utils";
 
 // Using a type for list items for better maintainability and type safety
@@ -28,24 +27,24 @@ type FeatureItem = {
 };
 
 const ResearchFeatures: FeatureItem[] = [
-  { icon: TrendingUp, text: "Hourly scans of Reddit, LinkedIn, X, and YouTube" },
-  { icon: Target, text: "ICP-based filtering for relevant insights" },
-  { icon: Lightbulb, text: "AI-generated topics with real citations" },
-  { icon: Zap, text: "Automated competitor analysis" },
+  { icon: BarChartIcon, text: "Hourly scans of Reddit, LinkedIn, X, and YouTube" },
+  { icon: TargetIcon, text: "ICP-based filtering for relevant insights" },
+  { icon: IdeaIcon, text: "AI-generated topics with real citations" },
+  { icon: LightningBoltIcon, text: "Automated competitor analysis" },
 ];
 
 const ContentFeatures: FeatureItem[] = [
-  { icon: FileText, text: "AI-powered post suggestions with reasoning" },
-  { icon: Layers, text: "Multi-channel content (LinkedIn, X, Instagram)" },
-  { icon: Star, text: "Brand voice integration with company context" },
-  { icon: Copy, text: "One-click image generation with Fal.ai" },
+  { icon: FileTextIcon, text: "AI-powered post suggestions with reasoning" },
+  { icon: LayersIcon, text: "Multi-channel content (LinkedIn, X, Instagram)" },
+  { icon: StarIcon, text: "Brand voice integration with company context" },
+  { icon: CopyIcon, text: "One-click image generation with Fal.ai" },
 ];
 
 const CampaignFeatures: FeatureItem[] = [
-  { icon: Users, text: "Define personas and pain points" },
-  { icon: Archive, text: "Track competitors and messaging gaps" },
-  { icon: Shapes, text: "Custom scheduling with timezone support" },
-  { icon: Smile, text: "Usage analytics and monthly limits" },
+  { icon: GroupIcon, text: "Define personas and pain points" },
+  { icon: ArchiveIcon, text: "Track competitors and messaging gaps" },
+  { icon: CubeIcon, text: "Custom scheduling with timezone support" },
+  { icon: FaceIcon, text: "Usage analytics and monthly limits" },
 ];
 
 const FeatureList = ({ features }: { features: FeatureItem[] }) => (
@@ -231,12 +230,12 @@ const CreatorTabs = () => {
               From industry research to content creation, Wondr automates your entire marketing workflow with AI.
             </p>
           </div>
-          <a
+          <Link
             href="/sign-in"
             className="flex-shrink-0 bg-secondary px-6 py-3 text-base font-medium text-foreground transition-colors hover:bg-white/20"
           >
             Get Started
-          </a>
+          </Link>
         </div>
 
         <div className="mt-12">
@@ -261,14 +260,16 @@ const CreatorTabs = () => {
               <button
                 onClick={handlePrevious}
                 className="flex h-10 w-10 items-center justify-center bg-secondary text-foreground transition-colors hover:bg-white/20"
+                aria-label="Previous tab"
               >
-                <ChevronLeft className="h-5 w-5" />
+                <ChevronLeftIcon className="h-5 w-5" />
               </button>
               <button
                 onClick={handleNext}
                 className="flex h-10 w-10 items-center justify-center bg-secondary text-foreground transition-colors hover:bg-white/20"
+                aria-label="Next tab"
               >
-                <ChevronRight className="h-5 w-5" />
+                <ChevronRightIcon className="h-5 w-5" />
               </button>
             </div>
           </div>

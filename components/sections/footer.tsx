@@ -1,8 +1,8 @@
 "use client";
 
-import React from 'react';
-import Link from 'next/link';
-import { ArrowUpRight } from 'lucide-react';
+import React from "react";
+import Link from "next/link";
+import { ArrowTopRightIcon } from "@radix-ui/react-icons";
 
 const WondrLogo = ({ className }: { className?: string }) => (
   <div className={`flex items-center gap-3 ${className}`}>
@@ -51,7 +51,11 @@ const Footer = () => {
             <div>
               <h4 className="font-medium text-white mb-4 text-base">Product</h4>
               <ul className="space-y-3">
-                <li><Link href="#" className="text-muted-foreground hover:text-white transition-colors">Home</Link></li>
+                <li>
+                  <Link href="#" className="text-muted-foreground transition-colors hover:text-white">
+                    Home
+                  </Link>
+                </li>
                 <li><Link href="#" className="text-muted-foreground hover:text-white transition-colors">Features</Link></li>
                 <li><Link href="#" className="text-muted-foreground hover:text-white transition-colors">Use cases</Link></li>
                 <li><Link href="#" className="text-muted-foreground hover:text-white transition-colors">Pricing</Link></li>
@@ -63,13 +67,13 @@ const Footer = () => {
               <ul className="space-y-3">
                 <li><Link href="#" className="text-muted-foreground hover:text-white transition-colors">Blog</Link></li>
                 <li>
-                  <Link href="#" className="text-muted-foreground hover:text-white transition-colors flex items-center gap-1">
-                    Help <ArrowUpRight className="w-3.5 h-3.5" />
+                  <Link href="#" className="flex items-center gap-1 text-muted-foreground transition-colors hover:text-white">
+                    Help <ArrowTopRightIcon className="h-3.5 w-3.5" />
                   </Link>
                 </li>
                 <li>
-                  <Link href="#" className="text-muted-foreground hover:text-white transition-colors flex items-center gap-1">
-                    Tutorials <ArrowUpRight className="w-3.5 h-3.5" />
+                  <Link href="#" className="flex items-center gap-1 text-muted-foreground transition-colors hover:text-white">
+                    Tutorials <ArrowTopRightIcon className="h-3.5 w-3.5" />
                   </Link>
                 </li>
                 <li><Link href="/sign-in" className="text-muted-foreground hover:text-white transition-colors">Sign In</Link></li>
