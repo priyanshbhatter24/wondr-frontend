@@ -38,6 +38,9 @@ function GeneratePostPageContent() {
   const [mode, setMode] = useState<"plan" | "generate">("plan");
   const [channel, setChannel] = useState<"instagram" | "linkedin" | "x">("instagram");
 
+  // Session file count tracking
+  const [sessionFileCount, setSessionFileCount] = useState(0);
+
   // Initialize or load session
   useEffect(() => {
     const initSession = async () => {
@@ -122,6 +125,10 @@ function GeneratePostPageContent() {
         const session = await imageGeneration.getSession(sessionId);
         if (session.mode) setMode(session.mode);
         if (session.channel) setChannel(session.channel);
+        // Load file count from session metadata
+        if (session.attachments_metadata) {
+          setSessionFileCount(session.attachments_metadata.length);
+        }
       } catch (err) {
         console.error("Failed to load session settings:", err);
       }
@@ -154,7 +161,7 @@ function GeneratePostPageContent() {
     }
   };
 
-  const handlePlanModeChat = async (prompt: string) => {
+  const handlePlanModeChat = async (prompt: string, files?: File[]) => {
     if (!sessionId || isGenerating) return;
 
     setIsGenerating(true);
@@ -171,15 +178,22 @@ function GeneratePostPageContent() {
       };
       setMessages(prev => [...prev, userMessage]);
 
-      // Call plan mode chat API
+      // Call plan mode chat API with files
       await planMode.chat({
         session_id: sessionId,
         message: prompt,
+        files,
       });
 
-      // Reload messages from server for consistency
-      const messagesData = await imageGeneration.getMessages(sessionId);
+      // Reload messages and session (to get updated file count)
+      const [messagesData, sessionData] = await Promise.all([
+        imageGeneration.getMessages(sessionId),
+        imageGeneration.getSession(sessionId),
+      ]);
       setMessages(messagesData.messages || []);
+      if (sessionData.attachments_metadata) {
+        setSessionFileCount(sessionData.attachments_metadata.length);
+      }
     } catch (err) {
       console.error("Failed to chat in plan mode:", err);
       setError("Failed to process message. Please try again.");
@@ -205,9 +219,9 @@ function GeneratePostPageContent() {
     return undefined;
   };
 
-  const handleMessage = async (prompt: string) => {
+  const handleMessage = async (prompt: string, files?: File[]) => {
     if (mode === "plan") {
-      await handlePlanModeChat(prompt);
+      await handlePlanModeChat(prompt, files);
     } else {
       // Generate mode - detect aspect ratio override
       const detectedAspectRatio = detectAspectRatio(prompt);
@@ -233,23 +247,29 @@ function GeneratePostPageContent() {
           ? generations[generations.length - 1].generation_id
           : undefined;
 
-        // Generate image with optional aspect ratio override
+        // Generate image with optional aspect ratio override and files
         await imageGeneration.generate({
           session_id: sessionId,
           prompt,
           previous_generation_id: previousGenerationId,
           aspect_ratio: detectedAspectRatio,
           channel: channel,
+          files: files,  // Pass uploaded files
         });
 
-        // Reload history and messages
-        const [historyData, messagesData] = await Promise.all([
+        // Reload history, messages, and session (to get updated file count)
+        const [historyData, messagesData, sessionData] = await Promise.all([
           imageGeneration.getHistory(sessionId),
           imageGeneration.getMessages(sessionId),
+          imageGeneration.getSession(sessionId),
         ]);
 
         setGenerations(historyData.generations || []);
         setMessages(messagesData.messages || []);
+        // Update session file count
+        if (sessionData.attachments_metadata) {
+          setSessionFileCount(sessionData.attachments_metadata.length);
+        }
 
         // Navigate to the new generation
         if (historyData.generations?.length > 0) {
@@ -341,6 +361,7 @@ function GeneratePostPageContent() {
                       }}
                       selectedGenerationId={generations[currentIndex]?.generation_id}
                       mode={mode}
+                      sessionFileCount={sessionFileCount}
                     />
                   </div>
                 </div>

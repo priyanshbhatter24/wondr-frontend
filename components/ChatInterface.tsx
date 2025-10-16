@@ -2,17 +2,25 @@
 
 import { useState, useRef, useEffect, useMemo } from "react";
 import { ChatMessage } from "@/types/image-generation";
-import { ArrowLeftIcon } from "@radix-ui/react-icons";
+import { ArrowLeftIcon, PlusIcon, Cross2Icon } from "@radix-ui/react-icons";
 import * as ScrollArea from "@radix-ui/react-scroll-area";
+import imageCompression from 'browser-image-compression';
+import { ImageModal } from "./ImageModal";
+
+// File upload constants
+const MAX_FILE_SIZE = 200 * 1024; // 200KB
+const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+const MAX_IMAGES_PER_SESSION = 3;  // Maximum 3 images per session (both Plan and Generate modes)
 
 interface ChatInterfaceProps {
   messages: ChatMessage[];
-  onSendMessage: (prompt: string) => void;
+  onSendMessage: (prompt: string, files?: File[]) => void;
   isGenerating: boolean;
   initialPrompt?: string;
   onSelectGeneration?: (generationId: string) => void;
   selectedGenerationId?: string;
   mode?: "plan" | "generate";
+  sessionFileCount?: number;
 }
 
 export function ChatInterface({
@@ -23,9 +31,14 @@ export function ChatInterface({
   onSelectGeneration,
   selectedGenerationId,
   mode = "generate",
+  sessionFileCount = 0,
 }: ChatInterfaceProps) {
   const [prompt, setPrompt] = useState(initialPrompt || "");
+  const [attachedFiles, setAttachedFiles] = useState<File[]>([]);
+  const [uploadError, setUploadError] = useState<string | null>(null);
+  const [selectedImage, setSelectedImage] = useState<{ url: string; name: string } | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const generationMessages = useMemo(
     () => messages.filter((message) => message.generation_id),
@@ -46,11 +59,70 @@ export function ChatInterface({
     }
   }, [messages]);
 
+  // Compress image files
+  const compressImage = async (file: File): Promise<File> => {
+    const options = {
+      maxSizeMB: 0.15, // 150KB target
+      maxWidthOrHeight: 1920,
+      useWebWorker: true
+    };
+    return await imageCompression(file, options);
+  };
+
+  // Handle file selection
+  const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    setUploadError(null);
+
+    // Check session limit (3 images max for both modes)
+    if (sessionFileCount + attachedFiles.length + files.length > MAX_IMAGES_PER_SESSION) {
+      setUploadError(`Maximum ${MAX_IMAGES_PER_SESSION} images per session. You already have ${sessionFileCount + attachedFiles.length} image(s).`);
+      return;
+    }
+
+    try {
+      // Validate and compress files
+      const processedFiles = await Promise.all(files.map(async (file) => {
+        // Validate type - only images allowed
+        if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
+          throw new Error(`Only images (JPG, PNG, WebP, GIF) are allowed. Got: ${file.type}`);
+        }
+
+        // Compress images
+        file = await compressImage(file);
+
+        // Validate size after compression
+        if (file.size > MAX_FILE_SIZE) {
+          throw new Error(`${file.name} exceeds 200KB limit even after compression`);
+        }
+
+        return file;
+      }));
+
+      setAttachedFiles([...attachedFiles, ...processedFiles]);
+    } catch (error) {
+      setUploadError(error instanceof Error ? error.message : 'File upload failed');
+    }
+
+    // Reset input
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
+
+  // Remove file from attachments
+  const handleRemoveFile = (index: number) => {
+    setAttachedFiles(attachedFiles.filter((_, i) => i !== index));
+    setUploadError(null);
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (prompt.trim() && !isGenerating) {
-      onSendMessage(prompt.trim());
+      onSendMessage(prompt.trim(), attachedFiles.length > 0 ? attachedFiles : undefined);
       setPrompt("");
+      setAttachedFiles([]);  // Clear after sending - will be visible in message history
+      setUploadError(null);
     }
   };
 
@@ -137,6 +209,29 @@ export function ChatInterface({
                       <div className="whitespace-pre-wrap break-words leading-relaxed">
                         {formatMessageContent(msg)}
                       </div>
+
+                      {/* Attachment previews - Simple numbered pills */}
+                      {msg.attachments && msg.attachments.length > 0 && (
+                        <div className="mt-3 pt-3 border-t border-white/10">
+                          <div className="flex flex-wrap gap-2">
+                            {msg.attachments.map((attachment, idx) => (
+                              <button
+                                key={idx}
+                                type="button"
+                                onClick={() => attachment.s3_url && setSelectedImage({ url: attachment.s3_url, name: attachment.file_name })}
+                                disabled={!attachment.s3_url}
+                                className={`px-3 py-1.5 rounded-full text-xs transition-colors ${
+                                  attachment.s3_url
+                                    ? 'bg-white/10 text-white/70 hover:bg-white/15 hover:text-white cursor-pointer'
+                                    : 'bg-white/5 text-white/40 cursor-default'
+                                }`}
+                              >
+                                Image {idx + 1}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      )}
                     </div>
                   </div>
                 );
@@ -171,8 +266,59 @@ export function ChatInterface({
       {/* Input form */}
       <div className="px-4 py-2 bg-[#3A3A3A] flex-shrink-0">
         <form onSubmit={handleSubmit} className="w-full">
-          <div className="w-full max-w-3xl mx-auto">
+          <div className="w-full max-w-3xl mx-auto space-y-2">
+            {/* File preview chips */}
+            {attachedFiles.length > 0 && (
+              <div className="flex flex-wrap gap-2 px-2">
+                {attachedFiles.map((file, index) => (
+                  <div
+                    key={index}
+                    className="flex items-center gap-2 bg-white/10 text-white/70 px-3 py-1.5 rounded-full text-xs"
+                  >
+                    <span className="max-w-[120px] truncate">{file.name}</span>
+                    <span className="text-white/40">({Math.round(file.size / 1024)}KB)</span>
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveFile(index)}
+                      className="hover:text-white transition-colors"
+                    >
+                      <Cross2Icon className="w-3 h-3" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* Error message */}
+            {uploadError && (
+              <div className="px-2 text-xs text-red-400">
+                {uploadError}
+              </div>
+            )}
+
+            {/* Input field */}
             <div className="rounded-full bg-[#252525] py-2 pr-2.5 pl-4 flex items-center gap-3">
+              {/* Hidden file input */}
+              <input
+                ref={fileInputRef}
+                type="file"
+                multiple
+                accept={ALLOWED_IMAGE_TYPES.join(',')}
+                className="hidden"
+                onChange={handleFileSelect}
+              />
+
+              {/* File upload button */}
+              <button
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+                disabled={isGenerating || sessionFileCount + attachedFiles.length >= MAX_IMAGES_PER_SESSION}
+                className="flex-shrink-0 text-white/40 hover:text-white/60 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                title="Attach images (max 3)"
+              >
+                <PlusIcon className="w-6 h-6" />
+              </button>
+
               <input
                 type="text"
                 value={prompt}
@@ -196,6 +342,16 @@ export function ChatInterface({
           </div>
         </form>
       </div>
+
+      {/* Image modal for full-size preview */}
+      {selectedImage && (
+        <ImageModal
+          isOpen={!!selectedImage}
+          onClose={() => setSelectedImage(null)}
+          imageUrl={selectedImage.url}
+          fileName={selectedImage.name}
+        />
+      )}
     </div>
   );
 }
