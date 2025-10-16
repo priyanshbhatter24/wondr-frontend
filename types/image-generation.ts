@@ -1,9 +1,17 @@
+export interface AttachmentMetadata {
+  file_name: string;
+  file_type: string;
+  file_size: number;
+  uploaded_at?: string;
+}
+
 export interface ImageGenerationSession {
   session_id: string;
   user_id: string;
   model_preference: "nano-banana";
   mode: "plan" | "generate";
   channel: "instagram" | "linkedin" | "x";
+  attachments_metadata?: AttachmentMetadata[];
   created_at: string;
 }
 
@@ -26,6 +34,7 @@ export interface ChatMessage {
   role: "user" | "assistant" | "tool_request" | "tool_result";
   content: string;
   generation_id?: string;
+  attachments?: AttachmentMetadata[];
   created_at: string;
 }
 
@@ -60,6 +69,7 @@ export interface UserSessionsResponse {
 export interface PlanModeChatRequest {
   session_id: string;
   message: string;
+  files?: File[];
 }
 
 export interface PlanModeChatResponse {
