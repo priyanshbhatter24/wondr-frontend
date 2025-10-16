@@ -1,29 +1,27 @@
-import Image from "next/image";
-
 const testimonials = [
   {
     name: "Lena H.",
     title: "Content Strategist",
     quote: "Switching tone used to be a chore. Now it's fun.",
-    image: "https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/object/public/test-clones/def4255d-2d00-4c18-95f2-d0a7e2cd6061-vanta-framer-ai/assets/icons/Q6viON9MsD4DUj4znRWbMTQ4QI-4.png?",
+    initial: "LH",
   },
   {
     name: "Raymond K.",
     title: "Growth Marketer",
     quote: "Wondr makes my writing sharper in half the time.",
-    image: "https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/object/public/test-clones/def4255d-2d00-4c18-95f2-d0a7e2cd6061-vanta-framer-ai/assets/icons/ffv86nrYC0gqzZ7YPZ7MnMSamk-5.png?",
+    initial: "RK",
   },
   {
     name: "Jordan T.",
     title: "Brand Lead",
     quote: "Perfect for testing voice without overthinking.",
-    image: "https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/object/public/test-clones/def4255d-2d00-4c18-95f2-d0a7e2cd6061-vanta-framer-ai/assets/icons/5bE49SkYSXIHE0I79vHJ3Iggo-6.png?",
+    initial: "JT",
   },
   {
     name: "Sofia M.",
     title: "UX Copywriter",
     quote: "I don't start a landing page without Wondr anymore.",
-    image: "https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/object/public/test-clones/def4255d-2d00-4c18-95f2-d0a7e2cd6061-vanta-framer-ai/assets/icons/mKQ3TXme2765ncgoEJUx2BuvnQ-7.png?",
+    initial: "SM",
   },
 ];
 
@@ -61,13 +59,9 @@ const TestimonialsSection = () => {
               className="flex h-full flex-col rounded-3xl bg-gradient-to-b from-[#d4ff33] to-[#c8ff00] p-10 text-black"
             >
               <div className="mb-auto">
-                <Image
-                  src={testimonial.image}
-                  alt={`Avatar of ${testimonial.name}`}
-                  width={48}
-                  height={48}
-                  className="h-12 w-12 rounded-full object-cover"
-                />
+                <div className="h-12 w-12 rounded-full bg-black/10 flex items-center justify-center">
+                  <span className="text-black font-semibold text-sm">{testimonial.initial}</span>
+                </div>
                 <p className="mt-8 font-serif text-2xl leading-snug tracking-tight text-black">
                   {testimonial.quote}
                 </p>

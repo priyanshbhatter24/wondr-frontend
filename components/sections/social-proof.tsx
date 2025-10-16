@@ -1,16 +1,3 @@
-import Image from "next/image";
-
-const avatarUrls = [
-  // The first avatar asset from the original site was not provided.
-  // Using another available avatar as a substitute to maintain the 4-avatar layout.
-  'https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/object/public/test-clones/def4255d-2d00-4c18-95f2-d0a7e2cd6061-vanta-framer-ai/assets/icons/EVtf6XqSybYVPmXrdJl5kXzH8-1.png?',
-  'https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/object/public/test-clones/def4255d-2d00-4c18-95f2-d0a7e2cd6061-vanta-framer-ai/assets/icons/sWYguhW9Ubk3HKJhQb1qFj5RRww-2.png?',
-  'https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/object/public/test-clones/def4255d-2d00-4c18-95f2-d0a7e2cd6061-vanta-framer-ai/assets/icons/edGgFlwNYeIcKCItDjZT2B9xO6M-3.png?',
-  // Re-using an avatar to complete the set of four as seen in the design.
-  'https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/object/public/test-clones/def4255d-2d00-4c18-95f2-d0a7e2cd6061-vanta-framer-ai/assets/icons/EVtf6XqSybYVPmXrdJl5kXzH8-1.png?',
-];
-
-
 const SocialProof = () => {
   return (
     <section className="bg-background py-[120px]">
@@ -18,15 +5,13 @@ const SocialProof = () => {
         <div className="flex flex-col items-center gap-10">
           <div className="flex flex-col items-center gap-5">
             <div className="flex justify-center -space-x-4">
-              {avatarUrls.map((url, index) => (
-                <Image
+              {[1, 2, 3, 4].map((index) => (
+                <div
                   key={index}
-                  className="inline-block size-12 rounded-full object-cover ring-2 ring-border ring-offset-2 ring-offset-background"
-                  src={url}
-                  alt={`Trusted user ${index + 1}`}
-                  width={48}
-                  height={48}
-                />
+                  className="inline-block size-12 rounded-full bg-gradient-to-br from-gray-700 to-gray-800 ring-2 ring-border ring-offset-2 ring-offset-background flex items-center justify-center"
+                >
+                  <span className="text-white text-xs font-semibold">{index}</span>
+                </div>
               ))}
             </div>
             <p className="text-base font-medium text-muted-foreground">

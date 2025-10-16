@@ -1,22 +1,14 @@
 "use client";
 
 import React from 'react';
-import Image from 'next/image';
 import Link from 'next/link';
 
 export default function HeroSection() {
   return (
-    <section className="relative flex flex-col min-h-screen bg-background-primary text-text-primary">
-      <div className="absolute inset-0 z-0">
-        <Image
-          src="https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/object/public/test-clones/def4255d-2d00-4c18-95f2-d0a7e2cd6061-vanta-framer-ai/assets/images/TLsZqzR3ubGFCceKSgsMlRQQQ-1.png?"
-          alt="Scenic desert landscape with horses grazing among cacti and mountains in the background."
-          fill
-          style={{ objectFit: 'cover' }}
-          priority
-          quality={100}
-        />
-        <div className="absolute inset-0 bg-black/40" />
+    <section className="relative flex flex-col min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900 text-text-primary">
+      <div className="absolute inset-0 z-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-gray-800/20 via-transparent to-transparent" />
+      <div className="absolute inset-0 z-0 opacity-30">
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px]" />
       </div>
 
       <div className="relative z-10 flex flex-col items-center justify-center flex-grow py-20 text-center px-5 sm:px-10">

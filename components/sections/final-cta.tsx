@@ -1,18 +1,12 @@
-import Image from 'next/image';
 import Link from 'next/link';
 
 const FinalCta = () => {
   return (
     <section className="bg-background-primary flex flex-col items-center justify-center text-center py-24 sm:py-32 md:py-40 px-6">
-      <div className="relative w-32 h-32">
-        <Image
-          src="https://framerusercontent.com/images/6c2TD7k91N1TNB5GKTki3r8sLv8.png"
-          alt="Wondr geometric horse logo"
-          width={512}
-          height={512}
-          className="object-contain"
-          unoptimized
-        />
+      <div className="relative w-32 h-32 flex items-center justify-center">
+        <div className="w-24 h-24 rounded-full bg-gradient-to-br from-gray-700 to-gray-800 flex items-center justify-center">
+          <span className="text-white text-4xl font-bold">W</span>
+        </div>
       </div>
 
       <h2 className="mt-12 font-display text-[48px] leading-[1.2] font-semibold -tracking-[0.48px] text-text-primary">

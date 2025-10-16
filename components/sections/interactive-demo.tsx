@@ -1,18 +1,10 @@
 "use client";
 
-import Image from "next/image";
-
 const InteractiveDemo = () => {
   return (
-    <section className="relative flex w-full flex-col items-center gap-[60px] overflow-hidden bg-black px-5 py-[120px] md:px-10">
-      {/* Background Image */}
-      <Image
-        src="https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/object/public/test-clones/def4255d-2d00-4c18-95f2-d0a7e2cd6061-vanta-framer-ai/assets/images/6mKInppQSXEURMBjwInrovyJSo-7.png?"
-        alt="Blurred scenic background of green hills"
-        fill
-        className="pointer-events-none object-cover"
-        quality={100}
-      />
+    <section className="relative flex w-full flex-col items-center gap-[60px] overflow-hidden bg-gradient-to-b from-black via-gray-900 to-black px-5 py-[120px] md:px-10">
+      {/* Background Pattern */}
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-gray-800/10 via-transparent to-transparent pointer-events-none" />
 
       {/* Heading Content */}
       <div className="z-10 flex max-w-[720px] flex-col items-center gap-5 text-center">
@@ -29,16 +21,14 @@ const InteractiveDemo = () => {
         </p>
       </div>
 
-      {/* Interactive Demo Image */}
+      {/* Interactive Demo Placeholder */}
       <div className="relative z-10 w-full max-w-[1020px]">
-        <Image
-          src="https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/object/public/test-clones/def4255d-2d00-4c18-95f2-d0a7e2cd6061-vanta-framer-ai/assets/images/JhTZiJszUUkoL3zCNwUAdiF7NhQ-4.png?"
-          alt="Interactive chat interface mockup for Wondr AI"
-          width={8320}
-          height={4623}
-          className="h-auto w-full rounded-2xl shadow-[0_16px_48px_rgba(0,0,0,0.4)]"
-          priority
-        />
+        <div className="w-full aspect-[16/9] rounded-2xl bg-gradient-to-br from-gray-800 to-gray-900 border border-white/10 shadow-[0_16px_48px_rgba(0,0,0,0.4)] flex items-center justify-center">
+          <div className="text-center">
+            <p className="text-text-secondary text-lg">Interactive Demo</p>
+            <p className="text-text-tertiary text-sm mt-2">Chat interface mockup</p>
+          </div>
+        </div>
       </div>
     </section>
   );

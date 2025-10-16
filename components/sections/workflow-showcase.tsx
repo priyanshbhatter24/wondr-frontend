@@ -1,5 +1,4 @@
 import React from 'react';
-import Image from 'next/image';
 import Link from 'next/link';
 
 const WorkflowShowcase = () => {
@@ -26,13 +25,12 @@ const WorkflowShowcase = () => {
           </Link>
         </div>
 
-        <Image
-          src="https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/object/public/test-clones/def4255d-2d00-4c18-95f2-d0a7e2cd6061-vanta-framer-ai/assets/images/iZm64yvj7o1kktyLMNKycPIhrOg-5.png"
-          alt="Wondr application interface mockup showing the chat and library features"
-          width={2560}
-          height={1504}
-          className="w-full h-auto rounded-xl border border-white/10 shadow-2xl shadow-black/30"
-        />
+        <div className="w-full aspect-[16/9] rounded-xl border border-white/10 shadow-2xl shadow-black/30 bg-gradient-to-br from-gray-800 to-gray-900 flex items-center justify-center">
+          <div className="text-center">
+            <p className="text-text-secondary text-xl">Application Interface</p>
+            <p className="text-text-tertiary text-sm mt-2">Chat and library features</p>
+          </div>
+        </div>
       </div>
     </section>
   );

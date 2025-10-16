@@ -1,19 +1,14 @@
 "use client";
 
 import React from 'react';
-import Image from 'next/image';
 import Link from 'next/link';
 import { ArrowUpRight } from 'lucide-react';
 
 const WondrLogo = ({ className }: { className?: string }) => (
   <div className={`flex items-center gap-3 ${className}`}>
-    <Image
-      src="https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/object/public/test-clones/def4255d-2d00-4c18-95f2-d0a7e2cd6061-vanta-framer-ai/assets/icons/nvyfvZuTVOUzxa7CvZbDLRCVvok-9.png?"
-      alt="Wondr horse icon"
-      width={24}
-      height={28}
-      className="object-contain"
-    />
+    <div className="w-6 h-6 rounded-full bg-gradient-to-br from-gray-600 to-gray-800 flex items-center justify-center">
+      <span className="text-white text-xs font-bold">W</span>
+    </div>
     <span className="text-xl font-medium text-white">Wondr</span>
   </div>
 );
@@ -29,7 +24,7 @@ const Footer = () => {
           <div className="lg:col-span-5 flex flex-col gap-6 items-start">
             <WondrLogo />
             <p className="text-muted-foreground text-base max-w-xs">
-              Think deeper, right smarter.
+              Think deeper, write smarter.
             </p>
             <form className="flex items-center gap-2 w-full max-w-sm mt-2">
               <div className="relative flex-grow">
@@ -106,16 +101,6 @@ const Footer = () => {
             <Link href="#" className="hover:text-white transition-colors">Dribbble</Link>
           </div>
         </div>
-      </div>
-
-      {/* Decorative Image */}
-      <div className="absolute -bottom-2 right-0 w-full max-w-[1000px] h-[649px] pointer-events-none z-0">
-          <Image
-            src="https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/object/public/test-clones/def4255d-2d00-4c18-95f2-d0a7e2cd6061-vanta-framer-ai/assets/images/6c2TD7k91N1TNB5GKTki3r8sLv8-6.png?"
-            alt="Decorative illustration of a cherry blossom tree on a green hill"
-            fill
-            style={{ objectFit: 'contain', objectPosition: 'bottom right' }}
-          />
       </div>
     </footer>
   );
