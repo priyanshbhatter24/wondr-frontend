@@ -2,17 +2,33 @@
 
 import { useState, useRef, useEffect, useMemo } from "react";
 import { ChatMessage } from "@/types/image-generation";
-import { ArrowLeftIcon } from "@radix-ui/react-icons";
+import { ArrowLeftIcon, PlusIcon, Cross2Icon } from "@radix-ui/react-icons";
 import * as ScrollArea from "@radix-ui/react-scroll-area";
+import imageCompression from 'browser-image-compression';
+
+// File upload constants
+const MAX_FILE_SIZE = 200 * 1024; // 200KB
+const MAX_FILES_PER_SESSION = 5;
+const ALLOWED_MIME_TYPES = {
+  images: ['image/jpeg', 'image/png', 'image/webp', 'image/gif'],
+  documents: ['application/pdf', 'text/plain', 'text/markdown']
+};
+
+// Get allowed file types based on mode
+const getAllowedTypes = (mode: 'plan' | 'generate') => {
+  if (mode === 'generate') return ALLOWED_MIME_TYPES.images;
+  return [...ALLOWED_MIME_TYPES.images, ...ALLOWED_MIME_TYPES.documents];
+};
 
 interface ChatInterfaceProps {
   messages: ChatMessage[];
-  onSendMessage: (prompt: string) => void;
+  onSendMessage: (prompt: string, files?: File[]) => void;
   isGenerating: boolean;
   initialPrompt?: string;
   onSelectGeneration?: (generationId: string) => void;
   selectedGenerationId?: string;
   mode?: "plan" | "generate";
+  sessionFileCount?: number;
 }
 
 export function ChatInterface({
@@ -23,9 +39,13 @@ export function ChatInterface({
   onSelectGeneration,
   selectedGenerationId,
   mode = "generate",
+  sessionFileCount = 0,
 }: ChatInterfaceProps) {
   const [prompt, setPrompt] = useState(initialPrompt || "");
+  const [attachedFiles, setAttachedFiles] = useState<File[]>([]);
+  const [uploadError, setUploadError] = useState<string | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const generationMessages = useMemo(
     () => messages.filter((message) => message.generation_id),
@@ -46,11 +66,73 @@ export function ChatInterface({
     }
   }, [messages]);
 
+  // Compress image files
+  const compressImage = async (file: File): Promise<File> => {
+    const options = {
+      maxSizeMB: 0.15, // 150KB target
+      maxWidthOrHeight: 1920,
+      useWebWorker: true
+    };
+    return await imageCompression(file, options);
+  };
+
+  // Handle file selection
+  const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    setUploadError(null);
+
+    // Check session limit
+    if (sessionFileCount + attachedFiles.length + files.length > MAX_FILES_PER_SESSION) {
+      setUploadError(`Maximum ${MAX_FILES_PER_SESSION} files per session`);
+      return;
+    }
+
+    try {
+      // Validate and compress files
+      const processedFiles = await Promise.all(files.map(async (file) => {
+        // Validate type
+        const allowedTypes = getAllowedTypes(mode);
+        if (!allowedTypes.includes(file.type)) {
+          throw new Error(`File type ${file.type} not allowed in ${mode} mode`);
+        }
+
+        // Compress images
+        if (file.type.startsWith('image/')) {
+          file = await compressImage(file);
+        }
+
+        // Validate size
+        if (file.size > MAX_FILE_SIZE) {
+          throw new Error(`${file.name} exceeds 200KB limit`);
+        }
+
+        return file;
+      }));
+
+      setAttachedFiles([...attachedFiles, ...processedFiles]);
+    } catch (error) {
+      setUploadError(error instanceof Error ? error.message : 'File upload failed');
+    }
+
+    // Reset input
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
+
+  // Remove file from attachments
+  const handleRemoveFile = (index: number) => {
+    setAttachedFiles(attachedFiles.filter((_, i) => i !== index));
+    setUploadError(null);
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (prompt.trim() && !isGenerating) {
-      onSendMessage(prompt.trim());
+      onSendMessage(prompt.trim(), attachedFiles.length > 0 ? attachedFiles : undefined);
       setPrompt("");
+      setAttachedFiles([]);
+      setUploadError(null);
     }
   };
 
@@ -171,8 +253,59 @@ export function ChatInterface({
       {/* Input form */}
       <div className="px-4 py-2 bg-[#3A3A3A] flex-shrink-0">
         <form onSubmit={handleSubmit} className="w-full">
-          <div className="w-full max-w-3xl mx-auto">
+          <div className="w-full max-w-3xl mx-auto space-y-2">
+            {/* File preview chips */}
+            {attachedFiles.length > 0 && (
+              <div className="flex flex-wrap gap-2 px-2">
+                {attachedFiles.map((file, index) => (
+                  <div
+                    key={index}
+                    className="flex items-center gap-2 bg-white/10 text-white/70 px-3 py-1.5 rounded-full text-xs"
+                  >
+                    <span className="max-w-[120px] truncate">{file.name}</span>
+                    <span className="text-white/40">({Math.round(file.size / 1024)}KB)</span>
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveFile(index)}
+                      className="hover:text-white transition-colors"
+                    >
+                      <Cross2Icon className="w-3 h-3" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* Error message */}
+            {uploadError && (
+              <div className="px-2 text-xs text-red-400">
+                {uploadError}
+              </div>
+            )}
+
+            {/* Input field */}
             <div className="rounded-full bg-[#252525] py-2 pr-2.5 pl-4 flex items-center gap-3">
+              {/* Hidden file input */}
+              <input
+                ref={fileInputRef}
+                type="file"
+                multiple
+                accept={getAllowedTypes(mode).join(',')}
+                className="hidden"
+                onChange={handleFileSelect}
+              />
+
+              {/* File upload button */}
+              <button
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+                disabled={isGenerating || sessionFileCount + attachedFiles.length >= MAX_FILES_PER_SESSION}
+                className="flex-shrink-0 text-white/40 hover:text-white/60 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                title="Attach files"
+              >
+                <PlusIcon className="w-6 h-6" />
+              </button>
+
               <input
                 type="text"
                 value={prompt}
