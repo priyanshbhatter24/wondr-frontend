@@ -224,6 +224,43 @@ export function ChatInterface({
                       <div className="whitespace-pre-wrap break-words leading-relaxed">
                         {formatMessageContent(msg)}
                       </div>
+
+                      {/* Attachment previews */}
+                      {msg.attachments && msg.attachments.length > 0 && (
+                        <div className="mt-3 pt-3 border-t border-white/10 space-y-2">
+                          {msg.attachments.map((attachment, idx) => {
+                            // Show thumbnail for images with S3 URL (Generate mode)
+                            if (attachment.s3_url && attachment.file_type.startsWith('image/')) {
+                              return (
+                                <div key={idx} className="flex items-center gap-2">
+                                  <img
+                                    src={attachment.s3_url}
+                                    alt={attachment.file_name}
+                                    className="w-16 h-16 object-cover rounded-lg border border-white/10"
+                                  />
+                                  <div className="flex-1 min-w-0">
+                                    <div className="text-xs text-white/60 truncate">{attachment.file_name}</div>
+                                    <div className="text-xs text-white/40">{Math.round(attachment.file_size / 1024)}KB</div>
+                                  </div>
+                                </div>
+                              );
+                            }
+
+                            // Show metadata for Plan mode (no S3 URL)
+                            return (
+                              <div key={idx} className="flex items-center gap-2 text-xs text-white/60">
+                                <div className="w-8 h-8 flex items-center justify-center bg-white/5 rounded border border-white/10">
+                                  {attachment.file_type.startsWith('image/') ? '🖼️' : '📄'}
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                  <div className="truncate">{attachment.file_name}</div>
+                                  <div className="text-white/40">{Math.round(attachment.file_size / 1024)}KB</div>
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      )}
                     </div>
                   </div>
                 );
