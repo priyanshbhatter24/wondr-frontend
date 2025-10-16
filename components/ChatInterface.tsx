@@ -8,10 +8,14 @@ import imageCompression from 'browser-image-compression';
 
 // File upload constants
 const MAX_FILE_SIZE = 200 * 1024; // 200KB
-const MAX_FILES_PER_SESSION = 5;
 const ALLOWED_MIME_TYPES = {
   images: ['image/jpeg', 'image/png', 'image/webp', 'image/gif'],
   documents: ['application/pdf', 'text/plain', 'text/markdown']
+};
+
+// Get max files per session based on mode
+const getMaxFilesPerSession = (mode: 'plan' | 'generate') => {
+  return mode === 'generate' ? 3 : 5;  // Generate: 3 images, Plan: 5 files
 };
 
 // Get allowed file types based on mode
@@ -82,8 +86,9 @@ export function ChatInterface({
     setUploadError(null);
 
     // Check session limit
-    if (sessionFileCount + attachedFiles.length + files.length > MAX_FILES_PER_SESSION) {
-      setUploadError(`Maximum ${MAX_FILES_PER_SESSION} files per session`);
+    const maxFiles = getMaxFilesPerSession(mode);
+    if (sessionFileCount + attachedFiles.length + files.length > maxFiles) {
+      setUploadError(`Maximum ${maxFiles} ${mode === 'generate' ? 'images' : 'files'} per session`);
       return;
     }
 
@@ -299,9 +304,9 @@ export function ChatInterface({
               <button
                 type="button"
                 onClick={() => fileInputRef.current?.click()}
-                disabled={isGenerating || sessionFileCount + attachedFiles.length >= MAX_FILES_PER_SESSION}
+                disabled={isGenerating || sessionFileCount + attachedFiles.length >= getMaxFilesPerSession(mode)}
                 className="flex-shrink-0 text-white/40 hover:text-white/60 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
-                title="Attach files"
+                title={`Attach ${mode === 'generate' ? 'images' : 'files'}`}
               >
                 <PlusIcon className="w-6 h-6" />
               </button>

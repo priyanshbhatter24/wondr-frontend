@@ -129,11 +129,51 @@ export function useApiClient() {
             method: "PATCH",
             body: JSON.stringify(data),
           }),
-        generate: (data: GenerateImageRequest) =>
-          apiClient<GenerateImageResponse>("/api/image-generation/generate", {
-            method: "POST",
-            body: JSON.stringify(data),
-          }),
+        generate: async (data: GenerateImageRequest) => {
+          const token = await getToken();
+
+          // If files provided, use FormData; otherwise use JSON
+          if (data.files && data.files.length > 0) {
+            const formData = new FormData();
+            formData.append('session_id', data.session_id);
+            formData.append('prompt', data.prompt);
+            if (data.previous_generation_id) formData.append('previous_generation_id', data.previous_generation_id);
+            if (data.aspect_ratio) formData.append('aspect_ratio', data.aspect_ratio);
+            if (data.channel) formData.append('channel', data.channel);
+
+            data.files.forEach((file) => {
+              formData.append('files', file);
+            });
+
+            const url = `${API_URL}/api/image-generation/generate`;
+            console.log("[API Client] Request (FormData):", { url, method: "POST", hasToken: !!token, fileCount: data.files.length });
+
+            const response = await fetch(url, {
+              method: 'POST',
+              headers: {
+                ...(token && { Authorization: `Bearer ${token}` }),
+                // Don't set Content-Type - browser will set it with boundary
+              },
+              body: formData
+            });
+
+            console.log("[API Client] Response:", { status: response.status, statusText: response.statusText });
+
+            if (!response.ok) {
+              const errorText = await response.text().catch(() => "No error details");
+              console.error("[API Client] Error details:", errorText);
+              throw new Error(`API Error: ${response.status} ${response.statusText} - ${errorText}`);
+            }
+
+            return response.json() as Promise<GenerateImageResponse>;
+          } else {
+            // Use JSON for backward compatibility (no files)
+            return apiClient<GenerateImageResponse>("/api/image-generation/generate", {
+              method: "POST",
+              body: JSON.stringify(data),
+            });
+          }
+        },
         getHistory: (sessionId: string) =>
           apiClient<ImageGenerationHistoryResponse>(`/api/image-generation/sessions/${sessionId}/history`),
         getMessages: (sessionId: string) =>

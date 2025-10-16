@@ -247,23 +247,29 @@ function GeneratePostPageContent() {
           ? generations[generations.length - 1].generation_id
           : undefined;
 
-        // Generate image with optional aspect ratio override
+        // Generate image with optional aspect ratio override and files
         await imageGeneration.generate({
           session_id: sessionId,
           prompt,
           previous_generation_id: previousGenerationId,
           aspect_ratio: detectedAspectRatio,
           channel: channel,
+          files: files,  // Pass uploaded files
         });
 
-        // Reload history and messages
-        const [historyData, messagesData] = await Promise.all([
+        // Reload history, messages, and session (to get updated file count)
+        const [historyData, messagesData, sessionData] = await Promise.all([
           imageGeneration.getHistory(sessionId),
           imageGeneration.getMessages(sessionId),
+          imageGeneration.getSession(sessionId),
         ]);
 
         setGenerations(historyData.generations || []);
         setMessages(messagesData.messages || []);
+        // Update session file count
+        if (sessionData.attachments_metadata) {
+          setSessionFileCount(sessionData.attachments_metadata.length);
+        }
 
         // Navigate to the new generation
         if (historyData.generations?.length > 0) {

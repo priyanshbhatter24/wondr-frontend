@@ -2,6 +2,8 @@ export interface AttachmentMetadata {
   file_name: string;
   file_type: string;
   file_size: number;
+  s3_url?: string;
+  s3_key?: string;
   uploaded_at?: string;
 }
 
@@ -44,6 +46,7 @@ export interface GenerateImageRequest {
   previous_generation_id?: string;
   aspect_ratio?: string;
   channel?: string;
+  files?: File[];
 }
 
 export interface GenerateImageResponse {
