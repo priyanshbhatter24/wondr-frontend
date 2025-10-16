@@ -126,10 +126,35 @@ export const api = {
     },
   },
   planMode: {
-    chat: (data: PlanModeChatRequest) =>
-      apiClient<PlanModeChatResponse>("/api/plan-mode/chat", {
-        method: "POST",
-        body: JSON.stringify(data),
-      }),
+    chat: async (data: PlanModeChatRequest) => {
+      const { getToken } = await auth();
+      const token = await getToken();
+
+      const formData = new FormData();
+      formData.append('session_id', data.session_id);
+      formData.append('message', data.message);
+
+      if (data.files) {
+        data.files.forEach((file) => {
+          formData.append('files', file);
+        });
+      }
+
+      const response = await fetch(`${API_URL}/api/plan-mode/chat`, {
+        method: 'POST',
+        headers: {
+          ...(token && { Authorization: `Bearer ${token}` }),
+          // Don't set Content-Type - browser will set it with boundary
+        },
+        body: formData
+      });
+
+      if (!response.ok) {
+        const error = await response.json().catch(() => ({ detail: 'Upload failed' }));
+        throw new Error(error.detail || 'Upload failed');
+      }
+
+      return response.json() as Promise<PlanModeChatResponse>;
+    },
   },
 };

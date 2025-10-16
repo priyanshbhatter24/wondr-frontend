@@ -153,11 +153,41 @@ export function useApiClient() {
         },
       },
       planMode: {
-        chat: (data: PlanModeChatRequest) =>
-          apiClient<PlanModeChatResponse>("/api/plan-mode/chat", {
-            method: "POST",
-            body: JSON.stringify(data),
-          }),
+        chat: async (data: PlanModeChatRequest) => {
+          const token = await getToken();
+
+          const formData = new FormData();
+          formData.append('session_id', data.session_id);
+          formData.append('message', data.message);
+
+          if (data.files) {
+            data.files.forEach((file) => {
+              formData.append('files', file);
+            });
+          }
+
+          const url = `${API_URL}/api/plan-mode/chat`;
+          console.log("[API Client] Request:", { url, method: "POST", hasToken: !!token, fileCount: data.files?.length || 0 });
+
+          const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+              ...(token && { Authorization: `Bearer ${token}` }),
+              // Don't set Content-Type - browser will set it with boundary
+            },
+            body: formData
+          });
+
+          console.log("[API Client] Response:", { status: response.status, statusText: response.statusText });
+
+          if (!response.ok) {
+            const errorText = await response.text().catch(() => "No error details");
+            console.error("[API Client] Error details:", errorText);
+            throw new Error(`API Error: ${response.status} ${response.statusText} - ${errorText}`);
+          }
+
+          return response.json() as Promise<PlanModeChatResponse>;
+        },
       },
     };
   }, [getToken]);
