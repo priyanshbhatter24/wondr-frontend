@@ -9,21 +9,8 @@ import { ImageModal } from "./ImageModal";
 
 // File upload constants
 const MAX_FILE_SIZE = 200 * 1024; // 200KB
-const ALLOWED_MIME_TYPES = {
-  images: ['image/jpeg', 'image/png', 'image/webp', 'image/gif'],
-  documents: ['application/pdf', 'text/plain', 'text/markdown']
-};
-
-// Get max files per session based on mode
-const getMaxFilesPerSession = (mode: 'plan' | 'generate') => {
-  return mode === 'generate' ? 3 : 5;  // Generate: 3 images, Plan: 5 files
-};
-
-// Get allowed file types based on mode
-const getAllowedTypes = (mode: 'plan' | 'generate') => {
-  if (mode === 'generate') return ALLOWED_MIME_TYPES.images;
-  return [...ALLOWED_MIME_TYPES.images, ...ALLOWED_MIME_TYPES.documents];
-};
+const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+const MAX_IMAGES_PER_SESSION = 3;  // Maximum 3 images per session (both Plan and Generate modes)
 
 interface ChatInterfaceProps {
   messages: ChatMessage[];
@@ -87,30 +74,26 @@ export function ChatInterface({
     const files = Array.from(e.target.files || []);
     setUploadError(null);
 
-    // Check session limit
-    const maxFiles = getMaxFilesPerSession(mode);
-    if (sessionFileCount + attachedFiles.length + files.length > maxFiles) {
-      setUploadError(`Maximum ${maxFiles} ${mode === 'generate' ? 'images' : 'files'} per session`);
+    // Check session limit (3 images max for both modes)
+    if (sessionFileCount + attachedFiles.length + files.length > MAX_IMAGES_PER_SESSION) {
+      setUploadError(`Maximum ${MAX_IMAGES_PER_SESSION} images per session. You already have ${sessionFileCount + attachedFiles.length} image(s).`);
       return;
     }
 
     try {
       // Validate and compress files
       const processedFiles = await Promise.all(files.map(async (file) => {
-        // Validate type
-        const allowedTypes = getAllowedTypes(mode);
-        if (!allowedTypes.includes(file.type)) {
-          throw new Error(`File type ${file.type} not allowed in ${mode} mode`);
+        // Validate type - only images allowed
+        if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
+          throw new Error(`Only images (JPG, PNG, WebP, GIF) are allowed. Got: ${file.type}`);
         }
 
         // Compress images
-        if (file.type.startsWith('image/')) {
-          file = await compressImage(file);
-        }
+        file = await compressImage(file);
 
-        // Validate size
+        // Validate size after compression
         if (file.size > MAX_FILE_SIZE) {
-          throw new Error(`${file.name} exceeds 200KB limit`);
+          throw new Error(`${file.name} exceeds 200KB limit even after compression`);
         }
 
         return file;
@@ -227,45 +210,26 @@ export function ChatInterface({
                         {formatMessageContent(msg)}
                       </div>
 
-                      {/* Attachment previews */}
+                      {/* Attachment previews - Simple numbered pills */}
                       {msg.attachments && msg.attachments.length > 0 && (
-                        <div className="mt-3 pt-3 border-t border-white/10 space-y-2">
-                          {msg.attachments.map((attachment, idx) => {
-                            // Show thumbnail for images with S3 URL (Generate mode)
-                            if (attachment.s3_url && attachment.file_type.startsWith('image/')) {
-                              return (
-                                <button
-                                  key={idx}
-                                  type="button"
-                                  onClick={() => setSelectedImage({ url: attachment.s3_url!, name: attachment.file_name })}
-                                  className="flex items-center gap-2 group cursor-pointer hover:bg-white/5 rounded-lg p-1 -m-1 transition-colors"
-                                >
-                                  <img
-                                    src={attachment.s3_url}
-                                    alt={attachment.file_name}
-                                    className="w-16 h-16 object-cover rounded-lg border border-white/10 group-hover:border-white/30 transition-colors"
-                                  />
-                                  <div className="flex-1 min-w-0 text-left">
-                                    <div className="text-xs text-white/60 group-hover:text-white/80 truncate transition-colors">{attachment.file_name}</div>
-                                    <div className="text-xs text-white/40">{Math.round(attachment.file_size / 1024)}KB • Click to view</div>
-                                  </div>
-                                </button>
-                              );
-                            }
-
-                            // Show metadata for Plan mode (no S3 URL)
-                            return (
-                              <div key={idx} className="flex items-center gap-2 text-xs text-white/60">
-                                <div className="w-8 h-8 flex items-center justify-center bg-white/5 rounded border border-white/10">
-                                  {attachment.file_type.startsWith('image/') ? '🖼️' : '📄'}
-                                </div>
-                                <div className="flex-1 min-w-0">
-                                  <div className="truncate">{attachment.file_name}</div>
-                                  <div className="text-white/40">{Math.round(attachment.file_size / 1024)}KB</div>
-                                </div>
-                              </div>
-                            );
-                          })}
+                        <div className="mt-3 pt-3 border-t border-white/10">
+                          <div className="flex flex-wrap gap-2">
+                            {msg.attachments.map((attachment, idx) => (
+                              <button
+                                key={idx}
+                                type="button"
+                                onClick={() => attachment.s3_url && setSelectedImage({ url: attachment.s3_url, name: attachment.file_name })}
+                                disabled={!attachment.s3_url}
+                                className={`px-3 py-1.5 rounded-full text-xs transition-colors ${
+                                  attachment.s3_url
+                                    ? 'bg-white/10 text-white/70 hover:bg-white/15 hover:text-white cursor-pointer'
+                                    : 'bg-white/5 text-white/40 cursor-default'
+                                }`}
+                              >
+                                Image {idx + 1}
+                              </button>
+                            ))}
+                          </div>
                         </div>
                       )}
                     </div>
@@ -339,7 +303,7 @@ export function ChatInterface({
                 ref={fileInputRef}
                 type="file"
                 multiple
-                accept={getAllowedTypes(mode).join(',')}
+                accept={ALLOWED_IMAGE_TYPES.join(',')}
                 className="hidden"
                 onChange={handleFileSelect}
               />
@@ -348,9 +312,9 @@ export function ChatInterface({
               <button
                 type="button"
                 onClick={() => fileInputRef.current?.click()}
-                disabled={isGenerating || sessionFileCount + attachedFiles.length >= getMaxFilesPerSession(mode)}
+                disabled={isGenerating || sessionFileCount + attachedFiles.length >= MAX_IMAGES_PER_SESSION}
                 className="flex-shrink-0 text-white/40 hover:text-white/60 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
-                title={`Attach ${mode === 'generate' ? 'images' : 'files'}`}
+                title="Attach images (max 3)"
               >
                 <PlusIcon className="w-6 h-6" />
               </button>
