@@ -20,14 +20,14 @@ export default function Navigation() {
         scrolled ? "bg-black/50 backdrop-blur-lg border-b border-white/10" : "bg-transparent"
       }`}
     >
-      <div className="container mx-auto flex h-[80px] items-center justify-between px-6">
+      <div className="container mx-auto flex h-[60px] items-center justify-between px-6">
         <Link href="/" className="flex items-center gap-3 text-white">
           <span className="text-2xl font-semibold">Wondr</span>
         </Link>
 
         <Link
           href="/sign-in"
-          className="bg-white text-black px-5 py-3 text-[15px] font-medium rounded-lg hover:bg-opacity-90 transition-opacity"
+          className="bg-white text-black px-4 py-1.5 text-[15px] font-medium rounded-full hover:bg-opacity-90 transition-opacity"
         >
           Sign In
         </Link>

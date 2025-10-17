@@ -219,7 +219,7 @@ const CreatorTabs = () => {
         <div className="flex flex-col items-start justify-between gap-8 md:flex-row md:items-end">
           <div className="max-w-xl">
             <div className="mb-4 flex">
-              <p className="bg-secondary px-4 py-1.5 text-sm font-medium text-foreground">
+              <p className="bg-secondary px-4 py-1.5 text-sm font-medium text-foreground rounded-full">
                 PLATFORM
               </p>
             </div>
@@ -232,7 +232,7 @@ const CreatorTabs = () => {
           </div>
           <Link
             href="/sign-in"
-            className="flex-shrink-0 bg-secondary px-6 py-3 text-base font-medium text-foreground transition-colors hover:bg-white/20"
+            className="flex-shrink-0 bg-secondary px-6 py-3 text-base font-medium text-foreground transition-colors hover:bg-white/20 rounded-full"
           >
             Get Started
           </Link>
@@ -259,14 +259,14 @@ const CreatorTabs = () => {
             <div className="flex items-center gap-2">
               <button
                 onClick={handlePrevious}
-                className="flex h-10 w-10 items-center justify-center bg-secondary text-foreground transition-colors hover:bg-white/20"
+                className="flex h-10 w-10 items-center justify-center bg-secondary text-foreground transition-colors hover:bg-white/20 rounded-full"
                 aria-label="Previous tab"
               >
                 <ChevronLeftIcon className="h-5 w-5" />
               </button>
               <button
                 onClick={handleNext}
-                className="flex h-10 w-10 items-center justify-center bg-secondary text-foreground transition-colors hover:bg-white/20"
+                className="flex h-10 w-10 items-center justify-center bg-secondary text-foreground transition-colors hover:bg-white/20 rounded-full"
                 aria-label="Next tab"
               >
                 <ChevronRightIcon className="h-5 w-5" />

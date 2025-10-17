@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap');
 @import "tailwindcss";
 @custom-variant dark (&:is(.dark *));
 
@@ -66,9 +66,9 @@
   --color-border-subtle: rgba(255, 255, 255, 0.1);
 
   /* Vanta Specific Typography */
-  --font-display: "Inter", sans-serif;
-  --font-serif: "Playfair Display", serif;
-  --font-body: "Inter", sans-serif;
+  --font-display: "Montserrat", sans-serif;
+  --font-serif: "Montserrat", sans-serif;
+  --font-body: "Montserrat", sans-serif;
 
   --radius-lg: 1rem; /* 16px */
   --radius-md: 0.5rem; /* 8px */

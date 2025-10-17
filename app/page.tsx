@@ -14,7 +14,7 @@ export default function Page() {
     <main className="min-h-screen bg-black">
       <Navigation />
       <HeroSection />
-      <SocialProof />
+      {/* <SocialProof /> */}
       <InteractiveDemo />
       <FeaturesGrid />
       <CreatorTabs />
