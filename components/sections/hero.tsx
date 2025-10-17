@@ -2,8 +2,56 @@
 
 import React from 'react';
 import Link from 'next/link';
+import { motion } from 'framer-motion';
 
 export default function HeroSection() {
+  // Split text into individual characters while preserving spaces
+  const line1 = "Your AI CMO.";
+  const line2 = "Always on.";
+
+  const line1Chars = line1.split("");
+  const line2Chars = line2.split("");
+
+  // Animation variants for the container
+  const containerVariants = {
+    hidden: { opacity: 1 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.03, // 30ms between each letter
+      }
+    }
+  };
+
+  // Animation variants for each letter
+  const letterVariants = {
+    hidden: {
+      opacity: 0,
+      x: -20
+    },
+    visible: {
+      opacity: 1,
+      x: 0,
+      transition: {
+        duration: 0.4,
+        ease: "easeOut"
+      }
+    }
+  };
+
+  // Variants for badge and description
+  const fadeInVariants = {
+    hidden: { opacity: 0, y: 10 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 0.6,
+        ease: "easeOut"
+      }
+    }
+  };
+
   return (
     <section className="relative flex flex-col min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900 text-text-primary">
       <div className="absolute inset-0 z-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-gray-800/20 via-transparent to-transparent" />
@@ -14,28 +62,79 @@ export default function HeroSection() {
       <div className="relative z-10 flex flex-col items-center justify-center flex-grow py-20 text-center px-5 sm:px-10">
         <div className="flex flex-col items-center max-w-[800px] gap-10">
           <div className="flex flex-col items-center gap-6">
-            <div className="border border-white/10 rounded-full bg-black/20 backdrop-blur-sm">
+            <motion.div
+              className="border border-white/10 rounded-full bg-black/20 backdrop-blur-sm"
+              initial="hidden"
+              animate="visible"
+              variants={fadeInVariants}
+            >
               <p className="px-3.5 py-1.5 text-[11px] font-semibold uppercase tracking-wider text-white">
                 AI-Powered Marketing Platform
               </p>
-            </div>
+            </motion.div>
+
             <h1 className="font-display font-semibold text-white text-4xl md:text-6xl lg:text-7xl leading-[1.1] tracking-[-0.04em]">
-              Your AI CMO.
+              <motion.span
+                className="inline-block"
+                variants={containerVariants}
+                initial="hidden"
+                animate="visible"
+              >
+                {line1Chars.map((char, index) => (
+                  <motion.span
+                    key={`line1-${index}`}
+                    variants={letterVariants}
+                    className="inline-block"
+                    style={{ display: char === ' ' ? 'inline' : 'inline-block' }}
+                  >
+                    {char === ' ' ? '\u00A0' : char}
+                  </motion.span>
+                ))}
+              </motion.span>
               <br />
-              Always on.
+              <motion.span
+                className="inline-block"
+                variants={containerVariants}
+                initial="hidden"
+                animate="visible"
+              >
+                {line2Chars.map((char, index) => (
+                  <motion.span
+                    key={`line2-${index}`}
+                    variants={letterVariants}
+                    className="inline-block"
+                    style={{ display: char === ' ' ? 'inline' : 'inline-block' }}
+                  >
+                    {char === ' ' ? '\u00A0' : char}
+                  </motion.span>
+                ))}
+              </motion.span>
             </h1>
-            <p className="max-w-[630px] text-lg md:text-xl text-text-secondary leading-relaxed">
+
+            <motion.p
+              className="max-w-[630px] text-lg md:text-xl text-text-secondary leading-relaxed"
+              initial="hidden"
+              animate="visible"
+              variants={fadeInVariants}
+              transition={{ delay: 0.8 }}
+            >
               Transform your marketing operations with AI-powered industry insights, automated content ideas, and intelligent campaign strategies.
-            </p>
+            </motion.p>
           </div>
-          <div className="flex items-center justify-center">
+          <motion.div
+            className="flex items-center justify-center"
+            initial="hidden"
+            animate="visible"
+            variants={fadeInVariants}
+            transition={{ delay: 1.0 }}
+          >
             <Link
               href="/sign-in"
               className="bg-primary text-primary-foreground font-medium rounded-lg px-8 py-3.5 text-base hover:opacity-90 transition-opacity duration-200"
             >
               Get Started
             </Link>
-          </div>
+          </motion.div>
         </div>
       </div>
     </section>
