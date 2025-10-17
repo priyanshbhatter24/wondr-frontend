@@ -28,18 +28,12 @@ export default function HeroSection() {
               Transform your marketing operations with AI-powered industry insights, automated content ideas, and intelligent campaign strategies.
             </p>
           </div>
-          <div className="flex flex-col sm:flex-row items-center gap-4">
+          <div className="flex items-center justify-center">
             <Link
               href="/sign-in"
               className="bg-primary text-primary-foreground font-medium rounded-lg px-8 py-3.5 text-base hover:opacity-90 transition-opacity duration-200"
             >
-              Get Started Free
-            </Link>
-            <Link
-              href="/idea-hub"
-              className="bg-interactive-secondary text-primary border border-border-subtle font-medium rounded-lg px-8 py-3.5 text-base hover:bg-white/20 transition-colors duration-200"
-            >
-              View Idea Hub
+              Get Started
             </Link>
           </div>
         </div>
