@@ -5,16 +5,14 @@ import Link from 'next/link';
 import { motion } from 'framer-motion';
 
 export default function HeroSection() {
-  // Split text into individual characters while preserving spaces
-  const line1 = "Your AI CMO.";
-  const line2 = "Always on.";
+  // Heading text on single line
+  const heading = "Your AI CMO. Always on.";
 
   // Description split into two lines
   const descriptionLine1 = "Transform your marketing operations with AI-powered industry insights,";
   const descriptionLine2 = "automated content ideas, and intelligent campaign strategies.";
 
-  const line1Chars = line1.split("");
-  const line2Chars = line2.split("");
+  const headingChars = heading.split("");
 
   // Animation variants for the heading container
   const containerVariants = {
@@ -112,27 +110,9 @@ export default function HeroSection() {
                 initial="hidden"
                 animate="visible"
               >
-                {line1Chars.map((char, index) => (
+                {headingChars.map((char, index) => (
                   <motion.span
-                    key={`line1-${index}`}
-                    variants={letterVariants}
-                    className="inline-block"
-                    style={{ display: char === ' ' ? 'inline' : 'inline-block' }}
-                  >
-                    {char === ' ' ? '\u00A0' : char}
-                  </motion.span>
-                ))}
-              </motion.span>
-              <br />
-              <motion.span
-                className="inline-block"
-                variants={containerVariants}
-                initial="hidden"
-                animate="visible"
-              >
-                {line2Chars.map((char, index) => (
-                  <motion.span
-                    key={`line2-${index}`}
+                    key={`heading-${index}`}
                     variants={letterVariants}
                     className="inline-block"
                     style={{ display: char === ' ' ? 'inline' : 'inline-block' }}
