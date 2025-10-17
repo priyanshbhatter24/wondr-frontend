@@ -19,7 +19,7 @@ export default function HeroSection() {
                 AI-Powered Marketing Platform
               </p>
             </div>
-            <h1 className="font-display font-semibold text-white text-5xl md:text-7xl lg:text-[96px] leading-[1.1] tracking-[-0.04em]">
+            <h1 className="font-display font-semibold text-white text-4xl md:text-6xl lg:text-7xl leading-[1.1] tracking-[-0.04em]">
               Your AI CMO.
               <br />
               Always on.
