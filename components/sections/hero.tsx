@@ -32,7 +32,7 @@ export default function HeroSection() {
       opacity: 1,
       transition: {
         staggerChildren: 0.015, // 15ms between each letter for description (faster for longer text)
-        delayChildren: 0.8, // Start after heading animation
+        delayChildren: 0, // Start at the same time as heading
       }
     }
   };
@@ -164,7 +164,7 @@ export default function HeroSection() {
             initial="hidden"
             animate="visible"
             variants={fadeInVariants}
-            transition={{ delay: 3.0 }}
+            transition={{ delay: 2.5 }}
           >
             <Link
               href="/sign-in"
