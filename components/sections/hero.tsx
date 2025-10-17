@@ -8,11 +8,13 @@ export default function HeroSection() {
   // Split text into individual characters while preserving spaces
   const line1 = "Your AI CMO.";
   const line2 = "Always on.";
-  const description = "Transform your marketing operations with AI-powered industry insights, automated content ideas, and intelligent campaign strategies.";
+
+  // Description split into two lines
+  const descriptionLine1 = "Transform your marketing operations with AI-powered industry insights,";
+  const descriptionLine2 = "automated content ideas, and intelligent campaign strategies.";
 
   const line1Chars = line1.split("");
   const line2Chars = line2.split("");
-  const descriptionChars = description.split("");
 
   // Animation variants for the heading container
   const containerVariants = {
@@ -21,18 +23,6 @@ export default function HeroSection() {
       opacity: 1,
       transition: {
         staggerChildren: 0.03, // 30ms between each letter
-      }
-    }
-  };
-
-  // Animation variants for the description container
-  const descriptionContainerVariants = {
-    hidden: { opacity: 1 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.015, // 15ms between each letter for description (faster for longer text)
-        delayChildren: 0, // Start at the same time as heading
       }
     }
   };
@@ -53,18 +43,30 @@ export default function HeroSection() {
     }
   };
 
-  // Animation variants for description letters (slightly faster)
-  const descriptionLetterVariants = {
+  // Animation variants for description lines (fade in from below)
+  const descriptionLineVariants = {
     hidden: {
       opacity: 0,
-      x: -10
+      y: 20
     },
     visible: {
       opacity: 1,
-      x: 0,
+      y: 0,
       transition: {
-        duration: 0.3,
+        duration: 0.6,
         ease: "easeOut"
+      }
+    }
+  };
+
+  // Container variant for staggering description lines
+  const descriptionContainerVariants = {
+    hidden: { opacity: 1 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.2, // 200ms between each line
+        delayChildren: 0.8, // Start after heading begins
       }
     }
   };
@@ -141,30 +143,26 @@ export default function HeroSection() {
               </motion.span>
             </h1>
 
-            <motion.p
+            <motion.div
               className="max-w-[630px] text-lg md:text-xl text-text-secondary leading-relaxed"
               variants={descriptionContainerVariants}
               initial="hidden"
               animate="visible"
             >
-              {descriptionChars.map((char, index) => (
-                <motion.span
-                  key={`desc-${index}`}
-                  variants={descriptionLetterVariants}
-                  className="inline-block"
-                  style={{ display: char === ' ' ? 'inline' : 'inline-block' }}
-                >
-                  {char === ' ' ? '\u00A0' : char}
-                </motion.span>
-              ))}
-            </motion.p>
+              <motion.p variants={descriptionLineVariants}>
+                {descriptionLine1}
+              </motion.p>
+              <motion.p variants={descriptionLineVariants}>
+                {descriptionLine2}
+              </motion.p>
+            </motion.div>
           </div>
           <motion.div
             className="flex items-center justify-center"
             initial="hidden"
             animate="visible"
             variants={fadeInVariants}
-            transition={{ delay: 2.5 }}
+            transition={{ delay: 1.5 }}
           >
             <Link
               href="/sign-in"
