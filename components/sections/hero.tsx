@@ -8,17 +8,31 @@ export default function HeroSection() {
   // Split text into individual characters while preserving spaces
   const line1 = "Your AI CMO.";
   const line2 = "Always on.";
+  const description = "Transform your marketing operations with AI-powered industry insights, automated content ideas, and intelligent campaign strategies.";
 
   const line1Chars = line1.split("");
   const line2Chars = line2.split("");
+  const descriptionChars = description.split("");
 
-  // Animation variants for the container
+  // Animation variants for the heading container
   const containerVariants = {
     hidden: { opacity: 1 },
     visible: {
       opacity: 1,
       transition: {
         staggerChildren: 0.03, // 30ms between each letter
+      }
+    }
+  };
+
+  // Animation variants for the description container
+  const descriptionContainerVariants = {
+    hidden: { opacity: 1 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.015, // 15ms between each letter for description (faster for longer text)
+        delayChildren: 0.8, // Start after heading animation
       }
     }
   };
@@ -39,7 +53,23 @@ export default function HeroSection() {
     }
   };
 
-  // Variants for badge and description
+  // Animation variants for description letters (slightly faster)
+  const descriptionLetterVariants = {
+    hidden: {
+      opacity: 0,
+      x: -10
+    },
+    visible: {
+      opacity: 1,
+      x: 0,
+      transition: {
+        duration: 0.3,
+        ease: "easeOut"
+      }
+    }
+  };
+
+  // Variants for badge and button
   const fadeInVariants = {
     hidden: { opacity: 0, y: 10 },
     visible: {
@@ -113,12 +143,20 @@ export default function HeroSection() {
 
             <motion.p
               className="max-w-[630px] text-lg md:text-xl text-text-secondary leading-relaxed"
+              variants={descriptionContainerVariants}
               initial="hidden"
               animate="visible"
-              variants={fadeInVariants}
-              transition={{ delay: 0.8 }}
             >
-              Transform your marketing operations with AI-powered industry insights, automated content ideas, and intelligent campaign strategies.
+              {descriptionChars.map((char, index) => (
+                <motion.span
+                  key={`desc-${index}`}
+                  variants={descriptionLetterVariants}
+                  className="inline-block"
+                  style={{ display: char === ' ' ? 'inline' : 'inline-block' }}
+                >
+                  {char === ' ' ? '\u00A0' : char}
+                </motion.span>
+              ))}
             </motion.p>
           </div>
           <motion.div
@@ -126,7 +164,7 @@ export default function HeroSection() {
             initial="hidden"
             animate="visible"
             variants={fadeInVariants}
-            transition={{ delay: 1.0 }}
+            transition={{ delay: 3.0 }}
           >
             <Link
               href="/sign-in"
