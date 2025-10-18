@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef } from "react";
+import Image from "next/image";
 import { UploadIcon, Cross2Icon } from "@radix-ui/react-icons";
 
 interface LogoUploaderProps {
@@ -103,10 +104,13 @@ export default function LogoUploader({ logoUrl, onUpload, uploading }: LogoUploa
 
         {previewUrl ? (
           <>
-            <img
+            <Image
               src={previewUrl}
               alt="Company logo"
-              className="h-full w-full rounded-full object-cover"
+              fill
+              sizes="8rem"
+              className="rounded-full object-cover"
+              unoptimized
             />
             {!uploading && (
               <button

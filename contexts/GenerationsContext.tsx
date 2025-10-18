@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import { createContext, useContext, useState, useEffect, ReactNode, useCallback } from "react";
 import { useApiClient } from "@/lib/api-client";
 import { SidebarSessionItem } from "@/types/image-generation";
 
@@ -24,13 +24,7 @@ export function GenerationsProvider({ children }: { children: ReactNode }) {
   const [error, setError] = useState<string | null>(null);
   const [hasFetched, setHasFetched] = useState(false);
 
-  // Load from cache + fetch from API
-  useEffect(() => {
-    if (hasFetched) return; // Only fetch once per session
-    loadSessions();
-  }, [imageGeneration, hasFetched]);
-
-  async function loadSessions() {
+  const loadSessions = useCallback(async () => {
     // Try localStorage first for instant display
     const cached = loadFromCache();
     if (cached) {
@@ -52,7 +46,13 @@ export function GenerationsProvider({ children }: { children: ReactNode }) {
     } finally {
       setLoading(false);
     }
-  }
+  }, [imageGeneration]);
+
+  // Load from cache + fetch from API
+  useEffect(() => {
+    if (hasFetched) return; // Only fetch once per session
+    void loadSessions();
+  }, [hasFetched, loadSessions]);
 
   function addNewGeneration(session: SidebarSessionItem) {
     // Optimistically prepend new session
