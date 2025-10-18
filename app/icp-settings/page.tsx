@@ -3,10 +3,13 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useApiClient } from "@/lib/api-client";
-import { UserICPConfig, Competitor } from "@/types/industry-updates";
+import { UserICPConfig, Competitor, SocialMediaHandles, BrandAsset } from "@/types/industry-updates";
 import AppShell from "@/components/AppShell";
 import BrandColorPicker from "@/components/BrandColorPicker";
-import { GearIcon, PlusIcon, TrashIcon, CheckIcon, ArrowLeftIcon } from "@radix-ui/react-icons";
+import LogoUploader from "@/components/LogoUploader";
+import SocialMediaInputs from "@/components/SocialMediaInputs";
+import BrandAssetsManager from "@/components/BrandAssetsManager";
+import { GearIcon, PlusIcon, TrashIcon, CheckIcon, ArrowLeftIcon, ChevronDownIcon, ChevronRightIcon } from "@radix-ui/react-icons";
 import { useGenerations } from "@/lib/use-generations";
 
 export default function ICPSettingsPage() {
@@ -38,6 +41,9 @@ export default function ICPSettingsPage() {
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [companyAnalysisStatus, setCompanyAnalysisStatus] = useState<string | null>(null);
+  const [uploadingLogo, setUploadingLogo] = useState(false);
+  const [uploadingAsset, setUploadingAsset] = useState(false);
+  const [expandedCompetitors, setExpandedCompetitors] = useState<Set<number>>(new Set());
 
   // Temporary input states for dynamic lists
   const [newYoutuber, setNewYoutuber] = useState('');
@@ -215,6 +221,94 @@ export default function ICPSettingsPage() {
     }
   };
 
+  // Logo upload handler
+  const handleLogoUpload = async (file: File) => {
+    try {
+      setUploadingLogo(true);
+      setError(null);
+      const response = await api.userConfig.uploadLogo(file);
+
+      // Update formData with new logo URL
+      setFormData({
+        ...formData,
+        company_logo_url: response.logo_url,
+        company_logo_s3_key: response.s3_key
+      });
+    } catch (err) {
+      console.error("Failed to upload logo:", err);
+      setError("Failed to upload logo");
+    } finally {
+      setUploadingLogo(false);
+    }
+  };
+
+  // Brand asset handlers
+  const handleBrandAssetUpload = async (file: File, label: string) => {
+    try {
+      setUploadingAsset(true);
+      setError(null);
+      const response = await api.userConfig.uploadBrandAsset(file, label);
+
+      // Update formData with new asset
+      setFormData({
+        ...formData,
+        brand_assets: [...(formData.brand_assets || []), response.asset]
+      });
+    } catch (err) {
+      console.error("Failed to upload brand asset:", err);
+      setError("Failed to upload brand asset");
+      throw err; // Re-throw to let component handle it
+    } finally {
+      setUploadingAsset(false);
+    }
+  };
+
+  const handleBrandAssetDelete = async (assetId: string) => {
+    try {
+      setError(null);
+      await api.userConfig.deleteBrandAsset(assetId);
+
+      // Update formData by removing the asset
+      setFormData({
+        ...formData,
+        brand_assets: (formData.brand_assets || []).filter(a => a.asset_id !== assetId)
+      });
+    } catch (err) {
+      console.error("Failed to delete brand asset:", err);
+      setError("Failed to delete brand asset");
+      throw err;
+    }
+  };
+
+  const handleBrandAssetLabelUpdate = async (assetId: string, label: string) => {
+    try {
+      setError(null);
+      await api.userConfig.updateBrandAssetLabel(assetId, label);
+
+      // Update formData with new label
+      setFormData({
+        ...formData,
+        brand_assets: (formData.brand_assets || []).map(a =>
+          a.asset_id === assetId ? { ...a, label } : a
+        )
+      });
+    } catch (err) {
+      console.error("Failed to update brand asset label:", err);
+      setError("Failed to update brand asset label");
+      throw err;
+    }
+  };
+
+  const toggleCompetitor = (index: number) => {
+    const newExpanded = new Set(expandedCompetitors);
+    if (newExpanded.has(index)) {
+      newExpanded.delete(index);
+    } else {
+      newExpanded.add(index);
+    }
+    setExpandedCompetitors(newExpanded);
+  };
+
   if (loading) {
     return (
       <AppShell sessions={sessions} onSessionClick={handleSessionClick}>
@@ -277,6 +371,17 @@ export default function ICPSettingsPage() {
                         Define your company identity and brand colors for AI-generated content.
                       </p>
                     </div>
+
+                    {/* Logo Upload */}
+                    <div className="space-y-2">
+                      <label className="text-xs uppercase tracking-wide text-white/50">Company Logo</label>
+                      <LogoUploader
+                        logoUrl={formData.company_logo_url}
+                        onUpload={handleLogoUpload}
+                        uploading={uploadingLogo}
+                      />
+                    </div>
+
                     <div className="grid gap-4 sm:grid-cols-2">
                       <div className="space-y-2">
                         <label className="text-xs uppercase tracking-wide text-white/50">Company Name *</label>
@@ -321,6 +426,20 @@ export default function ICPSettingsPage() {
                         maxColors={5}
                       />
                     </div>
+                  </section>
+
+                  {/* Social Media Section */}
+                  <section className="space-y-4">
+                    <div>
+                      <h2 className="text-sm font-semibold uppercase tracking-wider text-white/60">Social Media Presence</h2>
+                      <p className="mt-1 text-sm text-white/50">
+                        Add your company's social media handles for reference.
+                      </p>
+                    </div>
+                    <SocialMediaInputs
+                      handles={formData.social_media}
+                      onChange={(handles) => setFormData({ ...formData, social_media: handles })}
+                    />
                   </section>
 
                   {/* ICP Section */}
@@ -480,49 +599,126 @@ export default function ICPSettingsPage() {
                       </p>
                     </div>
                     <div className="space-y-3">
-                      {formData.competitors.map((comp, index) => (
-                        <div
-                          key={index}
-                          className="flex flex-col gap-3 rounded-full border border-white/10 bg-[#2A2A2A] px-6 py-4 sm:flex-row sm:items-center"
-                        >
-                          <div className="flex-1">
-                            <p className="text-sm font-medium text-white">{comp.name}</p>
-                            <p className="mt-1 truncate text-xs text-white/60">{comp.landing_page}</p>
-                          </div>
-                          <button
-                            onClick={() => removeCompetitor(index)}
-                            className="self-start rounded-full border border-red-500/50 bg-red-500/10 p-2 text-red-300 transition-colors hover:bg-red-500/20"
-                            type="button"
+                      {formData.competitors.map((comp, index) => {
+                        const isExpanded = expandedCompetitors.has(index);
+                        return (
+                          <div
+                            key={index}
+                            className="overflow-hidden rounded-lg border border-white/10 bg-[#2A2A2A]"
                           >
-                            <TrashIcon className="h-4 w-4" />
-                          </button>
-                        </div>
-                      ))}
-                      <div className="grid gap-3 sm:grid-cols-2">
-                        <input
-                          type="text"
-                          value={newCompetitor.name}
-                          onChange={(e) => setNewCompetitor({ ...newCompetitor, name: e.target.value })}
-                          className="rounded-full border border-white/10 bg-[#2A2A2A] px-4 py-3 text-sm text-white placeholder:text-white/40 focus:border-[#C5D86D] focus:outline-none"
-                          placeholder="Competitor name"
-                        />
-                        <div className="relative">
+                            <div className="flex items-center gap-3 px-6 py-4">
+                              <button
+                                onClick={() => toggleCompetitor(index)}
+                                className="text-white/50 transition-colors hover:text-[#C5D86D]"
+                                type="button"
+                              >
+                                {isExpanded ? (
+                                  <ChevronDownIcon className="h-4 w-4" />
+                                ) : (
+                                  <ChevronRightIcon className="h-4 w-4" />
+                                )}
+                              </button>
+                              <div className="flex-1">
+                                <p className="text-sm font-medium text-white">{comp.name}</p>
+                                <p className="mt-1 truncate text-xs text-white/60">{comp.landing_page}</p>
+                              </div>
+                              <button
+                                onClick={() => removeCompetitor(index)}
+                                className="rounded-full border border-red-500/50 bg-red-500/10 p-2 text-red-300 transition-colors hover:bg-red-500/20"
+                                type="button"
+                              >
+                                <TrashIcon className="h-4 w-4" />
+                              </button>
+                            </div>
+                            {isExpanded && (
+                              <div className="border-t border-white/10 px-6 py-4">
+                                <SocialMediaInputs
+                                  handles={comp.social_media}
+                                  onChange={(handles) => {
+                                    const updatedCompetitors = [...formData.competitors];
+                                    updatedCompetitors[index] = { ...comp, social_media: handles };
+                                    setFormData({ ...formData, competitors: updatedCompetitors });
+                                  }}
+                                  label="Competitor Social Media"
+                                />
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })}
+                      <div className="rounded-lg border border-white/10 bg-black/20 p-6 space-y-4">
+                        <h3 className="text-sm font-medium text-white/70">Add New Competitor</h3>
+                        <div className="grid gap-3 sm:grid-cols-2">
+                          <input
+                            type="text"
+                            value={newCompetitor.name}
+                            onChange={(e) => setNewCompetitor({ ...newCompetitor, name: e.target.value })}
+                            className="rounded-full border border-white/10 bg-[#2A2A2A] px-4 py-3 text-sm text-white placeholder:text-white/40 focus:border-[#C5D86D] focus:outline-none"
+                            placeholder="Competitor name"
+                          />
                           <input
                             type="url"
                             value={newCompetitor.landing_page}
                             onChange={(e) => setNewCompetitor({ ...newCompetitor, landing_page: e.target.value })}
-                            className="w-full rounded-full border border-white/10 bg-[#2A2A2A] px-4 py-3 pr-12 text-sm text-white placeholder:text-white/40 focus:border-[#C5D86D] focus:outline-none"
+                            className="w-full rounded-full border border-white/10 bg-[#2A2A2A] px-4 py-3 text-sm text-white placeholder:text-white/40 focus:border-[#C5D86D] focus:outline-none"
                             placeholder="https://example.com"
                           />
-                          <button
-                            onClick={addCompetitor}
-                            className="absolute right-2 top-1/2 -translate-y-1/2 flex h-8 w-8 items-center justify-center rounded-full border border-[#C5D86D]/40 bg-[#C5D86D]/10 text-[#C5D86D] transition-colors hover:bg-[#C5D86D]/20"
-                            type="button"
-                            aria-label="Add competitor"
-                          >
-                            <PlusIcon className="h-4 w-4" />
-                          </button>
                         </div>
+
+                        {/* Social Media URLs for new competitor */}
+                        <div className="space-y-3">
+                          <p className="text-xs text-white/50">Social Media (Optional)</p>
+                          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                            <input
+                              type="url"
+                              value={newCompetitor.social_media?.x || ''}
+                              onChange={(e) => setNewCompetitor({
+                                ...newCompetitor,
+                                social_media: { ...newCompetitor.social_media, x: e.target.value.trim() || undefined }
+                              })}
+                              className="rounded-full border border-white/10 bg-[#2A2A2A] px-4 py-3 text-sm text-white placeholder:text-white/40 focus:border-[#C5D86D] focus:outline-none"
+                              placeholder="X URL"
+                            />
+                            <input
+                              type="url"
+                              value={newCompetitor.social_media?.linkedin || ''}
+                              onChange={(e) => setNewCompetitor({
+                                ...newCompetitor,
+                                social_media: { ...newCompetitor.social_media, linkedin: e.target.value.trim() || undefined }
+                              })}
+                              className="rounded-full border border-white/10 bg-[#2A2A2A] px-4 py-3 text-sm text-white placeholder:text-white/40 focus:border-[#C5D86D] focus:outline-none"
+                              placeholder="LinkedIn URL"
+                            />
+                            <input
+                              type="url"
+                              value={newCompetitor.social_media?.instagram || ''}
+                              onChange={(e) => setNewCompetitor({
+                                ...newCompetitor,
+                                social_media: { ...newCompetitor.social_media, instagram: e.target.value.trim() || undefined }
+                              })}
+                              className="rounded-full border border-white/10 bg-[#2A2A2A] px-4 py-3 text-sm text-white placeholder:text-white/40 focus:border-[#C5D86D] focus:outline-none"
+                              placeholder="Instagram URL"
+                            />
+                            <input
+                              type="url"
+                              value={newCompetitor.social_media?.youtube || ''}
+                              onChange={(e) => setNewCompetitor({
+                                ...newCompetitor,
+                                social_media: { ...newCompetitor.social_media, youtube: e.target.value.trim() || undefined }
+                              })}
+                              className="rounded-full border border-white/10 bg-[#2A2A2A] px-4 py-3 text-sm text-white placeholder:text-white/40 focus:border-[#C5D86D] focus:outline-none"
+                              placeholder="YouTube URL"
+                            />
+                          </div>
+                        </div>
+
+                        <button
+                          onClick={addCompetitor}
+                          className="w-full rounded-full border border-[#C5D86D]/40 bg-[#C5D86D]/10 px-6 py-3 text-sm font-semibold text-[#C5D86D] transition-colors hover:bg-[#C5D86D]/20"
+                          type="button"
+                        >
+                          Add Competitor
+                        </button>
                       </div>
                     </div>
                   </section>
@@ -684,6 +880,17 @@ export default function ICPSettingsPage() {
                         </div>
                       </div>
                     </div>
+                  </section>
+
+                  {/* Brand Assets Section */}
+                  <section className="space-y-4">
+                    <BrandAssetsManager
+                      assets={formData.brand_assets || []}
+                      onUpload={handleBrandAssetUpload}
+                      onDelete={handleBrandAssetDelete}
+                      onUpdateLabel={handleBrandAssetLabelUpdate}
+                      uploading={uploadingAsset}
+                    />
                   </section>
 
                   <div className="flex flex-col items-center justify-center pt-4 space-y-3">
