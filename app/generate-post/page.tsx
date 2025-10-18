@@ -19,7 +19,7 @@ function GeneratePostPageContent() {
   const sessionIdFromUrl = searchParams.get("session");
 
   const { imageGeneration, planMode } = useApiClient();
-  const { sessions: sidebarSessions, refetch } = useGenerations();
+  const { sessions: sidebarSessions, addNewGeneration } = useGenerations();
 
   // Session state
   const [sessionId, setSessionId] = useState<string | null>(sessionIdFromUrl);
@@ -276,8 +276,16 @@ function GeneratePostPageContent() {
           setCurrentIndex(historyData.generations.length - 1);
         }
 
-        // Refetch sidebar generations
-        await refetch();
+        // Add new generation to sidebar (optimistic update - no API refetch needed)
+        if (sessionId && historyData.generations?.length > 0) {
+          const latestGeneration = historyData.generations[historyData.generations.length - 1];
+          addNewGeneration({
+            session_id: sessionId,
+            name: prompt.slice(0, 50), // Truncate to 50 chars for display
+            full_prompt: prompt,
+            created_at: latestGeneration.created_at,
+          });
+        }
       } catch (err) {
         console.error("Failed to generate image:", err);
         setError("Failed to generate image. Please try again.");
