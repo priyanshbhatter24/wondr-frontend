@@ -1,6 +1,5 @@
 import Navigation from "@/components/sections/navigation";
 import HeroSection from "@/components/sections/hero";
-import SocialProof from "@/components/sections/social-proof";
 import InteractiveDemo from "@/components/sections/interactive-demo";
 import FeaturesGrid from "@/components/sections/features-grid";
 import CreatorTabs from "@/components/sections/creator-tabs";

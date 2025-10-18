@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useApiClient } from "@/lib/api-client";
-import { UserICPConfig, Competitor, SocialMediaHandles, BrandAsset } from "@/types/industry-updates";
+import { UserICPConfig, Competitor } from "@/types/industry-updates";
 import AppShell from "@/components/AppShell";
 import BrandColorPicker from "@/components/BrandColorPicker";
 import LogoUploader from "@/components/LogoUploader";
@@ -433,7 +433,7 @@ export default function ICPSettingsPage() {
                     <div>
                       <h2 className="text-sm font-semibold uppercase tracking-wider text-white/60">Social Media Presence</h2>
                       <p className="mt-1 text-sm text-white/50">
-                        Add your company's social media handles for reference.
+                        Add your company&apos;s social media handles for reference.
                       </p>
                     </div>
                     <SocialMediaInputs

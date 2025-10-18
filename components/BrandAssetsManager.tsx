@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { BrandAsset } from "@/types/industry-updates";
 import { PlusIcon, TrashIcon, Pencil1Icon, Cross2Icon } from "@radix-ui/react-icons";
 import * as Dialog from "@radix-ui/react-dialog";
@@ -140,10 +141,12 @@ export default function BrandAssetsManager({
           >
             {/* Image */}
             <div className="relative aspect-video w-full overflow-hidden bg-black/20">
-              <img
+              <Image
                 src={asset.s3_url}
                 alt={asset.label}
-                className="h-full w-full object-cover transition-transform group-hover:scale-105"
+                fill
+                sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
+                className="object-cover transition-transform group-hover:scale-105"
               />
               {/* Delete button overlay */}
               <button
@@ -238,10 +241,13 @@ export default function BrandAssetsManager({
                   {/* Preview */}
                   {previewUrl && (
                     <div className="overflow-hidden rounded-lg border border-white/10">
-                      <img
+                      <Image
                         src={previewUrl}
                         alt="Preview"
+                        width={800}
+                        height={600}
                         className="h-auto w-full object-contain"
+                        unoptimized
                       />
                     </div>
                   )}
