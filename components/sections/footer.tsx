@@ -58,7 +58,6 @@ const Footer = () => {
                 </li>
                 <li><Link href="#" className="text-muted-foreground hover:text-white transition-colors">Features</Link></li>
                 <li><Link href="#" className="text-muted-foreground hover:text-white transition-colors">Use cases</Link></li>
-                <li><Link href="#" className="text-muted-foreground hover:text-white transition-colors">Pricing</Link></li>
                 <li><Link href="#" className="text-muted-foreground hover:text-white transition-colors">Changelog</Link></li>
               </ul>
             </div>
@@ -80,17 +79,9 @@ const Footer = () => {
               </ul>
             </div>
             <div>
-              <h4 className="font-medium text-white mb-4 text-base">Company</h4>
+              <h4 className="font-medium text-white mb-4 text-base">Project</h4>
               <ul className="space-y-3">
                 <li><Link href="#" className="text-muted-foreground hover:text-white transition-colors">About</Link></li>
-                <li><Link href="#" className="text-muted-foreground hover:text-white transition-colors">Career</Link></li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="font-medium text-white mb-4 text-base">Legal</h4>
-              <ul className="space-y-3">
-                <li><Link href="#" className="text-muted-foreground hover:text-white transition-colors">Privacy policy</Link></li>
-                <li><Link href="#" className="text-muted-foreground hover:text-white transition-colors">Terms of use</Link></li>
               </ul>
             </div>
           </div>
@@ -98,11 +89,10 @@ const Footer = () => {
 
         {/* Bottom Row: Copyright & Socials */}
         <div className="mt-28 flex flex-col-reverse md:flex-row justify-between items-center gap-6 text-sm text-muted-foreground">
-          <p className="mt-6 md:mt-0">&copy; Wondr Inc. All rights reserved, 2025.</p>
+          <p className="mt-6 md:mt-0">Wondr is under beta testing</p>
           <div className="flex items-center gap-6">
             <Link href="#" className="hover:text-white transition-colors">X (Twitter)</Link>
             <Link href="#" className="hover:text-white transition-colors">LinkedIn</Link>
-            <Link href="#" className="hover:text-white transition-colors">Dribbble</Link>
           </div>
         </div>
       </div>
