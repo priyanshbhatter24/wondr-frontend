@@ -56,13 +56,13 @@ const TestimonialsSection = () => {
           {testimonials.map((testimonial) => (
             <div
               key={testimonial.name}
-              className="flex h-full flex-col rounded-3xl bg-gradient-to-b from-[#d4ff33] to-[#c8ff00] p-10 text-black"
+              className="flex h-full flex-col bg-gradient-to-b from-[#c0ec1fc7] to-[#c2e936b0] p-6 text-black"
             >
               <div className="mb-auto">
-                <div className="h-12 w-12 rounded-full bg-black/10 flex items-center justify-center">
+                <div className="h-12 w-12 mb-10 bg-black/10 flex items-center justify-center">
                   <span className="text-black font-semibold text-sm">{testimonial.initial}</span>
                 </div>
-                <p className="mt-8 font-serif text-2xl leading-snug tracking-tight text-black">
+                <p className="mt-8 mb-12 font-serif text-lg leading-snug tracking-tight text-black">
                   {testimonial.quote}
                 </p>
               </div>

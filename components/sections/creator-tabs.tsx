@@ -5,8 +5,6 @@ import React, { useState } from "react";
 import {
   ArchiveIcon,
   BarChartIcon,
-  ChevronLeftIcon,
-  ChevronRightIcon,
   CopyIcon,
   CubeIcon,
   FaceIcon,
@@ -64,18 +62,6 @@ const CreatorTabs = () => {
   const [activeTab, setActiveTab] = useState<"Research" | "Content" | "Campaigns">("Research");
   const tabs: Array<"Research" | "Content" | "Campaigns"> = ["Research", "Content", "Campaigns"];
 
-  const handlePrevious = () => {
-    const currentIndex = tabs.indexOf(activeTab);
-    const previousIndex = currentIndex === 0 ? tabs.length - 1 : currentIndex - 1;
-    setActiveTab(tabs[previousIndex]);
-  };
-
-  const handleNext = () => {
-    const currentIndex = tabs.indexOf(activeTab);
-    const nextIndex = currentIndex === tabs.length - 1 ? 0 : currentIndex + 1;
-    setActiveTab(tabs[nextIndex]);
-  };
-
   const WondrConfigCard = () => (
     <div className="bg-card p-8">
       <h3 className="font-display text-2xl font-medium text-text-primary">Your ICP Configuration</h3>
@@ -111,107 +97,32 @@ const CreatorTabs = () => {
     </div>
   );
 
-  const renderCards = () => {
+  const getTabContent = () => {
     if (activeTab === "Research") {
-      return [
-        <div key="research" className="bg-[#3A2D21] p-8">
-          <div className="flex">
-            <p className="bg-white/10 px-4 py-1.5 text-sm font-medium text-white">
-              Industry Insights
-            </p>
-          </div>
-          <h3 className="mt-4 font-display text-2xl font-medium text-text-primary">
-            Stay ahead with automated market research.
-          </h3>
-          <p className="mt-2 text-base text-text-secondary">
-            Our research agent scans multiple platforms hourly, delivering trending topics and competitor insights directly to your Idea Hub.
-          </p>
-          <FeatureList features={ResearchFeatures} />
-        </div>,
-        <WondrConfigCard key="wondr" />,
-        <div key="content" className="bg-[#3A2D21] p-8">
-          <div className="flex">
-            <p className="bg-white/10 px-4 py-1.5 text-sm font-medium text-white">
-              Content Creation
-            </p>
-          </div>
-          <h3 className="mt-4 font-display text-2xl font-medium text-text-primary">
-            Generate posts that match your brand voice.
-          </h3>
-          <p className="mt-2 text-base text-text-secondary">
-            AI-powered suggestions with reasoning and citations. Create social media content that resonates with your ICP.
-          </p>
-          <FeatureList features={ContentFeatures} />
-        </div>
-      ];
+      return {
+        badge: "Industry Insights",
+        title: "Stay ahead with automated market research.",
+        description: "Our research agent scans multiple platforms hourly, delivering trending topics and competitor insights directly to your Idea Hub.",
+        features: ResearchFeatures
+      };
     } else if (activeTab === "Content") {
-      return [
-        <div key="content" className="bg-[#3A2D21] p-8">
-          <div className="flex">
-            <p className="bg-white/10 px-4 py-1.5 text-sm font-medium text-white">
-              Content Creation
-            </p>
-          </div>
-          <h3 className="mt-4 font-display text-2xl font-medium text-text-primary">
-            Generate posts that match your brand voice.
-          </h3>
-          <p className="mt-2 text-base text-text-secondary">
-            AI-powered suggestions with reasoning and citations. Create social media content that resonates with your ICP.
-          </p>
-          <FeatureList features={ContentFeatures} />
-        </div>,
-        <WondrConfigCard key="wondr" />,
-        <div key="campaigns" className="bg-[#3A2D21] p-8">
-          <div className="flex">
-            <p className="bg-white/10 px-4 py-1.5 text-sm font-medium text-white">
-              Campaign Management
-            </p>
-          </div>
-          <h3 className="mt-4 font-display text-2xl font-medium text-text-primary">
-            Orchestrate campaigns with intelligent targeting.
-          </h3>
-          <p className="mt-2 text-base text-text-secondary">
-            Define your ICP, track competitors, and manage content schedules. Wondr keeps your marketing operations running smoothly.
-          </p>
-          <FeatureList features={CampaignFeatures} />
-        </div>
-      ];
+      return {
+        badge: "Content Creation",
+        title: "Generate posts that match your brand voice.",
+        description: "AI-powered suggestions with reasoning and citations. Create social media content that resonates with your ICP.",
+        features: ContentFeatures
+      };
     } else {
-      return [
-        <div key="campaigns" className="bg-[#3A2D21] p-8">
-          <div className="flex">
-            <p className="bg-white/10 px-4 py-1.5 text-sm font-medium text-white">
-              Campaign Management
-            </p>
-          </div>
-          <h3 className="mt-4 font-display text-2xl font-medium text-text-primary">
-            Orchestrate campaigns with intelligent targeting.
-          </h3>
-          <p className="mt-2 text-base text-text-secondary">
-            Define your ICP, track competitors, and manage content schedules. Wondr keeps your marketing operations running smoothly.
-          </p>
-          <FeatureList features={CampaignFeatures} />
-        </div>,
-        <WondrConfigCard key="wondr" />,
-        <div key="research" className="bg-[#3A2D21] p-8">
-          <div className="flex">
-            <p className="bg-white/10 px-4 py-1.5 text-sm font-medium text-white">
-              Industry Insights
-            </p>
-          </div>
-          <h3 className="mt-4 font-display text-2xl font-medium text-text-primary">
-            Stay ahead with automated market research.
-          </h3>
-          <p className="mt-2 text-base text-text-secondary">
-            Our research agent scans multiple platforms hourly, delivering trending topics and competitor insights directly to your Idea Hub.
-          </p>
-          <FeatureList features={ResearchFeatures} />
-        </div>
-      ];
+      return {
+        badge: "Campaign Management",
+        title: "Orchestrate campaigns with intelligent targeting.",
+        description: "Define your ICP, track competitors, and manage content schedules. Wondr keeps your marketing operations running smoothly.",
+        features: CampaignFeatures
+      };
     }
   };
 
-  const cards = renderCards();
+  const tabContent = getTabContent();
 
   return (
     <section className="w-full bg-background-primary py-24 sm:py-32">
@@ -256,29 +167,26 @@ const CreatorTabs = () => {
                 </button>
               ))}
             </div>
-            <div className="flex items-center gap-2">
-              <button
-                onClick={handlePrevious}
-                className="flex h-10 w-10 items-center justify-center bg-secondary text-foreground transition-colors hover:bg-white/20 rounded-full"
-                aria-label="Previous tab"
-              >
-                <ChevronLeftIcon className="h-5 w-5" />
-              </button>
-              <button
-                onClick={handleNext}
-                className="flex h-10 w-10 items-center justify-center bg-secondary text-foreground transition-colors hover:bg-white/20 rounded-full"
-                aria-label="Next tab"
-              >
-                <ChevronRightIcon className="h-5 w-5" />
-              </button>
-            </div>
           </div>
         </div>
 
-        <div className="mt-8 flex">
-          <div className="flex-1">{cards[0]}</div>
-          <div className="flex-1">{cards[1]}</div>
-          <div className="flex-1 ml-6">{cards[2]}</div>
+        <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="bg-[#3A2D21] p-8">
+            <div className="flex">
+              <p className="bg-white/10 px-4 py-1.5 text-sm font-medium text-white">
+                {tabContent.badge}
+              </p>
+            </div>
+            <h3 className="mt-4 font-display text-2xl font-medium text-text-primary">
+              {tabContent.title}
+            </h3>
+            <p className="mt-2 text-base text-text-secondary">
+              {tabContent.description}
+            </p>
+            <FeatureList features={tabContent.features} />
+          </div>
+
+          <WondrConfigCard />
         </div>
       </div>
     </section>
