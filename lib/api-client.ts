@@ -100,6 +100,88 @@ export function useApiClient() {
             method: "POST",
             body: JSON.stringify(data),
           }),
+        uploadLogo: async (file: File) => {
+          const token = await getToken();
+
+          const formData = new FormData();
+          formData.append('file', file);
+
+          const url = `${API_URL}/api/user-config/logo`;
+          const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+              ...(token && { Authorization: `Bearer ${token}` }),
+            },
+            body: formData
+          });
+
+          if (!response.ok) {
+            throw new Error(`API Error: ${response.statusText}`);
+          }
+
+          return response.json() as Promise<{ success: boolean; logo_url: string; s3_key: string; message: string }>;
+        },
+        uploadBrandAsset: async (file: File, label: string) => {
+          const token = await getToken();
+
+          const formData = new FormData();
+          formData.append('file', file);
+          formData.append('label', label);
+
+          const url = `${API_URL}/api/user-config/brand-assets`;
+          const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+              ...(token && { Authorization: `Bearer ${token}` }),
+            },
+            body: formData
+          });
+
+          if (!response.ok) {
+            const errorData = await response.json().catch(() => ({ detail: response.statusText }));
+            throw new Error(errorData.detail || `API Error: ${response.statusText}`);
+          }
+
+          return response.json() as Promise<{ success: boolean; asset: any; message: string }>;
+        },
+        deleteBrandAsset: async (assetId: string) => {
+          const token = await getToken();
+
+          const url = `${API_URL}/api/user-config/brand-assets/${assetId}`;
+          const response = await fetch(url, {
+            method: 'DELETE',
+            headers: {
+              ...(token && { Authorization: `Bearer ${token}` }),
+            }
+          });
+
+          if (!response.ok) {
+            throw new Error(`API Error: ${response.statusText}`);
+          }
+
+          return response.json() as Promise<{ success: boolean; message: string }>;
+        },
+        updateBrandAssetLabel: async (assetId: string, label: string) => {
+          const token = await getToken();
+
+          const formData = new FormData();
+          formData.append('label', label);
+
+          const url = `${API_URL}/api/user-config/brand-assets/${assetId}`;
+          const response = await fetch(url, {
+            method: 'PATCH',
+            headers: {
+              ...(token && { Authorization: `Bearer ${token}` }),
+            },
+            body: formData
+          });
+
+          if (!response.ok) {
+            throw new Error(`API Error: ${response.statusText}`);
+          }
+
+          return response.json() as Promise<{ success: boolean; message: string }>;
+        },
       },
       postIdeation: {
         generatePrompt: (data: InitialPromptRequest) =>

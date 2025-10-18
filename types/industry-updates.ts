@@ -23,13 +23,29 @@ export interface IndustryUpdate {
   is_active: boolean;
 }
 
+export interface SocialMediaHandles {
+  x?: string; // X (formerly Twitter) URL
+  linkedin?: string; // LinkedIn company page URL
+  instagram?: string; // Instagram URL
+  youtube?: string; // YouTube channel URL
+}
+
 export interface Competitor {
   name: string;
   landing_page: string;
+  social_media?: SocialMediaHandles;
 }
 
 export interface BrandColor {
   hex_code: string; // Format: #RRGGBB
+}
+
+export interface BrandAsset {
+  asset_id: string;
+  s3_url: string;
+  s3_key: string;
+  label: string; // Max 50 characters
+  uploaded_at: string; // ISO date string
 }
 
 export interface CompanyDetails {
@@ -68,6 +84,14 @@ export interface UserICPConfig {
   company_details?: CompanyDetails;
   company_website_last_crawled?: string;
   updated_at?: string;
+
+  // NEW: Logo and social media
+  company_logo_url?: string;
+  company_logo_s3_key?: string;
+  social_media?: SocialMediaHandles;
+
+  // NEW: Brand assets (max 20)
+  brand_assets?: BrandAsset[];
 }
 
 export interface UpdateIcpResponse extends UserICPConfig {
