@@ -1,6 +1,6 @@
 import { auth } from "@clerk/nextjs/server";
 
-import { GenerateImageRequest, GenerateImageResponse, ImageGeneration, ImageGenerationSession, ChatMessage, UserSessionsResponse, PlanModeChatRequest, PlanModeChatResponse, UpdateSessionRequest } from "@/types/image-generation";
+import { GenerateImageRequest, GenerateImageResponse, ImageGeneration, ImageGenerationSession, ChatMessage, UserSessionsResponse, PlanModeChatRequest, PlanModeChatResponse, UpdateSessionRequest, SaveCanvasDataRequest } from "@/types/image-generation";
 import { BrandAsset, IndustryUpdate, IndustryUpdatesListResponse, UpdateIcpResponse, UserICPConfig } from "@/types/industry-updates";
 import { InitialPromptRequest, InitialPromptResponse, PostIdeationRequest, PostIdeationResponse, PostIdeationHistoryItem } from "@/types/post-ideation";
 
@@ -206,6 +206,11 @@ export const api = {
       const queryString = searchParams.toString();
       return apiClient<UserSessionsResponse>(`/api/image-generation/user-generations${queryString ? `?${queryString}` : ""}`);
     },
+    saveCanvasData: (generationId: string, data: SaveCanvasDataRequest) =>
+      apiClient<{ message: string; asset_count: number }>(`/api/image-generation/generations/${generationId}/canvas`, {
+        method: "PATCH",
+        body: JSON.stringify(data),
+      }),
   },
   planMode: {
     chat: async (data: PlanModeChatRequest) => {

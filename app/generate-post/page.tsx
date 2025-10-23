@@ -11,6 +11,11 @@ import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import { useGenerations } from "@/lib/use-generations";
 import { ModeToggle } from "@/components/ModeToggle";
 import { ChannelSelector } from "@/components/ChannelSelector";
+import { BrandAssetsSidebar } from "@/components/BrandAssetsSidebar";
+import { useBrandAssets } from "@/lib/use-brand-assets";
+import { useCanvasExport } from "@/lib/use-canvas-export";
+import { useCanvasAutosave } from "@/lib/use-canvas-autosave";
+import { addImageToCanvas, restoreCanvasData } from "@/lib/fabric-utils";
 
 function GeneratePostPageContent() {
   const searchParams = useSearchParams();
@@ -40,6 +45,26 @@ function GeneratePostPageContent() {
 
   // Session file count tracking
   const [sessionFileCount, setSessionFileCount] = useState(0);
+
+  // Canvas state
+  const [assetsSidebarOpen, setAssetsSidebarOpen] = useState(false);
+  const [canvasEditor, setCanvasEditor] = useState<any>(null);
+  const [hasSelection, setHasSelection] = useState(false);
+
+  // Fetch brand assets
+  const { assets: brandAssets } = useBrandAssets();
+
+  // Export hook
+  const { exportImage, isExporting, error: exportError } = useCanvasExport();
+
+  // Auto-save hook for canvas data
+  const currentGeneration = generations[currentIndex];
+  useCanvasAutosave({
+    canvas: canvasEditor?.canvas || null,
+    generationId: currentGeneration?.generation_id,
+    enabled: mode === "generate" && !!currentGeneration,
+    apiClient: { imageGeneration }
+  });
 
   // Initialize or load session
   useEffect(() => {
@@ -306,6 +331,63 @@ function GeneratePostPageContent() {
     router.push(`/generate-post?session=${newSessionId}`);
   };
 
+  // Restore canvas data when navigating between versions
+  useEffect(() => {
+    const restoreCanvas = async () => {
+      if (!canvasEditor?.canvas) return;
+
+      const generation = generations[currentIndex];
+      if (generation?.canvas_data && generation.canvas_data.length > 0) {
+        // Restore saved canvas data
+        await restoreCanvasData(canvasEditor.canvas, generation.canvas_data);
+      } else {
+        // No saved data, clear canvas
+        canvasEditor.canvas.clear();
+        canvasEditor.canvas.renderAll();
+      }
+    };
+
+    restoreCanvas();
+  }, [currentIndex, canvasEditor, generations]);
+
+  // Handle asset selection from sidebar
+  const handleAssetSelect = async (assetUrl: string, label: string) => {
+    if (!canvasEditor?.canvas) {
+      console.error('Canvas not ready');
+      return;
+    }
+
+    try {
+      await addImageToCanvas(canvasEditor.canvas, assetUrl, label);
+      console.log('✅ Asset added to canvas:', label);
+      // Close sidebar after successful asset placement
+      setAssetsSidebarOpen(false);
+      // TODO: Add toast notification for success
+    } catch (err) {
+      console.error('❌ Failed to add asset:', err);
+      // TODO: Add toast notification for error
+    }
+  };
+
+  // Handle download
+  const handleDownload = async () => {
+    if (!currentGeneration) return;
+
+    await exportImage(
+      canvasEditor?.canvas,
+      currentGeneration.s3_url,
+      currentGeneration.version_number
+    );
+  };
+
+  // Note: Keyboard shortcuts (Delete, Escape) are handled in FabricCanvas component
+
+  // Determine if assets button should be disabled
+  const assetsButtonDisabled =
+    !currentGeneration ||  // No image generated
+    !brandAssets ||        // Assets not loaded
+    (brandAssets.assets.length === 0 && !brandAssets.logo);  // No assets uploaded
+
   if (isInitializing) {
     return (
       <AppShell
@@ -340,9 +422,9 @@ function GeneratePostPageContent() {
         </header>
 
         {/* Error banner */}
-        {error && (
+        {(error || exportError) && (
           <div className="bg-red-500/10 border-l-4 border-red-500 text-red-500 p-4">
-            <p className="font-medium">{error}</p>
+            <p className="font-medium">{error || exportError}</p>
           </div>
         )}
 
@@ -401,11 +483,28 @@ function GeneratePostPageContent() {
                 generations={generations}
                 currentIndex={currentIndex}
                 onNavigate={handleNavigate}
+                onAssetsButtonClick={() => setAssetsSidebarOpen(true)}
+                onDownloadClick={handleDownload}
+                assetsButtonDisabled={assetsButtonDisabled}
+                downloadButtonDisabled={!currentGeneration || isExporting}
+                isExporting={isExporting}
+                onCanvasReady={setCanvasEditor}
+                onSelectionChange={setHasSelection}
               />
             </Panel>
           </PanelGroup>
         </div>
       </div>
+
+      {/* Brand Assets Sidebar */}
+      {brandAssets && (
+        <BrandAssetsSidebar
+          isOpen={assetsSidebarOpen}
+          onClose={() => setAssetsSidebarOpen(false)}
+          onAssetSelect={handleAssetSelect}
+          brandAssets={brandAssets}
+        />
+      )}
     </AppShell>
   );
 }
