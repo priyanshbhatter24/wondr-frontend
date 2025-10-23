@@ -51,7 +51,7 @@ function GeneratePostPageContent() {
   const [hasSelection, setHasSelection] = useState(false);
 
   // Fetch brand assets
-  const { assets: brandAssets, loading: assetsLoading } = useBrandAssets();
+  const { assets: brandAssets } = useBrandAssets();
 
   // Export hook
   const { exportImage, isExporting, error: exportError } = useCanvasExport();
@@ -339,6 +339,8 @@ function GeneratePostPageContent() {
     try {
       await addImageToCanvas(canvasEditor.canvas, assetUrl, label);
       console.log('✅ Asset added to canvas:', label);
+      // Close sidebar after successful asset placement
+      setAssetsSidebarOpen(false);
       // TODO: Add toast notification for success
     } catch (err) {
       console.error('❌ Failed to add asset:', err);
