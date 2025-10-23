@@ -1,4 +1,4 @@
-import { fabric } from 'fabric';
+import * as fabric from 'fabric';
 
 /**
  * Load an image and add it to the canvas at the center
@@ -6,44 +6,45 @@ import { fabric } from 'fabric';
  * @param canvas - Fabric.js canvas instance
  * @param imageUrl - URL of the image to load
  * @param label - Label/identifier for the image
- * @returns Promise resolving to the added fabric.Image object
+ * @returns Promise resolving to the added fabric.FabricImage object
  */
 export async function addImageToCanvas(
   canvas: fabric.Canvas,
   imageUrl: string,
   label: string
-): Promise<fabric.Image> {
+): Promise<fabric.FabricImage> {
   return new Promise((resolve, reject) => {
-    fabric.Image.fromURL(
-      imageUrl,
-      (img) => {
+    fabric.FabricImage.fromURL(imageUrl, { crossOrigin: 'anonymous' })
+      .then((img) => {
         if (!img) {
           reject(new Error('Failed to load image'));
           return;
         }
 
         // Scale to reasonable default size (100px width)
-        img.scaleToWidth(100);
+        const scale = 100 / (img.width || 100);
+        img.scale(scale);
 
         // Center the image on canvas
-        const canvasCenter = canvas.getCenter();
+        const centerPoint = canvas.getCenterPoint();
         img.set({
-          left: canvasCenter.left - (img.getScaledWidth() / 2),
-          top: canvasCenter.top - (img.getScaledHeight() / 2),
+          left: centerPoint.x - (img.getScaledWidth() / 2),
+          top: centerPoint.y - (img.getScaledHeight() / 2),
           selectable: true,
           hasControls: true,
           hasBorders: true,
           // Store metadata
-          data: { assetLabel: label } as any
+          data: { assetLabel: label }
         });
 
         canvas.add(img);
         canvas.setActiveObject(img);
         canvas.renderAll();
         resolve(img);
-      },
-      { crossOrigin: 'anonymous' }  // Required for S3/CORS images
-    );
+      })
+      .catch((err) => {
+        reject(new Error(`Failed to load image: ${err.message}`));
+      });
   });
 }
 
@@ -62,51 +63,52 @@ export async function exportCanvasAsImage(
   const width = canvas.width || 800;
   const height = canvas.height || 800;
 
-  // Create temporary offscreen canvas
-  const tempCanvas = new fabric.Canvas(null as any, {
-    width,
-    height
-  });
+  // Create temporary offscreen canvas element
+  const tempCanvasEl = document.createElement('canvas');
+  tempCanvasEl.width = width;
+  tempCanvasEl.height = height;
+  const ctx = tempCanvasEl.getContext('2d');
 
-  // Load and set background image
-  await new Promise<void>((resolve, reject) => {
-    fabric.Image.fromURL(
-      baseImageUrl,
-      (img) => {
-        if (!img) {
-          reject(new Error('Failed to load background image'));
-          return;
-        }
-
-        // Scale background to fill canvas
-        const scaleX = width / (img.width || 1);
-        const scaleY = height / (img.height || 1);
-        img.set({ scaleX, scaleY });
-
-        tempCanvas.setBackgroundImage(img, () => {
-          tempCanvas.renderAll();
-          resolve();
-        });
-      },
-      { crossOrigin: 'anonymous' }
-    );
-  });
-
-  // Copy all objects from main canvas to temp canvas
-  const objects = canvas.getObjects();
-  for (const obj of objects) {
-    const cloned = await new Promise<fabric.Object>((resolve) => {
-      obj.clone((clonedObj: fabric.Object) => resolve(clonedObj));
-    });
-    tempCanvas.add(cloned);
+  if (!ctx) {
+    throw new Error('Failed to get canvas context');
   }
 
-  tempCanvas.renderAll();
+  // Load and draw background image
+  const bgImage = await new Promise<HTMLImageElement>((resolve, reject) => {
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.onload = () => resolve(img);
+    img.onerror = () => reject(new Error('Failed to load background image'));
+    img.src = baseImageUrl;
+  });
+
+  // Draw background image
+  ctx.drawImage(bgImage, 0, 0, width, height);
+
+  // Draw all canvas objects on top
+  const objects = canvas.getObjects();
+  for (const obj of objects) {
+    // Convert each Fabric object to an image and draw it
+    const objDataURL = obj.toDataURL({ format: 'png' });
+    const objImage = await new Promise<HTMLImageElement>((resolve, reject) => {
+      const img = new Image();
+      img.onload = () => resolve(img);
+      img.onerror = () => reject(new Error('Failed to load object image'));
+      img.src = objDataURL;
+    });
+
+    // Calculate position and size
+    const left = obj.left || 0;
+    const top = obj.top || 0;
+    const scaledWidth = obj.getScaledWidth();
+    const scaledHeight = obj.getScaledHeight();
+
+    ctx.drawImage(objImage, left, top, scaledWidth, scaledHeight);
+  }
 
   // Convert to blob
   return new Promise((resolve, reject) => {
-    const canvasEl = tempCanvas.toCanvasElement();
-    canvasEl.toBlob((blob) => {
+    tempCanvasEl.toBlob((blob) => {
       if (blob) {
         resolve(blob);
       } else {

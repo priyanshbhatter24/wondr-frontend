@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { exportCanvasAsImage } from './fabric-utils';
-import { fabric } from 'fabric';
+import * as fabric from 'fabric';
 
 /**
  * React hook for exporting Fabric.js canvas with background image

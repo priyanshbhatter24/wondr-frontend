@@ -1,13 +1,12 @@
 "use client";
 
-import { useEffect } from 'react';
-import { FabricJSCanvas, useFabricJSEditor } from 'fabricjs-react';
-import { fabric } from 'fabric';
+import { useEffect, useRef } from 'react';
+import * as fabric from 'fabric';
 
 interface FabricCanvasProps {
   width: number;
   height: number;
-  onCanvasReady?: (editor: any) => void;
+  onCanvasReady?: (editor: { canvas: fabric.Canvas }) => void;
   onSelectionChange?: (hasSelection: boolean) => void;
 }
 
@@ -15,7 +14,7 @@ interface FabricCanvasProps {
  * Fabric.js canvas wrapper component
  *
  * Provides a Fabric.js canvas overlay for placing draggable/resizable brand assets
- * on top of generated images. Uses fabricjs-react for React integration.
+ * on top of generated images. Direct Fabric.js integration (React 19 compatible).
  */
 export function FabricCanvas({
   width,
@@ -23,24 +22,25 @@ export function FabricCanvas({
   onCanvasReady,
   onSelectionChange
 }: FabricCanvasProps) {
-  const { editor, onReady } = useFabricJSEditor();
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const fabricCanvasRef = useRef<fabric.Canvas | null>(null);
 
-  // Initialize canvas when editor is ready
+  // Initialize Fabric.js canvas
   useEffect(() => {
-    if (!editor?.canvas) return;
+    if (!canvasRef.current || fabricCanvasRef.current) return;
 
-    const canvas = editor.canvas;
+    // Create Fabric canvas
+    const canvas = new fabric.Canvas(canvasRef.current, {
+      width,
+      height,
+      selection: true,  // Allow multi-select with mouse drag
+      preserveObjectStacking: true,  // Maintain z-index order
+    });
 
-    // Set canvas dimensions to match the image
-    canvas.setWidth(width);
-    canvas.setHeight(height);
-
-    // Configure canvas behavior
-    canvas.selection = true;  // Allow multi-select with mouse drag
-    canvas.preserveObjectStacking = true;  // Maintain z-index order
+    fabricCanvasRef.current = canvas;
 
     // Customize selection appearance
-    fabric.Object.prototype.set({
+    fabric.FabricObject.prototype.set({
       borderColor: '#C5D86D',
       borderScaleFactor: 2,
       cornerColor: '#C5D86D',
@@ -76,38 +76,38 @@ export function FabricCanvas({
     });
 
     // Notify parent component that canvas is ready
-    onCanvasReady?.(editor);
+    onCanvasReady?.({ canvas });
 
     // Cleanup function
     return () => {
-      canvas.off('selection:created');
-      canvas.off('selection:updated');
-      canvas.off('selection:cleared');
-      canvas.off('object:modified');
-      canvas.off('object:added');
-      canvas.off('object:removed');
+      canvas.dispose();
+      fabricCanvasRef.current = null;
     };
-  }, [editor, width, height, onCanvasReady, onSelectionChange]);
+  }, []); // Only run once on mount
+
+  // Update canvas dimensions when they change
+  useEffect(() => {
+    if (fabricCanvasRef.current) {
+      fabricCanvasRef.current.setDimensions({ width, height });
+      fabricCanvasRef.current.renderAll();
+    }
+  }, [width, height]);
 
   return (
     <div className="absolute inset-0 pointer-events-auto">
-      <FabricJSCanvas
-        className="fabric-canvas"
-        onReady={onReady}
-      />
+      <canvas ref={canvasRef} />
 
       {/* Global canvas styles */}
       <style jsx global>{`
-        .fabric-canvas canvas {
-          border: none !important;
-        }
         .canvas-container {
           position: absolute !important;
           top: 0 !important;
           left: 0 !important;
         }
-        /* Customize control corners */
-        .canvas-container .upper-canvas {
+        .canvas-container canvas {
+          border: none !important;
+        }
+        .upper-canvas {
           border: none !important;
         }
       `}</style>
