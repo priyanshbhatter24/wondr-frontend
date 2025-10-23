@@ -1,12 +1,22 @@
 import { useEffect, useRef, useCallback } from 'react';
 import * as fabric from 'fabric';
 import { serializeCanvasData } from './fabric-utils';
+import type { SaveCanvasDataRequest } from '@/types/image-generation';
+
+interface CanvasAutosaveApiClient {
+  imageGeneration: {
+    saveCanvasData: (
+      generationId: string,
+      data: SaveCanvasDataRequest
+    ) => Promise<{ message: string; asset_count: number }>;
+  };
+}
 
 interface UseCanvasAutosaveOptions {
   canvas: fabric.Canvas | null;
   generationId: string | undefined;
   enabled: boolean;
-  apiClient: any; // Client-side API from useApiClient hook
+  apiClient: CanvasAutosaveApiClient | null; // Client-side API from useApiClient hook
 }
 
 /**
