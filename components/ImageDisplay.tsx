@@ -1,16 +1,37 @@
 "use client";
 
-import { ChevronLeftIcon, ChevronRightIcon } from "@radix-ui/react-icons";
+import { ChevronLeftIcon, ChevronRightIcon, DownloadIcon, ImageIcon } from "@radix-ui/react-icons";
 import Image from "next/image";
+import { useState } from "react";
 import { ImageGeneration } from "@/types/image-generation";
+import { FabricCanvas } from "./FabricCanvas";
 
 interface ImageDisplayProps {
   generations: ImageGeneration[];
   currentIndex: number;
   onNavigate: (index: number) => void;
+  // Canvas integration props
+  onAssetsButtonClick?: () => void;
+  onDownloadClick?: () => void;
+  assetsButtonDisabled?: boolean;
+  downloadButtonDisabled?: boolean;
+  isExporting?: boolean;
+  onCanvasReady?: (editor: any) => void;
+  onSelectionChange?: (hasSelection: boolean) => void;
 }
 
-export function ImageDisplay({ generations, currentIndex, onNavigate }: ImageDisplayProps) {
+export function ImageDisplay({
+  generations,
+  currentIndex,
+  onNavigate,
+  onAssetsButtonClick,
+  onDownloadClick,
+  assetsButtonDisabled = false,
+  downloadButtonDisabled = false,
+  isExporting = false,
+  onCanvasReady,
+  onSelectionChange
+}: ImageDisplayProps) {
   const currentGeneration = generations[currentIndex];
   const hasPrevious = currentIndex > 0;
   const hasNext = currentIndex < generations.length - 1;
@@ -20,6 +41,9 @@ export function ImageDisplay({ generations, currentIndex, onNavigate }: ImageDis
         .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
         .join(" ")
     : "";
+
+  // Track image dimensions for canvas sizing
+  const [imageDimensions, setImageDimensions] = useState({ width: 0, height: 0 });
 
   if (!currentGeneration) {
     return (
@@ -34,13 +58,39 @@ export function ImageDisplay({ generations, currentIndex, onNavigate }: ImageDis
 
   return (
     <div className="relative h-full bg-[#2A2A2A] flex flex-col overflow-hidden">
-      {/* Header with version info */}
+      {/* Header with version info and action buttons */}
       <div className="flex items-center justify-between p-4 border-b border-white/5 bg-[#262626]/40 flex-shrink-0">
         <div className="text-white/70 text-sm">
           <span className="font-medium text-white">Version {currentGeneration.version_number}</span>
           <span className="mx-2 text-white/40">•</span>
           <span className="text-white/70">{modelLabel}</span>
         </div>
+
+        {/* Action buttons */}
+        <div className="flex items-center gap-2">
+          {/* Assets Button */}
+          <button
+            onClick={onAssetsButtonClick}
+            disabled={assetsButtonDisabled}
+            className="flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-lg border border-white/10 bg-white/5 text-white hover:bg-white/10 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            aria-label="Open brand assets"
+          >
+            <ImageIcon className="w-4 h-4" />
+            <span>Assets</span>
+          </button>
+
+          {/* Download Button */}
+          <button
+            onClick={onDownloadClick}
+            disabled={downloadButtonDisabled || isExporting}
+            className="flex items-center gap-2 px-3 py-2 text-sm font-semibold rounded-lg bg-[#C5D86D] text-black hover:bg-[#d4e479] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            aria-label="Download image"
+          >
+            <DownloadIcon className="w-4 h-4" />
+            <span>{isExporting ? 'Exporting...' : 'Download'}</span>
+          </button>
+        </div>
+
         <div className="text-white/40 text-xs">
           {currentIndex + 1} / {generations.length}
         </div>
@@ -57,7 +107,24 @@ export function ImageDisplay({ generations, currentIndex, onNavigate }: ImageDis
               height={1024}
               className="w-auto h-auto max-w-full object-contain rounded-xl shadow-xl"
               priority
+              onLoad={(e) => {
+                const img = e.target as HTMLImageElement;
+                setImageDimensions({
+                  width: img.clientWidth,
+                  height: img.clientHeight
+                });
+              }}
             />
+
+            {/* Fabric.js Canvas Overlay */}
+            {imageDimensions.width > 0 && (
+              <FabricCanvas
+                width={imageDimensions.width}
+                height={imageDimensions.height}
+                onCanvasReady={onCanvasReady}
+                onSelectionChange={onSelectionChange}
+              />
+            )}
           </div>
 
           {/* Navigation arrows */}
