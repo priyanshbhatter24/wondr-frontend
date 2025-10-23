@@ -62,6 +62,35 @@ export function FabricCanvas({
       onSelectionChange?.(false);
     });
 
+    // Boundary constraints - keep objects within canvas
+    canvas.on('object:moving', (e) => {
+      const obj = e.target;
+      if (!obj) return;
+
+      const objWidth = obj.getScaledWidth();
+      const objHeight = obj.getScaledHeight();
+
+      // Constrain left boundary
+      if (obj.left! < 0) {
+        obj.left = 0;
+      }
+
+      // Constrain right boundary
+      if (obj.left! + objWidth > canvas.width!) {
+        obj.left = canvas.width! - objWidth;
+      }
+
+      // Constrain top boundary
+      if (obj.top! < 0) {
+        obj.top = 0;
+      }
+
+      // Constrain bottom boundary
+      if (obj.top! + objHeight > canvas.height!) {
+        obj.top = canvas.height! - objHeight;
+      }
+    });
+
     // Object modification events (useful for future undo/redo)
     canvas.on('object:modified', () => {
       console.log('Canvas object modified');
@@ -75,11 +104,37 @@ export function FabricCanvas({
       console.log('Canvas object removed');
     });
 
+    // Keyboard event handler for Delete key
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Delete or Backspace key - remove selected object
+      if (e.key === 'Delete' || e.key === 'Backspace') {
+        const activeObject = canvas.getActiveObject();
+        if (activeObject) {
+          e.preventDefault(); // Prevent browser back navigation on Backspace
+          canvas.remove(activeObject);
+          canvas.renderAll();
+          onSelectionChange?.(false);
+          console.log('✅ Asset removed via keyboard');
+        }
+      }
+
+      // Escape - deselect
+      if (e.key === 'Escape') {
+        canvas.discardActiveObject();
+        canvas.renderAll();
+        onSelectionChange?.(false);
+      }
+    };
+
+    // Add keyboard listener
+    window.addEventListener('keydown', handleKeyDown);
+
     // Notify parent component that canvas is ready
     onCanvasReady?.({ canvas });
 
     // Cleanup function
     return () => {
+      window.removeEventListener('keydown', handleKeyDown);
       canvas.dispose();
       fabricCanvasRef.current = null;
     };

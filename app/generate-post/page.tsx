@@ -360,30 +360,7 @@ function GeneratePostPageContent() {
     );
   };
 
-  // Handle keyboard shortcuts
-  useEffect(() => {
-    function handleKeyDown(e: KeyboardEvent) {
-      if (!canvasEditor?.canvas) return;
-
-      // Delete key - remove selected object
-      if (e.key === 'Delete' && hasSelection) {
-        const activeObject = canvasEditor.canvas.getActiveObject();
-        if (activeObject) {
-          canvasEditor.canvas.remove(activeObject);
-          canvasEditor.canvas.renderAll();
-        }
-      }
-
-      // Escape - deselect
-      if (e.key === 'Escape') {
-        canvasEditor.canvas.discardActiveObject();
-        canvasEditor.canvas.renderAll();
-      }
-    }
-
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [canvasEditor, hasSelection]);
+  // Note: Keyboard shortcuts (Delete, Escape) are handled in FabricCanvas component
 
   // Determine if assets button should be disabled
   const currentGeneration = generations[currentIndex];
