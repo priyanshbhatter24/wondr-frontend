@@ -424,9 +424,9 @@ function GeneratePostPageContent() {
         </header>
 
         {/* Error banner */}
-        {error && (
+        {(error || exportError) && (
           <div className="bg-red-500/10 border-l-4 border-red-500 text-red-500 p-4">
-            <p className="font-medium">{error}</p>
+            <p className="font-medium">{error || exportError}</p>
           </div>
         )}
 
