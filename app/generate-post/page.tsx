@@ -11,6 +11,10 @@ import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import { useGenerations } from "@/lib/use-generations";
 import { ModeToggle } from "@/components/ModeToggle";
 import { ChannelSelector } from "@/components/ChannelSelector";
+import { BrandAssetsSidebar } from "@/components/BrandAssetsSidebar";
+import { useBrandAssets } from "@/lib/use-brand-assets";
+import { useCanvasExport } from "@/lib/use-canvas-export";
+import { addImageToCanvas } from "@/lib/fabric-utils";
 
 function GeneratePostPageContent() {
   const searchParams = useSearchParams();
@@ -40,6 +44,17 @@ function GeneratePostPageContent() {
 
   // Session file count tracking
   const [sessionFileCount, setSessionFileCount] = useState(0);
+
+  // Canvas state
+  const [assetsSidebarOpen, setAssetsSidebarOpen] = useState(false);
+  const [canvasEditor, setCanvasEditor] = useState<any>(null);
+  const [hasSelection, setHasSelection] = useState(false);
+
+  // Fetch brand assets
+  const { assets: brandAssets, loading: assetsLoading } = useBrandAssets();
+
+  // Export hook
+  const { exportImage, isExporting, error: exportError } = useCanvasExport();
 
   // Initialize or load session
   useEffect(() => {
@@ -306,6 +321,75 @@ function GeneratePostPageContent() {
     router.push(`/generate-post?session=${newSessionId}`);
   };
 
+  // Clear canvas when navigating between versions
+  useEffect(() => {
+    if (canvasEditor?.canvas) {
+      canvasEditor.canvas.clear();
+      canvasEditor.canvas.renderAll();
+    }
+  }, [currentIndex, canvasEditor]);
+
+  // Handle asset selection from sidebar
+  const handleAssetSelect = async (assetUrl: string, label: string) => {
+    if (!canvasEditor?.canvas) {
+      console.error('Canvas not ready');
+      return;
+    }
+
+    try {
+      await addImageToCanvas(canvasEditor.canvas, assetUrl, label);
+      console.log('✅ Asset added to canvas:', label);
+      // TODO: Add toast notification for success
+    } catch (err) {
+      console.error('❌ Failed to add asset:', err);
+      // TODO: Add toast notification for error
+    }
+  };
+
+  // Handle download
+  const handleDownload = async () => {
+    const currentGeneration = generations[currentIndex];
+    if (!currentGeneration) return;
+
+    await exportImage(
+      canvasEditor?.canvas,
+      currentGeneration.s3_url,
+      currentGeneration.version_number
+    );
+  };
+
+  // Handle keyboard shortcuts
+  useEffect(() => {
+    function handleKeyDown(e: KeyboardEvent) {
+      if (!canvasEditor?.canvas) return;
+
+      // Delete key - remove selected object
+      if (e.key === 'Delete' && hasSelection) {
+        const activeObject = canvasEditor.canvas.getActiveObject();
+        if (activeObject) {
+          canvasEditor.canvas.remove(activeObject);
+          canvasEditor.canvas.renderAll();
+        }
+      }
+
+      // Escape - deselect
+      if (e.key === 'Escape') {
+        canvasEditor.canvas.discardActiveObject();
+        canvasEditor.canvas.renderAll();
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [canvasEditor, hasSelection]);
+
+  // Determine if assets button should be disabled
+  const currentGeneration = generations[currentIndex];
+  const assetsButtonDisabled =
+    !currentGeneration ||  // No image generated
+    !brandAssets ||        // Assets not loaded
+    (brandAssets.assets.length === 0 && !brandAssets.logo);  // No assets uploaded
+
   if (isInitializing) {
     return (
       <AppShell
@@ -401,11 +485,28 @@ function GeneratePostPageContent() {
                 generations={generations}
                 currentIndex={currentIndex}
                 onNavigate={handleNavigate}
+                onAssetsButtonClick={() => setAssetsSidebarOpen(true)}
+                onDownloadClick={handleDownload}
+                assetsButtonDisabled={assetsButtonDisabled}
+                downloadButtonDisabled={!currentGeneration || isExporting}
+                isExporting={isExporting}
+                onCanvasReady={setCanvasEditor}
+                onSelectionChange={setHasSelection}
               />
             </Panel>
           </PanelGroup>
         </div>
       </div>
+
+      {/* Brand Assets Sidebar */}
+      {brandAssets && (
+        <BrandAssetsSidebar
+          isOpen={assetsSidebarOpen}
+          onClose={() => setAssetsSidebarOpen(false)}
+          onAssetSelect={handleAssetSelect}
+          brandAssets={brandAssets}
+        />
+      )}
     </AppShell>
   );
 }
