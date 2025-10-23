@@ -7,6 +7,16 @@ export interface AttachmentMetadata {
   uploaded_at?: string;
 }
 
+export interface PlacedAsset {
+  asset_url: string;
+  asset_label: string;
+  left: number;
+  top: number;
+  scaleX: number;
+  scaleY: number;
+  angle: number;
+}
+
 export interface ImageGenerationSession {
   session_id: string;
   user_id: string;
@@ -27,6 +37,7 @@ export interface ImageGeneration {
   s3_key: string;
   version_number: number;
   parent_generation_id?: string;
+  canvas_data?: PlacedAsset[];
   created_at: string;
 }
 
@@ -83,4 +94,8 @@ export interface PlanModeChatResponse {
 export interface UpdateSessionRequest {
   mode?: "plan" | "generate";
   channel?: "instagram" | "linkedin" | "x";
+}
+
+export interface SaveCanvasDataRequest {
+  canvas_data: PlacedAsset[];
 }

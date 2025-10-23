@@ -1,4 +1,5 @@
 import * as fabric from 'fabric';
+import { PlacedAsset } from '@/types/image-generation';
 
 /**
  * Load an image and add it to the canvas at the center
@@ -126,4 +127,76 @@ export async function exportCanvasAsImage(
 export function clearCanvas(canvas: fabric.Canvas): void {
   canvas.clear();
   canvas.renderAll();
+}
+
+/**
+ * Serialize canvas objects to PlacedAsset format for persistence
+ *
+ * @param canvas - Fabric.js canvas instance
+ * @returns Array of PlacedAsset objects with position and transform data
+ */
+export function serializeCanvasData(canvas: fabric.Canvas): PlacedAsset[] {
+  const objects = canvas.getObjects();
+
+  return objects.map(obj => {
+    const data = obj.data as { assetLabel?: string } | undefined;
+
+    return {
+      asset_url: (obj as any).src || (obj as any)._originalElement?.src || '',
+      asset_label: data?.assetLabel || 'Unknown Asset',
+      left: obj.left || 0,
+      top: obj.top || 0,
+      scaleX: obj.scaleX || 1,
+      scaleY: obj.scaleY || 1,
+      angle: obj.angle || 0,
+    };
+  });
+}
+
+/**
+ * Restore canvas from PlacedAsset data
+ *
+ * @param canvas - Fabric.js canvas instance
+ * @param canvasData - Array of PlacedAsset objects to restore
+ */
+export async function restoreCanvasData(
+  canvas: fabric.Canvas,
+  canvasData: PlacedAsset[]
+): Promise<void> {
+  // Clear existing objects
+  canvas.clear();
+
+  // Load each asset
+  for (const asset of canvasData) {
+    try {
+      const img = await fabric.FabricImage.fromURL(asset.asset_url, {
+        crossOrigin: 'anonymous'
+      });
+
+      if (!img) {
+        console.warn(`Failed to load asset: ${asset.asset_label}`);
+        continue;
+      }
+
+      // Restore position and transform
+      img.set({
+        left: asset.left,
+        top: asset.top,
+        scaleX: asset.scaleX,
+        scaleY: asset.scaleY,
+        angle: asset.angle,
+        selectable: true,
+        hasControls: true,
+        hasBorders: true,
+        data: { assetLabel: asset.asset_label }
+      });
+
+      canvas.add(img);
+    } catch (err) {
+      console.error(`Error restoring asset ${asset.asset_label}:`, err);
+    }
+  }
+
+  canvas.renderAll();
+  console.log(`✅ Restored ${canvasData.length} assets to canvas`);
 }

@@ -14,7 +14,8 @@ import { ChannelSelector } from "@/components/ChannelSelector";
 import { BrandAssetsSidebar } from "@/components/BrandAssetsSidebar";
 import { useBrandAssets } from "@/lib/use-brand-assets";
 import { useCanvasExport } from "@/lib/use-canvas-export";
-import { addImageToCanvas } from "@/lib/fabric-utils";
+import { useCanvasAutosave } from "@/lib/use-canvas-autosave";
+import { addImageToCanvas, restoreCanvasData } from "@/lib/fabric-utils";
 
 function GeneratePostPageContent() {
   const searchParams = useSearchParams();
@@ -55,6 +56,14 @@ function GeneratePostPageContent() {
 
   // Export hook
   const { exportImage, isExporting, error: exportError } = useCanvasExport();
+
+  // Auto-save hook for canvas data
+  const currentGeneration = generations[currentIndex];
+  useCanvasAutosave({
+    canvas: canvasEditor?.canvas || null,
+    generationId: currentGeneration?.generation_id,
+    enabled: mode === "generate" && !!currentGeneration
+  });
 
   // Initialize or load session
   useEffect(() => {
@@ -321,13 +330,24 @@ function GeneratePostPageContent() {
     router.push(`/generate-post?session=${newSessionId}`);
   };
 
-  // Clear canvas when navigating between versions
+  // Restore canvas data when navigating between versions
   useEffect(() => {
-    if (canvasEditor?.canvas) {
-      canvasEditor.canvas.clear();
-      canvasEditor.canvas.renderAll();
-    }
-  }, [currentIndex, canvasEditor]);
+    const restoreCanvas = async () => {
+      if (!canvasEditor?.canvas) return;
+
+      const generation = generations[currentIndex];
+      if (generation?.canvas_data && generation.canvas_data.length > 0) {
+        // Restore saved canvas data
+        await restoreCanvasData(canvasEditor.canvas, generation.canvas_data);
+      } else {
+        // No saved data, clear canvas
+        canvasEditor.canvas.clear();
+        canvasEditor.canvas.renderAll();
+      }
+    };
+
+    restoreCanvas();
+  }, [currentIndex, canvasEditor, generations]);
 
   // Handle asset selection from sidebar
   const handleAssetSelect = async (assetUrl: string, label: string) => {
@@ -350,7 +370,6 @@ function GeneratePostPageContent() {
 
   // Handle download
   const handleDownload = async () => {
-    const currentGeneration = generations[currentIndex];
     if (!currentGeneration) return;
 
     await exportImage(
@@ -363,7 +382,6 @@ function GeneratePostPageContent() {
   // Note: Keyboard shortcuts (Delete, Escape) are handled in FabricCanvas component
 
   // Determine if assets button should be disabled
-  const currentGeneration = generations[currentIndex];
   const assetsButtonDisabled =
     !currentGeneration ||  // No image generated
     !brandAssets ||        // Assets not loaded
