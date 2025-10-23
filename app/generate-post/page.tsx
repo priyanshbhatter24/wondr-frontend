@@ -16,6 +16,7 @@ import { useBrandAssets } from "@/lib/use-brand-assets";
 import { useCanvasExport } from "@/lib/use-canvas-export";
 import { useCanvasAutosave } from "@/lib/use-canvas-autosave";
 import { addImageToCanvas, restoreCanvasData } from "@/lib/fabric-utils";
+import type { FabricCanvasEditor } from "@/components/FabricCanvas";
 
 function GeneratePostPageContent() {
   const searchParams = useSearchParams();
@@ -48,8 +49,7 @@ function GeneratePostPageContent() {
 
   // Canvas state
   const [assetsSidebarOpen, setAssetsSidebarOpen] = useState(false);
-  const [canvasEditor, setCanvasEditor] = useState<any>(null);
-  const [hasSelection, setHasSelection] = useState(false);
+  const [canvasEditor, setCanvasEditor] = useState<FabricCanvasEditor | null>(null);
 
   // Fetch brand assets
   const { assets: brandAssets } = useBrandAssets();
@@ -489,7 +489,6 @@ function GeneratePostPageContent() {
                 downloadButtonDisabled={!currentGeneration || isExporting}
                 isExporting={isExporting}
                 onCanvasReady={setCanvasEditor}
-                onSelectionChange={setHasSelection}
               />
             </Panel>
           </PanelGroup>

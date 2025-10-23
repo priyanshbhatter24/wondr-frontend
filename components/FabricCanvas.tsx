@@ -3,10 +3,14 @@
 import { useEffect, useRef } from 'react';
 import * as fabric from 'fabric';
 
+export interface FabricCanvasEditor {
+  canvas: fabric.Canvas;
+}
+
 interface FabricCanvasProps {
   width: number;
   height: number;
-  onCanvasReady?: (editor: { canvas: fabric.Canvas }) => void;
+  onCanvasReady?: (editor: FabricCanvasEditor) => void;
   onSelectionChange?: (hasSelection: boolean) => void;
 }
 
@@ -24,6 +28,16 @@ export function FabricCanvas({
 }: FabricCanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const fabricCanvasRef = useRef<fabric.Canvas | null>(null);
+  const latestSelectionChangeRef = useRef(onSelectionChange);
+  const latestCanvasReadyRef = useRef(onCanvasReady);
+
+  useEffect(() => {
+    latestSelectionChangeRef.current = onSelectionChange;
+  }, [onSelectionChange]);
+
+  useEffect(() => {
+    latestCanvasReadyRef.current = onCanvasReady;
+  }, [onCanvasReady]);
 
   // Initialize Fabric.js canvas
   useEffect(() => {
@@ -51,15 +65,15 @@ export function FabricCanvas({
 
     // Selection event handlers
     canvas.on('selection:created', () => {
-      onSelectionChange?.(true);
+      latestSelectionChangeRef.current?.(true);
     });
 
     canvas.on('selection:updated', () => {
-      onSelectionChange?.(true);
+      latestSelectionChangeRef.current?.(true);
     });
 
     canvas.on('selection:cleared', () => {
-      onSelectionChange?.(false);
+      latestSelectionChangeRef.current?.(false);
     });
 
     // Boundary constraints - keep objects within canvas
@@ -113,7 +127,7 @@ export function FabricCanvas({
           e.preventDefault(); // Prevent browser back navigation on Backspace
           canvas.remove(activeObject);
           canvas.renderAll();
-          onSelectionChange?.(false);
+          latestSelectionChangeRef.current?.(false);
           console.log('✅ Asset removed via keyboard');
         }
       }
@@ -122,7 +136,7 @@ export function FabricCanvas({
       if (e.key === 'Escape') {
         canvas.discardActiveObject();
         canvas.renderAll();
-        onSelectionChange?.(false);
+        latestSelectionChangeRef.current?.(false);
       }
     };
 
@@ -130,7 +144,7 @@ export function FabricCanvas({
     window.addEventListener('keydown', handleKeyDown);
 
     // Notify parent component that canvas is ready
-    onCanvasReady?.({ canvas });
+    latestCanvasReadyRef.current?.({ canvas });
 
     // Cleanup function
     return () => {
@@ -138,7 +152,7 @@ export function FabricCanvas({
       canvas.dispose();
       fabricCanvasRef.current = null;
     };
-  }, []); // Only run once on mount
+  }, [height, width]);
 
   // Update canvas dimensions when they change
   useEffect(() => {

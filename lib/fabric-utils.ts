@@ -1,6 +1,15 @@
 import * as fabric from 'fabric';
 import { PlacedAsset } from '@/types/image-generation';
 
+type FabricObjectWithSource = fabric.FabricObject & {
+  src?: string;
+  _originalElement?: { src?: string | undefined };
+};
+
+type FabricObjectWithData = fabric.FabricObject & {
+  data?: { assetLabel?: string };
+};
+
 /**
  * Load an image and add it to the canvas at the center
  *
@@ -138,11 +147,19 @@ export function clearCanvas(canvas: fabric.Canvas): void {
 export function serializeCanvasData(canvas: fabric.Canvas): PlacedAsset[] {
   const objects = canvas.getObjects();
 
-  return objects.map(obj => {
-    const data = obj.data as { assetLabel?: string } | undefined;
+  return objects.map((obj) => {
+    const { data } = obj as FabricObjectWithData;
+    const fabricImage = obj instanceof fabric.FabricImage ? obj : null;
+    const objectWithSource = obj as FabricObjectWithSource;
+
+    const assetUrl =
+      fabricImage?.getSrc() ??
+      objectWithSource.src ??
+      objectWithSource._originalElement?.src ??
+      '';
 
     return {
-      asset_url: (obj as any).src || (obj as any)._originalElement?.src || '',
+      asset_url: assetUrl,
       asset_label: data?.assetLabel || 'Unknown Asset',
       left: obj.left || 0,
       top: obj.top || 0,

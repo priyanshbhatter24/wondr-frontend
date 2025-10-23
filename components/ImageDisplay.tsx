@@ -5,6 +5,7 @@ import Image from "next/image";
 import { useState } from "react";
 import { ImageGeneration } from "@/types/image-generation";
 import { FabricCanvas } from "./FabricCanvas";
+import type { FabricCanvasEditor } from "./FabricCanvas";
 
 interface ImageDisplayProps {
   generations: ImageGeneration[];
@@ -16,7 +17,7 @@ interface ImageDisplayProps {
   assetsButtonDisabled?: boolean;
   downloadButtonDisabled?: boolean;
   isExporting?: boolean;
-  onCanvasReady?: (editor: any) => void;
+  onCanvasReady?: (editor: FabricCanvasEditor) => void;
   onSelectionChange?: (hasSelection: boolean) => void;
 }
 
