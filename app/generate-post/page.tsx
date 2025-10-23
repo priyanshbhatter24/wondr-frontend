@@ -62,7 +62,8 @@ function GeneratePostPageContent() {
   useCanvasAutosave({
     canvas: canvasEditor?.canvas || null,
     generationId: currentGeneration?.generation_id,
-    enabled: mode === "generate" && !!currentGeneration
+    enabled: mode === "generate" && !!currentGeneration,
+    apiClient: { imageGeneration }
   });
 
   // Initialize or load session

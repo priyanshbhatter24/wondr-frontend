@@ -1,12 +1,12 @@
 import { useEffect, useRef, useCallback } from 'react';
 import * as fabric from 'fabric';
-import { api } from './api';
 import { serializeCanvasData } from './fabric-utils';
 
 interface UseCanvasAutosaveOptions {
   canvas: fabric.Canvas | null;
   generationId: string | undefined;
   enabled: boolean;
+  apiClient: any; // Client-side API from useApiClient hook
 }
 
 /**
@@ -18,19 +18,20 @@ interface UseCanvasAutosaveOptions {
 export function useCanvasAutosave({
   canvas,
   generationId,
-  enabled
+  enabled,
+  apiClient
 }: UseCanvasAutosaveOptions) {
   const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const isSavingRef = useRef(false);
 
   const saveCanvasData = useCallback(async () => {
-    if (!canvas || !generationId || isSavingRef.current || !enabled) return;
+    if (!canvas || !generationId || isSavingRef.current || !enabled || !apiClient) return;
 
     try {
       isSavingRef.current = true;
       const canvasData = serializeCanvasData(canvas);
 
-      await api.imageGeneration.saveCanvasData(generationId, {
+      await apiClient.imageGeneration.saveCanvasData(generationId, {
         canvas_data: canvasData
       });
 
@@ -40,7 +41,7 @@ export function useCanvasAutosave({
     } finally {
       isSavingRef.current = false;
     }
-  }, [canvas, generationId, enabled]);
+  }, [canvas, generationId, enabled, apiClient]);
 
   const debouncedSave = useCallback(() => {
     // Clear existing timeout
