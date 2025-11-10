@@ -42,6 +42,7 @@ export default function IdeaHubPage() {
   const [industryUpdatesFromAPI, setIndustryUpdatesFromAPI] = useState<IndustryUpdate[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [researching, setResearching] = useState(false);
 
   // Get API client
   const api = useApiClient();
@@ -70,6 +71,27 @@ export default function IdeaHubPage() {
     fetchUpdates();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []); // Only run once on mount
+
+  // Handle manual research trigger
+  const handleResearch = async () => {
+    setResearching(true);
+    setError(null);
+
+    try {
+      await api.industryUpdates.triggerResearch();
+
+      // Refresh the list after research completes
+      const data = await api.industryUpdates.list({ limit: 20 });
+      setIndustryUpdatesFromAPI(data.updates);
+
+      alert("Research completed! New topic added.");
+    } catch (error) {
+      console.error("Research failed:", error);
+      setError("Research failed. Please try again.");
+    } finally {
+      setResearching(false);
+    }
+  };
 
   // Industry Updates data
   const industryUpdates: InsightData[] = [
@@ -262,6 +284,13 @@ export default function IdeaHubPage() {
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-xl font-medium text-white">Industry Updates</h2>
               <div className="flex gap-2">
+                <button
+                  onClick={handleResearch}
+                  disabled={researching}
+                  className="px-4 py-2 rounded-lg bg-[#C5D86D] text-black font-medium transition-all hover:bg-[#B5C85D] disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {researching ? "Researching..." : "Research"}
+                </button>
                 <button
                   onClick={() => scroll(industrySliderRef, "left")}
                   className="w-8 h-8 rounded-full bg-transparent border border-white/20 flex items-center justify-center text-white transition-colors hover:bg-black/40"

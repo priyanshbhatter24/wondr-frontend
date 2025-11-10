@@ -70,6 +70,10 @@ export const api = {
       return apiClient<IndustryUpdatesListResponse>(`/api/industry-updates${queryString ? `?${queryString}` : ""}`);
     },
     get: (id: string) => apiClient<IndustryUpdate>(`/api/industry-updates/${id}`),
+    triggerResearch: () =>
+      apiClient<{ success: boolean; message: string; user_id: string }>("/api/industry-updates/research", {
+        method: "POST",
+      }),
   },
   userConfig: {
     getIcp: () => apiClient<UserICPConfig>("/api/user-config/icp"),
