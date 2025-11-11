@@ -1,6 +1,7 @@
 "use client";
 
 import { formatRelativeTime } from "@/utils/date";
+import { stripTwitterUrls } from "@/utils/text";
 
 interface RemixOption {
   text: string;
@@ -45,7 +46,7 @@ export default function InsightCard({
       <h3 className="text-lg font-bold leading-tight">{topic}</h3>
 
       {/* Description */}
-      <p className="text-sm leading-relaxed opacity-95">{description}</p>
+      <p className="text-sm leading-relaxed opacity-95">{stripTwitterUrls(description)}</p>
 
       {/* Remix Section */}
       <div className="mt-2">

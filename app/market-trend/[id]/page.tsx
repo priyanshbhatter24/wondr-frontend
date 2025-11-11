@@ -9,6 +9,7 @@ import { useGenerations } from "@/lib/use-generations";
 import { IndustryUpdate } from "@/types/industry-updates";
 import { PostIdeationHistoryItem } from "@/types/post-ideation";
 import { formatRelativeTime } from "@/utils/date";
+import { stripTwitterUrls } from "@/utils/text";
 
 // Helper function to get channel icon
 const getChannelIcon = (channelName: string) => {
@@ -272,7 +273,7 @@ export default function MarketTrendPage() {
 
                   {/* Description */}
                   <p className="text-white/90 text-sm mb-6 leading-relaxed text-left">
-                    {industryUpdate.description}
+                    {stripTwitterUrls(industryUpdate.description)}
                   </p>
 
                   {/* Remix Options as bullet points */}
