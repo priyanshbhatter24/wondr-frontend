@@ -4,7 +4,6 @@ import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import AppShell from "@/components/AppShell";
 import InsightCard from "@/components/InsightCard";
-import CompetitorCard from "@/components/CompetitorCard";
 import CompetitorResearchCard from "@/components/CompetitorResearchCard";
 import { ChevronLeftIcon, ChevronRightIcon, FileIcon } from "@radix-ui/react-icons";
 import { useApiClient } from "@/lib/api-client";
@@ -21,24 +20,8 @@ interface InsightData {
   remixOptions: { text: string; reasoning?: string }[];
 }
 
-type CompetitorType = "Meta" | "Alphabet" | "Microsoft";
-
-interface CompetitorInsightData extends InsightData {
-  heroImageUrl: string;
-  heroImageAlt: string;
-  heroImageSourceUrl: string;
-  metrics: {
-    views: number;
-    likes: number;
-    shares: number;
-  };
-  ctaLabel: string;
-  ctaHref: string;
-}
-
 export default function IdeaHubPage() {
   const router = useRouter();
-  const [activeCompetitor, setActiveCompetitor] = useState<CompetitorType>("Meta");
 
   // API state for industry updates
   const [industryUpdatesFromAPI, setIndustryUpdatesFromAPI] = useState<IndustryUpdate[]>([]);
@@ -183,111 +166,7 @@ export default function IdeaHubPage() {
     },
   ];
 
-  // Competitor Insights data
-  const competitorInsights: Record<CompetitorType, CompetitorInsightData[]> = {
-    Meta: [
-      {
-        id: "meta-1",
-        source: "VERGE",
-        topic: "Meta Ray Ban glasses fail live demo.",
-        description:
-          "During the live demo from mark zuckerberg, there was an error states, and onboarding flows. There is a need to further refine the framework and add more accessibility.",
-        remixOptions: [
-          { text: "Google believes that there is an infrastructure shortage" },
-          { text: "Tease the competitor that we are building" },
-          { text: "Google integration with meta glasses" },
-          { text: "Need for smaller form factor to enable tech" },
-        ],
-        heroImageUrl:
-          "https://cdn.mos.cms.futurecdn.net/uBLE9FqeNG6j3kX2DowuXD.jpg",
-        heroImageAlt: "Person holding modern wearable earbuds",
-        heroImageSourceUrl: "https://unsplash.com/photos/a-person-holding-a-pair-of-earbuds-0y8Hq15SCBM",
-        metrics: {
-          views: 27864,
-          likes: 3245,
-          shares: 271,
-        },
-        ctaLabel: "Try with 100-day free returns",
-        ctaHref: "https://www.verge.com/articles/meta-rayban-demo",
-      },
-      {
-        id: "meta-2",
-        source: "VERGE",
-        topic: "Meta Ray Ban glasses fail live demo.",
-        description:
-          "During the live demo from mark zuckerberg, there was an error states, and onboarding flows. There is a need to further refine the framework and add more accessibility.",
-        remixOptions: [
-          { text: "Google believes that there is an infrastructure shortage" },
-          { text: "Tease the competitor that we are building" },
-          { text: "Google integration with meta glasses" },
-          { text: "Need for smaller form factor to enable tech" },
-        ],
-        heroImageUrl:
-          "https://cdn.mos.cms.futurecdn.net/uBLE9FqeNG6j3kX2DowuXD.jpg",
-        heroImageAlt: "Augmented reality glasses on display",
-        heroImageSourceUrl: "https://unsplash.com/photos/a-close-up-of-a-pair-of-glasses-on-a-table-g6fNRoe8t44",
-        metrics: {
-          views: 21950,
-          likes: 1984,
-          shares: 184,
-        },
-        ctaLabel: "View competitive teardown",
-        ctaHref: "https://www.verge.com/articles/meta-rayban-analysis",
-      },
-    ],
-    Alphabet: [
-      {
-        id: "alphabet-1",
-        source: "VERGE",
-        topic: "Meta Ray Ban glasses fail live demo.",
-        description:
-          "During the live demo from mark zuckerberg, there was an error states, and onboarding flows. There is a need to further refine the framework and add more accessibility.",
-        remixOptions: [
-          { text: "Google believes that there is an infrastructure shortage" },
-          { text: "Tease the competitor that we are building" },
-          { text: "Google integration with meta glasses" },
-          { text: "Need for smaller form factor to enable tech" },
-        ],
-        heroImageUrl:
-          "https://cdn.mos.cms.futurecdn.net/uBLE9FqeNG6j3kX2DowuXD.jpg",
-        heroImageAlt: "Person testing futuristic wearable display",
-        heroImageSourceUrl: "https://unsplash.com/photos/person-wearing-augmented-reality-glasses-pOUA8Xay514",
-        metrics: {
-          views: 18742,
-          likes: 1644,
-          shares: 132,
-        },
-        ctaLabel: "Read the full report",
-        ctaHref: "https://www.verge.com/articles/alphabet-ar-roadmap",
-      },
-    ],
-    Microsoft: [
-      {
-        id: "microsoft-1",
-        source: "VERGE",
-        topic: "Meta Ray Ban glasses fail live demo.",
-        description:
-          "During the live demo from mark zuckerberg, there was an error states, and onboarding flows. There is a need to further refine the framework and add more accessibility.",
-        remixOptions: [
-          { text: "Google believes that there is an infrastructure shortage" },
-          { text: "Tease the competitor that we are building" },
-          { text: "Google integration with meta glasses" },
-          { text: "Need for smaller form factor to enable tech" },
-        ],
-        heroImageUrl:
-          "https://cdn.mos.cms.futurecdn.net/uBLE9FqeNG6j3kX2DowuXD.jpg",
-        heroImageAlt: "Smart speaker with ambient lighting",
-        heroImageSourceUrl: "https://unsplash.com/photos/gray-and-black-echo-dot-2nd-generation-AHVqE7MjIzk",
-        metrics: {
-          views: 20431,
-          likes: 1762,
-          shares: 165,
-        },
-        ctaLabel: "Explore partnership pitch",
-        ctaHref: "https://www.verge.com/articles/microsoft-mesh-launch",
-      },
-    ],
-  };
+
 
   const handleCardClick = (insightId: string) => {
     router.push(`/market-trend/${insightId}`);
@@ -299,14 +178,6 @@ export default function IdeaHubPage() {
 
   const industrySliderRef = useRef<HTMLDivElement | null>(null);
   const competitorResearchSliderRef = useRef<HTMLDivElement | null>(null);
-  const competitorSliderRef = useRef<HTMLDivElement | null>(null);
-
-  useEffect(() => {
-    competitorSliderRef.current?.scrollTo({
-      left: 0,
-      behavior: "instant",
-    });
-  }, [activeCompetitor]);
 
   const scroll = (ref: React.RefObject<HTMLDivElement | null>, direction: "left" | "right") => {
     if (ref.current) {
@@ -497,7 +368,7 @@ export default function IdeaHubPage() {
                 ) : (
                   // Empty state message
                   <div className="text-center py-12 text-white/60 w-full">
-                    <p>No competitor research available. Click "Research" to generate insights.</p>
+                    <p>No competitor research available. Click “Research” to generate insights.</p>
                   </div>
                 )}
               </div>

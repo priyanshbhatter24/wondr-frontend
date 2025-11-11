@@ -6,7 +6,7 @@ import { ArrowLeftIcon, ChevronLeftIcon, ChevronRightIcon } from "@radix-ui/reac
 import AppShell from "@/components/AppShell";
 import { useApiClient } from "@/lib/api-client";
 import { useGenerations } from "@/lib/use-generations";
-import { CompetitorResearch, CompetitorProfile, CompetitorSocialAnalysis, MessagingAnalysis } from "@/types/competitor-research";
+import { CompetitorResearch } from "@/types/competitor-research";
 import { formatRelativeTime } from "@/utils/date";
 
 // Helper function to get platform icon
