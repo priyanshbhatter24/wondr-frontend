@@ -36,6 +36,17 @@ export interface SocialPost {
   topics: string[];
 }
 
+export interface PostingPatterns {
+  /** Average number of posts per week across the platform. */
+  average_posts_per_week?: number | null;
+  /** Days of the week where posting is most frequent. */
+  days_of_week?: string[];
+  /** Common time windows for publishing content. */
+  times_of_day?: string[];
+  /** Additional metadata supplied by the API. */
+  [key: string]: number | string | string[] | null | undefined;
+}
+
 export interface PlatformAnalysis {
   competitor_name: string;
   platform: string;
@@ -46,7 +57,7 @@ export interface PlatformAnalysis {
   content_types_distribution: { [key: string]: number };  // {"text": 5, "image": 2, ...}
   avg_engagement_rate: number | null;
   top_performing_posts: SocialPost[];
-  posting_patterns: any;  // Days of week, times of day, avg posts per week
+  posting_patterns: PostingPatterns;  // Days of week, times of day, avg posts per week
   insights: string[];            // Key insights about this platform
 }
 
@@ -83,14 +94,14 @@ export interface CompetitorResearch {
   // Empty fields (not used by competitor research agent)
   topic?: string;
   description?: string;
-  channels?: any;
-  post_suggestions?: any[];
-  swot_analysis?: any;
-  competitor_mentions?: any;
-  content_strategies?: any;
-  pricing_analysis?: any;
-  seo_analysis?: any;
-  engagement_analysis?: any;
+  channels?: Record<string, unknown>;
+  post_suggestions?: unknown[];
+  swot_analysis?: Record<string, unknown>;
+  competitor_mentions?: Record<string, unknown>;
+  content_strategies?: Record<string, unknown>;
+  pricing_analysis?: Record<string, unknown>;
+  seo_analysis?: Record<string, unknown>;
+  engagement_analysis?: Record<string, unknown>;
   competitive_summary?: string;
 }
 
