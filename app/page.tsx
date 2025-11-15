@@ -9,6 +9,11 @@ import FinalCta from "@/components/sections/final-cta";
 import Footer from "@/components/sections/footer";
 
 export default function Page() {
+  // Feature toggles allow us to hide sections without deleting their implementations
+  const showPlatformSection = false;
+  const showWorkflowSection = false;
+  const showTestimonialsSection = false;
+
   return (
     <main className="min-h-screen bg-black">
       <Navigation />
@@ -16,9 +21,9 @@ export default function Page() {
       {/* <SocialProof /> */}
       <InteractiveDemo />
       <FeaturesGrid />
-      <CreatorTabs />
-      <WorkflowShowcase />
-      <TestimonialsSection />
+      {showPlatformSection && <CreatorTabs />}
+      {showWorkflowSection && <WorkflowShowcase />}
+      {showTestimonialsSection && <TestimonialsSection />}
       <FinalCta />
       <Footer />
     </main>
