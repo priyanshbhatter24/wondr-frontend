@@ -219,7 +219,6 @@ export function useApiClient() {
         generate: async (data: GenerateImageRequest) => {
           const token = await getToken();
 
-          // Always use FormData (backend endpoint requires multipart/form-data)
           const formData = new FormData();
           formData.append('session_id', data.session_id);
           formData.append('prompt', data.prompt);

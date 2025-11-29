@@ -20,7 +20,7 @@ export interface PlacedAsset {
 export interface ImageGenerationSession {
   session_id: string;
   user_id: string;
-  model_preference: "nano-banana";
+  model_preference: "nano-banana-pro";
   mode: "plan" | "generate";
   channel: "instagram" | "linkedin" | "x";
   attachments_metadata?: AttachmentMetadata[];
@@ -32,7 +32,7 @@ export interface ImageGeneration {
   session_id: string;
   user_id: string;
   prompt: string;
-  model_used: "nano-banana";
+  model_used: "nano-banana-pro";
   s3_url: string;
   s3_key: string;
   version_number: number;

@@ -458,7 +458,7 @@ function GeneratePostPageContent() {
 
                 {/* Mode and Channel Controls - Below Input */}
                 <div className="px-4 pb-2 pt-1 bg-[#3A3A3A] flex-shrink-0">
-                  <div className="flex items-center justify-between gap-4">
+                  <div className="flex items-center justify-between gap-4 flex-wrap">
                     <ModeToggle
                       mode={mode}
                       onModeChange={handleModeChange}
