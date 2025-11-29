@@ -203,7 +203,6 @@ export const api = {
       if (data.previous_generation_id) formData.append("previous_generation_id", data.previous_generation_id);
       if (data.aspect_ratio) formData.append("aspect_ratio", data.aspect_ratio);
       if (data.channel) formData.append("channel", data.channel);
-      if (data.model_preference) formData.append("model_preference", data.model_preference);
       if (data.files) {
         data.files.forEach((file) => formData.append("files", file));
       }

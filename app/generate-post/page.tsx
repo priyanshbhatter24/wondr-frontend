@@ -11,7 +11,6 @@ import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import { useGenerations } from "@/lib/use-generations";
 import { ModeToggle } from "@/components/ModeToggle";
 import { ChannelSelector } from "@/components/ChannelSelector";
-import { ModelSelector } from "@/components/ModelSelector";
 import { BrandAssetsSidebar } from "@/components/BrandAssetsSidebar";
 import { useBrandAssets } from "@/lib/use-brand-assets";
 import { useCanvasExport } from "@/lib/use-canvas-export";
@@ -44,7 +43,6 @@ function GeneratePostPageContent() {
   // Mode and channel state
   const [mode, setMode] = useState<"plan" | "generate">("plan");
   const [channel, setChannel] = useState<"instagram" | "linkedin" | "x">("instagram");
-  const [model, setModel] = useState<"nano-banana" | "nano-banana-pro">("nano-banana-pro");
 
   // Session file count tracking
   const [sessionFileCount, setSessionFileCount] = useState(0);
@@ -96,7 +94,6 @@ function GeneratePostPageContent() {
         setIsInitializing(true);
         const session = await imageGeneration.createSession();
         setSessionId(session.session_id);
-        if (session.model_preference) setModel(session.model_preference);
 
         // IMPORTANT: Update URL to include session_id for persistence
         const params = new URLSearchParams();
@@ -153,7 +150,6 @@ function GeneratePostPageContent() {
         const session = await imageGeneration.getSession(sessionId);
         if (session.mode) setMode(session.mode);
         if (session.channel) setChannel(session.channel);
-        if (session.model_preference) setModel(session.model_preference);
         // Load file count from session metadata
         if (session.attachments_metadata) {
           setSessionFileCount(session.attachments_metadata.length);
@@ -187,18 +183,6 @@ function GeneratePostPageContent() {
       await imageGeneration.updateSession(sessionId, { channel: newChannel });
     } catch (err) {
       console.error("Failed to update channel:", err);
-    }
-  };
-
-  const handleModelChange = async (newModel: "nano-banana" | "nano-banana-pro") => {
-    if (!sessionId) return;
-
-    setModel(newModel);
-
-    try {
-      await imageGeneration.updateSession(sessionId, { model_preference: newModel });
-    } catch (err) {
-      console.error("Failed to update model:", err);
     }
   };
 
@@ -295,7 +279,6 @@ function GeneratePostPageContent() {
           previous_generation_id: previousGenerationId,
           aspect_ratio: detectedAspectRatio,
           channel: channel,
-          model_preference: model,
           files: files,  // Pass uploaded files
         });
 
@@ -484,11 +467,6 @@ function GeneratePostPageContent() {
                     <ChannelSelector
                       channel={channel}
                       onChannelChange={handleChannelChange}
-                      disabled={isGenerating}
-                    />
-                    <ModelSelector
-                      value={model}
-                      onChange={handleModelChange}
                       disabled={isGenerating}
                     />
                   </div>

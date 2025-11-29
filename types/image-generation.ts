@@ -20,7 +20,7 @@ export interface PlacedAsset {
 export interface ImageGenerationSession {
   session_id: string;
   user_id: string;
-  model_preference: "nano-banana" | "nano-banana-pro";
+  model_preference: "nano-banana-pro";
   mode: "plan" | "generate";
   channel: "instagram" | "linkedin" | "x";
   attachments_metadata?: AttachmentMetadata[];
@@ -32,7 +32,7 @@ export interface ImageGeneration {
   session_id: string;
   user_id: string;
   prompt: string;
-  model_used: "nano-banana" | "nano-banana-pro";
+  model_used: "nano-banana-pro";
   s3_url: string;
   s3_key: string;
   version_number: number;
@@ -57,7 +57,6 @@ export interface GenerateImageRequest {
   previous_generation_id?: string;
   aspect_ratio?: string;
   channel?: string;
-  model_preference?: "nano-banana" | "nano-banana-pro";
   files?: File[];
 }
 
@@ -95,7 +94,6 @@ export interface PlanModeChatResponse {
 export interface UpdateSessionRequest {
   mode?: "plan" | "generate";
   channel?: "instagram" | "linkedin" | "x";
-  model_preference?: "nano-banana" | "nano-banana-pro";
 }
 
 export interface SaveCanvasDataRequest {
