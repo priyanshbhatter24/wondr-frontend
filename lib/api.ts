@@ -182,10 +182,9 @@ export const api = {
       apiClient<PostIdeationResponse[]>(`/api/post-ideation/history/${industryUpdateId}/${ideationId}`),  // Returns array of all turns
   },
   imageGeneration: {
-    createSession: (model?: string) =>
+    createSession: () =>
       apiClient<ImageGenerationSession>("/api/image-generation/sessions", {
         method: "POST",
-        body: JSON.stringify({ model }),
       }),
     getSession: (sessionId: string) =>
       apiClient<ImageGenerationSession>(`/api/image-generation/sessions/${sessionId}`),
@@ -194,11 +193,36 @@ export const api = {
         method: "PATCH",
         body: JSON.stringify(data),
       }),
-    generate: (data: GenerateImageRequest & { model: string }) =>
-      apiClient<GenerateImageResponse>("/api/image-generation/generate", {
+    generate: async (data: GenerateImageRequest) => {
+      const token = await auth();
+      const userToken = await token.getToken();
+
+      const formData = new FormData();
+      formData.append("session_id", data.session_id);
+      formData.append("prompt", data.prompt);
+      if (data.previous_generation_id) formData.append("previous_generation_id", data.previous_generation_id);
+      if (data.aspect_ratio) formData.append("aspect_ratio", data.aspect_ratio);
+      if (data.channel) formData.append("channel", data.channel);
+      if (data.model_preference) formData.append("model_preference", data.model_preference);
+      if (data.files) {
+        data.files.forEach((file) => formData.append("files", file));
+      }
+
+      const response = await fetch(`${API_URL}/api/image-generation/generate`, {
         method: "POST",
-        body: JSON.stringify(data),
-      }),
+        headers: {
+          ...(userToken && { Authorization: `Bearer ${userToken}` }),
+        },
+        body: formData,
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text().catch(() => "Upload failed");
+        throw new Error(errorText);
+      }
+
+      return response.json() as Promise<GenerateImageResponse>;
+    },
     getHistory: (sessionId: string) =>
       apiClient<ImageGenerationHistoryResponse>(`/api/image-generation/sessions/${sessionId}/history`),
     getMessages: (sessionId: string) =>
