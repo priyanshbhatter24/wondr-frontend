@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { ChevronRightIcon } from "@radix-ui/react-icons";
 import { CompetitorAggregatedData } from "@/types/competitor-research";
 
@@ -34,8 +35,8 @@ export default function CompetitorSelector({
             <div className="flex items-center gap-3">
               {/* Logo or Fallback */}
               {data.logo_url ? (
-                <div className="w-10 h-10 rounded-full overflow-hidden bg-white flex-shrink-0 border border-white/10">
-                  <img src={data.logo_url} alt={name} className="w-full h-full object-cover" />
+                <div className="w-10 h-10 rounded-full overflow-hidden bg-white flex-shrink-0 border border-white/10 relative">
+                  <Image src={data.logo_url} alt={name} fill sizes="40px" className="object-cover" />
                 </div>
               ) : (
                 <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center flex-shrink-0 text-black font-bold text-lg border border-white/10">

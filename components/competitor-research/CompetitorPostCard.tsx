@@ -1,8 +1,9 @@
 "use client";
 
+import Image from "next/image";
 import { useState } from "react";
 import { CompetitorPost } from "@/types/competitor-research";
-import { EyeOpenIcon, HeartIcon, ChatBubbleIcon, Share1Icon, PaperPlaneIcon } from "@radix-ui/react-icons";
+import { EyeOpenIcon, HeartIcon, ChatBubbleIcon, PaperPlaneIcon } from "@radix-ui/react-icons";
 
 interface CompetitorPostCardProps {
   post: CompetitorPost;
@@ -71,16 +72,18 @@ export default function CompetitorPostCard({
       {/* Image Area - 3:2 aspect ratio with dark background */}
       <div className="relative aspect-[3/2] w-full bg-[#1A1A1A] rounded-md overflow-hidden mb-4 flex items-center justify-center">
         {hasImage ? (
-          <img
+          <Image
             src={post.images[0]}
             alt={postText.substring(0, 60)}
-            className="w-full h-full object-cover"
+            fill
+            sizes="(max-width: 768px) 100vw, 50vw"
+            className="object-cover"
             onError={() => setImageError(true)}
           />
         ) : (
           <div className="w-full h-full p-4 flex flex-col items-center justify-center bg-[#151515] rounded-md">
-             <p className="text-white/60 text-xs text-center line-clamp-6 italic">
-              "{postText.substring(0, 150)}{postText.length > 150 ? "..." : ""}"
+            <p className="text-white/60 text-xs text-center line-clamp-6 italic">
+              &ldquo;{postText.substring(0, 150)}{postText.length > 150 ? "..." : ""}&rdquo;
             </p>
           </div>
         )}

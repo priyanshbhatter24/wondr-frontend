@@ -7,7 +7,6 @@ import { CompetitorAggregatedResponse, CompetitorPost, ResearchJob } from "@/typ
 import PostInsightsModal from "./PostInsightsModal";
 import CompetitorSelector from "./competitor-research/CompetitorSelector";
 import PlatformSection from "./competitor-research/PlatformSection";
-import { ChevronRightIcon } from "@radix-ui/react-icons";
 
 export default function CompetitorInsightsSection() {
   const router = useRouter();
@@ -174,9 +173,11 @@ export default function CompetitorInsightsSection() {
   }
 
   // Get current competitor data
-  const currentCompetitor = selectedCompetitor && data?.competitors[selectedCompetitor];
+  const currentCompetitor = selectedCompetitor
+    ? data?.competitors[selectedCompetitor] ?? null
+    : null;
   // Get all platforms for current competitor (we show all of them)
-  const platforms = currentCompetitor?.platforms || [];
+  const platforms = currentCompetitor?.platforms ?? [];
 
   return (
     <div className="mb-12">

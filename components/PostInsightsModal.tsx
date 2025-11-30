@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useState } from "react";
 import { CompetitorPost } from "@/types/competitor-research";
 import { Cross2Icon, EyeOpenIcon, HeartIcon, ChatBubbleIcon, Share1Icon, ExternalLinkIcon } from "@radix-ui/react-icons";
@@ -99,15 +100,18 @@ export default function PostInsightsModal({
             {post.images && post.images.length > 0 && (
               <div className="space-y-2">
                 {post.images.map((img, index) => (
-                  <img
-                    key={index}
-                    src={img}
-                    alt={`Post image ${index + 1}`}
-                    className="w-full rounded-lg"
-                    onError={(e) => {
-                      (e.target as HTMLImageElement).style.display = "none";
-                    }}
-                  />
+                  <div key={index} className="relative w-full aspect-[4/3]">
+                    <Image
+                      src={img}
+                      alt={`Post image ${index + 1}`}
+                      fill
+                      sizes="100vw"
+                      className="rounded-lg object-cover"
+                      onError={(e) => {
+                        e.currentTarget.style.display = "none";
+                      }}
+                    />
+                  </div>
                 ))}
               </div>
             )}
