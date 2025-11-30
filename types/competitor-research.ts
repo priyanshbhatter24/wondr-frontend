@@ -1,111 +1,95 @@
+import { SocialMediaHandles } from "./industry-updates";
+
 /**
  * Competitor Research Data Types
  *
- * Type definitions for competitive intelligence data returned by the
- * Google ADK competitor research agent.
+ * Type definitions for the LangGraph-based competitor tracking agent.
+ * Updated to match the wondr-comp-agent-lc Lambda response format.
  */
 
-export interface CompetitorProfile {
-  name: string;
-  website: string;
-  about: string;
-  value_propositions: string[];
-  target_audience_signals: string[];
-  product_offerings: string[];
-  content_themes: string[];
-  social_channels: { [key: string]: string };  // {"LinkedIn": "Active", ...}
-}
-
+// Engagement metrics for a social media post
 export interface PostEngagement {
-  likes?: number;
-  comments?: number;
-  shares?: number;      // LinkedIn, Reddit
-  retweets?: number;    // Twitter/X
-  replies?: number;     // Twitter/X
-  views?: number;       // YouTube
-  score?: number;       // Reddit
+  likes: number;
+  comments: number;
+  shares: number;
+  views: number;
+  retweets: number;
 }
 
-export interface SocialPost {
-  platform: string;
+// AI-generated analysis for a single post
+export interface PostAnalysis {
+  messaging: string;
+  positioning: string;
+  strategy_fit: string;
+  engagement_insight: string;
+  themes: string[];
+}
+
+// Sentiment analysis for posts with comments (Reddit, YouTube)
+export interface PostSentiment {
+  overall: string;
+  praise_points: string[];
+  complaints: string[];
+  surprising_insights: string[];
+  sample_comments: Array<{
+    text?: string;
+    num_upvotes?: number;
+    num_replies?: number;
+  }>;
+}
+
+// A single competitor post with analysis
+export interface CompetitorPost {
+  post_id: string;
   post_text: string;
   post_url: string;
-  posted_date: string | null;
+  date_posted: string;
+  images: string[];
   engagement: PostEngagement;
-  content_type: string;              // "text", "image", "video", "post"
-  topics: string[];
+  analysis: PostAnalysis;
+  sentiment?: PostSentiment;
 }
 
-export interface PostingPatterns {
-  /** Average number of posts per week across the platform. */
-  average_posts_per_week?: number | null;
-  /** Days of the week where posting is most frequent. */
-  days_of_week?: string[];
-  /** Common time windows for publishing content. */
-  times_of_day?: string[];
-  /** Additional metadata supplied by the API. */
-  [key: string]: number | string | string[] | null | undefined;
-}
-
-export interface PlatformAnalysis {
+// Aggregated data for a single competitor (across all runs)
+export interface CompetitorAggregatedData {
   competitor_name: string;
-  platform: string;
-  total_posts_analyzed: number;
-  recent_posts: SocialPost[];
-  posting_frequency: string;         // "3-5x per week", "Low frequency (weekly or less)", etc.
-  content_themes: string[];          // Top themes extracted from posts
-  content_types_distribution: { [key: string]: number };  // {"text": 5, "image": 2, ...}
-  avg_engagement_rate: number | null;
-  top_performing_posts: SocialPost[];
-  posting_patterns: PostingPatterns;  // Days of week, times of day, avg posts per week
-  insights: string[];            // Key insights about this platform
+  logo_url?: string;  // New field for logo
+  total_posts: number;
+  platforms: string[];
+  top_themes: string[];
+  posts_by_platform: { [platform: string]: CompetitorPost[] };
+  latest_run_date: string;
 }
 
-export interface CompetitorSocialAnalysis {
-  competitor_name: string;
-  platforms: { [platform: string]: PlatformAnalysis };  // {"LinkedIn": {...}, "Twitter": {...}, ...}
-  total_posts_tracked: number;
-  most_active_platform: string;
-  most_engaging_platform: string;
-  overall_content_themes: string[];
-  cross_platform_insights: string[];
+// Response from aggregated endpoint GET /api/competitor-research/by-competitor
+export interface CompetitorAggregatedResponse {
+  competitors: { [name: string]: CompetitorAggregatedData };
+  total_competitors: number;
+  total_posts: number;
 }
 
-export interface MessagingAnalysis {
-  value_propositions: string[];
-  key_messages: string[];
-  tone: string;
-  positioning_statement: string;
-  differentiation_claims: string[];
+// Trigger research response (async - returns job_id)
+export interface TriggerResearchResponse {
+  status: "started";
+  job_id: string;
+  message: string;
 }
 
-export interface CompetitorResearch {
-  id: string;
+// Research job status (for polling)
+export type ResearchJobStatus = "pending" | "running" | "completed" | "failed";
+
+export interface ResearchJob {
+  job_id: string;
   user_id: string;
-  run_id: string;
-  created_at: string;
-  is_active: boolean;
-
-  // Main research data
-  competitor_profiles: CompetitorProfile[];
-  social_post_analysis: { [competitor: string]: CompetitorSocialAnalysis };
-  messaging_analysis: { [competitor: string]: MessagingAnalysis };
-
-  // Empty fields (not used by competitor research agent)
-  topic?: string;
-  description?: string;
-  channels?: Record<string, unknown>;
-  post_suggestions?: unknown[];
-  swot_analysis?: Record<string, unknown>;
-  competitor_mentions?: Record<string, unknown>;
-  content_strategies?: Record<string, unknown>;
-  pricing_analysis?: Record<string, unknown>;
-  seo_analysis?: Record<string, unknown>;
-  engagement_analysis?: Record<string, unknown>;
-  competitive_summary?: string;
+  status: ResearchJobStatus;
+  competitors: string[];  // Names of competitors being researched
+  progress?: string;      // e.g., "Analyzing HubSpot..."
+  error_message?: string;
+  started_at: string;
+  completed_at?: string;
+  results_count: number;  // Number of posts found
 }
 
-export interface CompetitorResearchListResponse {
-  competitor_research: CompetitorResearch[];
-  total: number;
+export interface RemixPromptResponse {
+  prompt: string;
 }
