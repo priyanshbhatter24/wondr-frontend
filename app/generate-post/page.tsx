@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useEffect, useState, useRef } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import AppShell from "@/components/AppShell";
 import { ImageDisplay } from "@/components/ImageDisplay";
@@ -21,8 +21,12 @@ import type { FabricCanvasEditor } from "@/components/FabricCanvas";
 function GeneratePostPageContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
-  const initialPrompt = searchParams.get("prompt") || "";
+  const initialPromptFromUrl = searchParams.get("prompt") || "";
   const sessionIdFromUrl = searchParams.get("session");
+  
+  // Remix parameters
+  const remixPostImage = searchParams.get("post_image");
+  const remixProcessedRef = useRef(false);
 
   const { imageGeneration, planMode } = useApiClient();
   const { sessions: sidebarSessions, addNewGeneration } = useGenerations();
@@ -39,9 +43,10 @@ function GeneratePostPageContent() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isInitializing, setIsInitializing] = useState(true);
+  const [initialPrompt, setInitialPrompt] = useState(initialPromptFromUrl);
 
   // Mode and channel state
-  const [mode, setMode] = useState<"plan" | "generate">("plan");
+  const [mode, setMode] = useState<"plan" | "generate">("generate");
   const [channel, setChannel] = useState<"instagram" | "linkedin" | "x">("instagram");
 
   // Session file count tracking
@@ -50,6 +55,9 @@ function GeneratePostPageContent() {
   // Canvas state
   const [assetsSidebarOpen, setAssetsSidebarOpen] = useState(false);
   const [canvasEditor, setCanvasEditor] = useState<FabricCanvasEditor | null>(null);
+
+  // Pre-attached files for chat interface
+  const [preAttachedFiles, setPreAttachedFiles] = useState<File[]>([]);
 
   // Fetch brand assets
   const { assets: brandAssets } = useBrandAssets();
@@ -96,11 +104,14 @@ function GeneratePostPageContent() {
         setSessionId(session.session_id);
 
         // IMPORTANT: Update URL to include session_id for persistence
-        const params = new URLSearchParams();
+        const params = new URLSearchParams(searchParams.toString());
         params.set("session", session.session_id);
-        if (initialPrompt) {
-          params.set("prompt", initialPrompt);
+        
+        // Don't overwrite remix params if they exist in current URL
+        if (initialPromptFromUrl && !params.has("prompt")) {
+          params.set("prompt", initialPromptFromUrl);
         }
+        
         router.replace(`/generate-post?${params.toString()}`);
       } catch (err) {
         console.error("Failed to create session:", err);
@@ -113,6 +124,50 @@ function GeneratePostPageContent() {
     initSession();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sessionIdFromUrl]);
+
+  // Handle Remix Logic (Prepare prompt and files ONLY)
+  useEffect(() => {
+    const handleRemix = async () => {
+      // Ensure we have a session, a prompt, and haven't processed it yet
+      if (!sessionId || !initialPromptFromUrl || remixProcessedRef.current || isGenerating) return;
+      
+      remixProcessedRef.current = true; // Mark as processed
+      
+      try {
+        console.log("🔄 Starting remix setup...");
+        // Set mode to generate
+        setMode("generate");
+        
+        // 1. Set initial prompt (pre-fill)
+        setInitialPrompt(initialPromptFromUrl);
+        
+        // 2. Prepare image attachment if available
+        if (remixPostImage) {
+          try {
+            console.log("📥 Fetching reference image:", remixPostImage);
+            const imgResponse = await fetch(remixPostImage);
+            const blob = await imgResponse.blob();
+            const file = new File([blob], "reference_image.jpg", { type: blob.type });
+            setPreAttachedFiles([file]);
+            console.log("✅ Reference image attached");
+          } catch (imgErr) {
+            console.error("❌ Failed to fetch remix image:", imgErr);
+          }
+        }
+
+        console.log("✅ Remix setup complete - Waiting for user to submit");
+        
+      } catch (err) {
+        console.error("❌ Remix setup failed:", err);
+        setError("Failed to setup remix.");
+      }
+    };
+
+    if (!isInitializing && sessionId) {
+      handleRemix();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sessionId, isInitializing, initialPromptFromUrl, remixPostImage]);
 
   // Load history when session changes
   useEffect(() => {
@@ -441,6 +496,7 @@ function GeneratePostPageContent() {
                       onSendMessage={handleMessage}
                       isGenerating={isGenerating}
                       initialPrompt={initialPrompt}
+                      preAttachedFiles={preAttachedFiles}
                       onSelectGeneration={(generationId) => {
                         const targetIndex = generations.findIndex(
                           (generation) => generation.generation_id === generationId,
