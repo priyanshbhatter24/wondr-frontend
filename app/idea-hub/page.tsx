@@ -4,11 +4,10 @@ import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import AppShell from "@/components/AppShell";
 import InsightCard from "@/components/InsightCard";
-import CompetitorResearchCard from "@/components/CompetitorResearchCard";
+import CompetitorInsightsSection from "@/components/CompetitorInsightsSection";
 import { ChevronLeftIcon, ChevronRightIcon, FileIcon } from "@radix-ui/react-icons";
 import { useApiClient } from "@/lib/api-client";
 import { IndustryUpdate } from "@/types/industry-updates";
-import { CompetitorResearch } from "@/types/competitor-research";
 import { getChannelSourcesLabel } from "@/utils/date";
 import { useGenerations } from "@/lib/use-generations";
 
@@ -28,12 +27,6 @@ export default function IdeaHubPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [researching, setResearching] = useState(false);
-
-  // API state for competitor research
-  const [competitorResearchFromAPI, setCompetitorResearchFromAPI] = useState<CompetitorResearch[]>([]);
-  const [competitorLoading, setCompetitorLoading] = useState(true);
-  const [competitorError, setCompetitorError] = useState<string | null>(null);
-  const [competitorResearching, setCompetitorResearching] = useState(false);
 
   // Get API client
   const api = useApiClient();
@@ -63,23 +56,6 @@ export default function IdeaHubPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []); // Only run once on mount
 
-  // Fetch competitor research on mount
-  useEffect(() => {
-    async function fetchCompetitorResearch() {
-      try {
-        const data = await api.competitorResearch.list({ limit: 20 });
-        setCompetitorResearchFromAPI(data.competitor_research);
-      } catch (error) {
-        console.error("Failed to fetch competitor research:", error);
-        setCompetitorError("Failed to load competitor research");
-      } finally {
-        setCompetitorLoading(false);
-      }
-    }
-    fetchCompetitorResearch();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // Only run once on mount
-
   // Handle manual research trigger
   const handleResearch = async () => {
     setResearching(true);
@@ -98,28 +74,6 @@ export default function IdeaHubPage() {
       setError("Research failed. Please try again.");
     } finally {
       setResearching(false);
-    }
-  };
-
-  // Handle manual competitor research trigger
-  const handleCompetitorResearch = async () => {
-    setCompetitorResearching(true);
-    setCompetitorError(null);
-
-    try {
-      const result = await api.competitorResearch.triggerResearch();
-
-      // Refresh the list after research completes
-      const data = await api.competitorResearch.list({ limit: 20 });
-      setCompetitorResearchFromAPI(data.competitor_research);
-
-      // Silent success - just log to console, no alert popup
-      console.log(`✅ Competitor research completed! Analyzed ${result.competitors_analyzed} competitors across ${result.platforms_tracked} platforms.`);
-    } catch (error) {
-      console.error("Competitor research failed:", error);
-      setCompetitorError("Competitor research failed. Please try again.");
-    } finally {
-      setCompetitorResearching(false);
     }
   };
 
@@ -172,12 +126,7 @@ export default function IdeaHubPage() {
     router.push(`/market-trend/${insightId}`);
   };
 
-  const handleCompetitorResearchCardClick = (researchId: string) => {
-    router.push(`/competitor-analysis/${researchId}`);
-  };
-
   const industrySliderRef = useRef<HTMLDivElement | null>(null);
-  const competitorResearchSliderRef = useRef<HTMLDivElement | null>(null);
 
   const scroll = (ref: React.RefObject<HTMLDivElement | null>, direction: "left" | "right") => {
     if (ref.current) {
@@ -206,11 +155,11 @@ export default function IdeaHubPage() {
           <div className="mb-12">
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-xl font-medium text-white">Industry Updates</h2>
-              <div className="flex gap-2">
+              <div className="flex gap-4">
                 <button
                   onClick={handleResearch}
                   disabled={researching}
-                  className="px-4 py-2 rounded-lg bg-[#C5D86D] text-black font-medium transition-all hover:bg-[#B5C85D] disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="px-4 py-1 rounded-md bg-transparent border border-white/20 text-white/90 font-medium text-sm transition-all hover:bg-white/10 hover:text-white disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
                 >
                   {researching ? "Researching..." : "Research"}
                 </button>
@@ -301,139 +250,8 @@ export default function IdeaHubPage() {
             )}
           </div>
 
-          {/* Competitor Research Section */}
-          <div className="mb-12">
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xl font-medium text-white">Competitor Research</h2>
-              <div className="flex gap-2">
-                <button
-                  onClick={handleCompetitorResearch}
-                  disabled={competitorResearching}
-                  className="px-4 py-2 rounded-lg bg-[#C5D86D] text-black font-medium transition-all hover:bg-[#B5C85D] disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {competitorResearching ? "Researching..." : "Research"}
-                </button>
-                <button
-                  onClick={() => scroll(competitorResearchSliderRef, "left")}
-                  className="w-8 h-8 rounded-full bg-transparent border border-white/20 flex items-center justify-center text-white transition-colors hover:bg-black/40"
-                >
-                  <ChevronLeftIcon className="w-4 h-4" />
-                </button>
-                <button
-                  onClick={() => scroll(competitorResearchSliderRef, "right")}
-                  className="w-8 h-8 rounded-full bg-transparent border border-white/20 flex items-center justify-center text-white transition-colors hover:bg-black/40"
-                >
-                  <ChevronRightIcon className="w-4 h-4" />
-                </button>
-              </div>
-            </div>
-
-            {/* Loading State */}
-            {competitorLoading && (
-              <div
-                ref={competitorResearchSliderRef}
-                className="flex gap-4 overflow-x-auto scrollbar-hide scroll-smooth pb-2"
-              >
-                {[1, 2, 3].map((i) => (
-                  <div
-                    key={i}
-                    className="bg-white/5 animate-pulse min-w-[400px] h-[300px] rounded"
-                  />
-                ))}
-              </div>
-            )}
-
-            {/* Error State */}
-            {competitorError && !competitorLoading && (
-              <div className="text-center py-12 text-red-400">
-                <p>{competitorError}</p>
-              </div>
-            )}
-
-            {/* Data or Empty State */}
-            {!competitorLoading && !competitorError && (
-              <div
-                ref={competitorResearchSliderRef}
-                className="flex gap-4 overflow-x-auto scrollbar-hide scroll-smooth pb-2"
-              >
-                {competitorResearchFromAPI.length > 0 ? (
-                  // Real API data
-                  competitorResearchFromAPI.map((research) => (
-                    <CompetitorResearchCard
-                      key={research.id}
-                      research={research}
-                      onClick={() => handleCompetitorResearchCardClick(research.id)}
-                    />
-                  ))
-                ) : (
-                  // Empty state message
-                  <div className="text-center py-12 text-white/60 w-full">
-                    <p>No competitor research available. Click “Research” to generate insights.</p>
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
-
-          {/* Legacy Competitor Tabs and Insights - HIDDEN (replaced by Competitor Research section above) */}
-          {/*
-          <div className="mb-12">
-            <div className="flex gap-8 mb-6 border-b border-white/20">
-              {(["Meta", "Alphabet", "Microsoft"] as CompetitorType[]).map((competitor) => (
-                <button
-                  key={competitor}
-                  onClick={() => setActiveCompetitor(competitor)}
-                  className={`pb-3 text-lg font-medium transition-colors relative ${
-                    activeCompetitor === competitor
-                      ? "text-white border-b-2 border-white"
-                      : "text-white/70 hover:text-white/80"
-                  }`}
-                >
-                  {competitor}
-                </button>
-              ))}
-            </div>
-
-            <div className="flex items-center justify-between mb-6">
-              <div className="flex-1" />
-              <div className="flex gap-2">
-                <button
-                  onClick={() => scroll(competitorSliderRef, "left")}
-                  className="w-8 h-8 rounded-full bg-transparent border border-white/20 flex items-center justify-center text-white transition-colors hover:bg-black/40"
-                >
-                  <ChevronLeftIcon className="w-4 h-4" />
-                </button>
-                <button
-                  onClick={() => scroll(competitorSliderRef, "right")}
-                  className="w-8 h-8 rounded-full bg-transparent border border-white/20 flex items-center justify-center text-white transition-colors hover:bg-black/40"
-                >
-                  <ChevronRightIcon className="w-4 h-4" />
-                </button>
-              </div>
-            </div>
-            <div
-              ref={competitorSliderRef}
-              className="flex gap-4 overflow-x-auto scrollbar-hide scroll-smooth pb-2"
-            >
-              {competitorInsights[activeCompetitor].map((insight) => (
-                <CompetitorCard
-                  key={insight.id}
-                  source={insight.source}
-                  topic={insight.topic}
-                  description={insight.description}
-                  remixOptions={insight.remixOptions}
-                  heroImageUrl={insight.heroImageUrl}
-                  heroImageAlt={insight.heroImageAlt}
-                  heroImageSourceUrl={insight.heroImageSourceUrl}
-                  metrics={insight.metrics}
-                  ctaLabel={insight.ctaLabel}
-                  ctaHref={insight.ctaHref}
-                  onClick={() => handleCardClick(insight.id)}
-                />
-              ))}
-            </div>
-          </div>
-          */}
+          {/* Competitor Insights Section */}
+          <CompetitorInsightsSection />
         </div>
       </div>
     </AppShell>

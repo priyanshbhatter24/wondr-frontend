@@ -33,6 +33,7 @@ export interface SocialMediaHandles {
 export interface Competitor {
   name: string;
   landing_page: string;
+  logo_url?: string; // New field
   social_media?: SocialMediaHandles;
 }
 
