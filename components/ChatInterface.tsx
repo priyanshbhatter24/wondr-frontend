@@ -16,6 +16,7 @@ interface ChatInterfaceProps {
   onSendMessage: (prompt: string, files?: File[]) => void;
   isGenerating: boolean;
   initialPrompt?: string;
+  preAttachedFiles?: File[];
   onSelectGeneration?: (generationId: string) => void;
   selectedGenerationId?: string;
   mode?: "plan" | "generate";
@@ -27,6 +28,7 @@ export function ChatInterface({
   onSendMessage,
   isGenerating,
   initialPrompt,
+  preAttachedFiles,
   onSelectGeneration,
   selectedGenerationId,
   mode = "generate",
@@ -50,6 +52,13 @@ export function ChatInterface({
       setPrompt(initialPrompt);
     }
   }, [initialPrompt]);
+
+  // Update attachedFiles if preAttachedFiles changes (e.g. remix flow)
+  useEffect(() => {
+    if (preAttachedFiles && preAttachedFiles.length > 0) {
+      setAttachedFiles(preAttachedFiles);
+    }
+  }, [preAttachedFiles]);
 
   // Auto-scroll to bottom when messages change
   useEffect(() => {
