@@ -1,5 +1,3 @@
-import { SocialMediaHandles } from "./industry-updates";
-
 /**
  * Competitor Research Data Types
  *
