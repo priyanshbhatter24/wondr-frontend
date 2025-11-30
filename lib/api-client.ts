@@ -6,7 +6,7 @@ import { useAuth } from "@clerk/nextjs";
 import { GenerateImageRequest, GenerateImageResponse, ImageGeneration, ImageGenerationSession, ChatMessage, UserSessionsResponse, PlanModeChatRequest, PlanModeChatResponse, UpdateSessionRequest, SaveCanvasDataRequest } from "@/types/image-generation";
 import { BrandAsset, IndustryUpdate, IndustryUpdatesListResponse, UpdateIcpResponse, UserICPConfig } from "@/types/industry-updates";
 import { InitialPromptRequest, InitialPromptResponse, PostIdeationRequest, PostIdeationResponse, PostIdeationHistoryItem } from "@/types/post-ideation";
-import { CompetitorResearch, CompetitorResearchListResponse } from "@/types/competitor-research";
+import { CompetitorAggregatedResponse, TriggerResearchResponse, ResearchJob, RemixPromptResponse } from "@/types/competitor-research";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
@@ -316,25 +316,22 @@ export function useApiClient() {
         },
       },
       competitorResearch: {
-        list: (params?: { limit?: number; offset?: number }) => {
-          let endpoint = "/api/competitor-research";
-          if (params) {
-            const searchParams = new URLSearchParams();
-            if (params.limit !== undefined) searchParams.append("limit", params.limit.toString());
-            if (params.offset !== undefined) searchParams.append("offset", params.offset.toString());
-            const queryString = searchParams.toString();
-            if (queryString) {
-              endpoint += `?${queryString}`;
-            }
-          }
-          return apiClient<CompetitorResearchListResponse>(endpoint);
-        },
-        get: (id: string) => apiClient<CompetitorResearch>(`/api/competitor-research/${id}`),
+        getAggregated: () =>
+          apiClient<CompetitorAggregatedResponse>("/api/competitor-research/by-competitor"),
         triggerResearch: () =>
-          apiClient<{ success: boolean; message: string; run_id: string; competitors_analyzed: number; platforms_tracked: number }>("/api/competitor-research/research", {
+          apiClient<TriggerResearchResponse>("/api/competitor-research/research", {
             method: "POST",
           }),
+        getJobStatus: (jobId: string) =>
+          apiClient<ResearchJob>(`/api/competitor-research/jobs/${jobId}`),
       },
+      promptGeneration: {
+        remix: (text: string) => 
+          apiClient<RemixPromptResponse>("/api/prompt-generation/remix", {
+            method: "POST",
+            body: JSON.stringify({ text })
+          })
+      }
     };
   }, [getToken]);
 }
