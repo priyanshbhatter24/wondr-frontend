@@ -23,6 +23,34 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "*.s3.*.amazonaws.com",
       },
+      // LinkedIn media images
+      {
+        protocol: "https",
+        hostname: "media.licdn.com",
+      },
+      // YouTube thumbnails
+      {
+        protocol: "https",
+        hostname: "i.ytimg.com",
+      },
+      {
+        protocol: "https",
+        hostname: "img.youtube.com",
+      },
+      // Twitter/X images
+      {
+        protocol: "https",
+        hostname: "pbs.twimg.com",
+      },
+      // Reddit images
+      {
+        protocol: "https",
+        hostname: "preview.redd.it",
+      },
+      {
+        protocol: "https",
+        hostname: "i.redd.it",
+      },
     ],
   },
 };

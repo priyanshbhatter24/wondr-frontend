@@ -35,6 +35,16 @@ export default function CompetitorPostCard({
   const [isRemixing, setIsRemixing] = useState(false);
   const hasImage = post.images && post.images.length > 0 && !imageError;
 
+  // Log post data for debugging
+  console.log("[PostCard] Rendering:", {
+    post_id: post.post_id,
+    post_url: post.post_url,
+    platform,
+    images: post.images,
+    hasImage,
+    post_text_preview: post.post_text?.substring(0, 50)
+  });
+
   // Use entire post text for display logic, truncation handled by CSS or length check in render
   const postText = post.post_text;
 

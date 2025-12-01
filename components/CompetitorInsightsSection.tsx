@@ -51,6 +51,32 @@ export default function CompetitorInsightsSection() {
       setLoading(true);
       setError(null);
       const response = await api.competitorResearch.getAggregated();
+
+      // Log full API response for debugging
+      console.log("[CompetitorInsights] API Response:", response);
+      console.log("[CompetitorInsights] Total competitors:", response.total_competitors);
+      console.log("[CompetitorInsights] Total posts:", response.total_posts);
+      console.log("[CompetitorInsights] Competitors:", Object.keys(response.competitors));
+
+      // Log details for each competitor
+      for (const [name, compData] of Object.entries(response.competitors)) {
+        console.log(`[CompetitorInsights] ${name}:`, {
+          total_posts: compData.total_posts,
+          platforms: compData.platforms,
+          logo_url: compData.logo_url,
+          posts_sample: Object.entries(compData.posts_by_platform).map(([p, posts]) => ({
+            platform: p,
+            count: posts.length,
+            first_post: posts[0] ? {
+              post_id: posts[0].post_id,
+              post_url: posts[0].post_url,
+              images: posts[0].images,
+              post_text_preview: posts[0].post_text?.substring(0, 50)
+            } : null
+          }))
+        });
+      }
+
       setData(response);
 
       // Auto-select first competitor
