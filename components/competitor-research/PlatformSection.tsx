@@ -66,12 +66,12 @@ export default function PlatformSection({
         )}
       </div>
       
-      <div 
+      <div
         ref={scrollContainerRef}
         className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide -mx-1 px-1 snap-x"
       >
-        {posts.map((post) => (
-          <div key={post.post_id} className="w-[320px] flex-shrink-0 snap-start">
+        {posts.map((post, index) => (
+          <div key={`${post.post_id}-${index}`} className="w-[320px] flex-shrink-0 snap-start">
             <CompetitorPostCard
               post={post}
               platform={platform}
