@@ -7,6 +7,7 @@ export interface ChannelDetail {
 export interface PostSuggestion {
   suggestion: string;
   reasoning: string;
+  context: string;
 }
 
 export interface IndustryUpdate {
@@ -21,6 +22,7 @@ export interface IndustryUpdate {
   post_suggestions: PostSuggestion[];
   created_at: string;
   is_active: boolean;
+  research_context: string;
 }
 
 export interface SocialMediaHandles {
