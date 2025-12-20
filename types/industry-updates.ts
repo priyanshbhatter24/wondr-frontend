@@ -70,9 +70,7 @@ export interface UserICPConfig {
     region?: string;
     [key: string]: string | string[] | undefined;
   };
-  persona: {
-    youtubers: string[];
-  };
+  top_voices: TopVoices;
   industry: string[];
   competitors: Competitor[];
   channels: string[];
@@ -107,4 +105,10 @@ export interface IndustryUpdatesListResponse {
   total: number;
   limit: number;
   offset: number;
+}
+
+export interface TopVoices {
+  linkedin: string[];
+  twitter: string[];
+  reddit_keywords: string[];
 }
