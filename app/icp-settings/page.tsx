@@ -26,7 +26,7 @@ export default function ICPSettingsPage() {
 
   const [formData, setFormData] = useState<UserICPConfig>({
     ICP: { industry: '', target_audience: '', region: '' },
-    persona: { youtubers: [] },
+    top_voices: { linkedin: [], twitter: [], reddit_keywords: [] },
     industry: [],
     competitors: [],
     channels: ['Reddit', 'X', 'LinkedIn', 'YouTube'],
@@ -46,7 +46,9 @@ export default function ICPSettingsPage() {
   const [expandedCompetitors, setExpandedCompetitors] = useState<Set<number>>(new Set());
 
   // Temporary input states for dynamic lists
-  const [newYoutuber, setNewYoutuber] = useState('');
+  const [newLinkedinUrl, setNewLinkedinUrl] = useState('');
+  const [newTwitterUrl, setNewTwitterUrl] = useState('');
+  const [newRedditKeyword, setNewRedditKeyword] = useState('');
   const [newIndustry, setNewIndustry] = useState('');
   const [newCompetitor, setNewCompetitor] = useState<Competitor>({ name: '', landing_page: '' });
   const [newBlogTitle, setNewBlogTitle] = useState('');
@@ -98,21 +100,67 @@ export default function ICPSettingsPage() {
     }
   };
 
-  // Helper functions for dynamic lists
-  const addYoutuber = () => {
-    if (newYoutuber.trim()) {
+  // URL validation helpers
+  const isValidLinkedInUrl = (url: string): boolean => {
+    return url.startsWith('https://www.linkedin.com/');
+  };
+
+  const isValidTwitterUrl = (url: string): boolean => {
+    return url.startsWith('https://x.com/') || url.startsWith('https://twitter.com/');
+  };
+
+  // Helper functions for top voices
+  const addLinkedInUrl = () => {
+    const trimmed = newLinkedinUrl.trim();
+    if (trimmed && isValidLinkedInUrl(trimmed) && !formData.top_voices.linkedin.includes(trimmed)) {
       setFormData({
         ...formData,
-        persona: { youtubers: [...formData.persona.youtubers, newYoutuber.trim()] }
+        top_voices: { ...formData.top_voices, linkedin: [...formData.top_voices.linkedin, trimmed] }
       });
-      setNewYoutuber('');
+      setNewLinkedinUrl('');
     }
   };
 
-  const removeYoutuber = (index: number) => {
+  const removeLinkedInUrl = (index: number) => {
     setFormData({
       ...formData,
-      persona: { youtubers: formData.persona.youtubers.filter((_, i) => i !== index) }
+      top_voices: { ...formData.top_voices, linkedin: formData.top_voices.linkedin.filter((_, i) => i !== index) }
+    });
+  };
+
+  const addTwitterUrl = () => {
+    const trimmed = newTwitterUrl.trim();
+    if (trimmed && isValidTwitterUrl(trimmed) && !formData.top_voices.twitter.includes(trimmed)) {
+      setFormData({
+        ...formData,
+        top_voices: { ...formData.top_voices, twitter: [...formData.top_voices.twitter, trimmed] }
+      });
+      setNewTwitterUrl('');
+    }
+  };
+
+  const removeTwitterUrl = (index: number) => {
+    setFormData({
+      ...formData,
+      top_voices: { ...formData.top_voices, twitter: formData.top_voices.twitter.filter((_, i) => i !== index) }
+    });
+  };
+
+  const addRedditKeyword = () => {
+    const trimmed = newRedditKeyword.trim();
+    if (trimmed && !formData.top_voices.reddit_keywords.includes(trimmed)) {
+      setFormData({
+        ...formData,
+        top_voices: { ...formData.top_voices, reddit_keywords: [...formData.top_voices.reddit_keywords, trimmed] }
+      });
+      setNewRedditKeyword('');
+    }
+  };
+
+  const removeRedditKeyword = (index: number) => {
+    setFormData({
+      ...formData,
+      top_voices: { ...formData.top_voices, reddit_keywords: formData.top_voices.reddit_keywords.filter((_, i) => i !== index) }
     });
   };
 
@@ -499,7 +547,7 @@ export default function ICPSettingsPage() {
                     </div>
                   </section>
 
-                  {/* Persona Section */}
+                  {/* Persona Insights Section - Top Voices */}
                   <section className="space-y-4">
                     <div className="flex items-start justify-between gap-4">
                       <div>
@@ -509,12 +557,16 @@ export default function ICPSettingsPage() {
                         </p>
                       </div>
                     </div>
+
+                    {/* LinkedIn Profiles */}
                     <div className="space-y-3">
-                      {formData.persona.youtubers.map((youtuber, index) => (
+                      <h3 className="text-xs uppercase tracking-wide text-white/50">LinkedIn Profiles</h3>
+                      <p className="text-xs text-white/40">Add LinkedIn company pages or individual profiles to monitor.</p>
+                      {formData.top_voices.linkedin.map((url, index) => (
                         <div key={index} className="flex items-center gap-2 rounded-full border border-white/10 bg-[#2A2A2A] px-4 py-3">
-                          <div className="flex-1 text-sm text-white">{youtuber}</div>
+                          <div className="flex-1 text-sm text-white truncate">{url}</div>
                           <button
-                            onClick={() => removeYoutuber(index)}
+                            onClick={() => removeLinkedInUrl(index)}
                             className="rounded-full border border-red-500/50 bg-red-500/10 p-2 text-red-300 transition-colors hover:bg-red-500/20"
                             type="button"
                           >
@@ -524,18 +576,112 @@ export default function ICPSettingsPage() {
                       ))}
                       <div className="relative">
                         <input
-                          type="text"
-                          value={newYoutuber}
-                          onChange={(e) => setNewYoutuber(e.target.value)}
-                          onKeyPress={(e) => e.key === 'Enter' && addYoutuber()}
-                          className="w-full rounded-full border border-white/10 bg-[#2A2A2A] px-4 py-3 pr-12 text-sm text-white placeholder:text-white/40 focus:border-[#C5D86D] focus:outline-none"
-                          placeholder="Add YouTuber/Influencer name"
+                          type="url"
+                          value={newLinkedinUrl}
+                          onChange={(e) => setNewLinkedinUrl(e.target.value)}
+                          onKeyPress={(e) => e.key === 'Enter' && addLinkedInUrl()}
+                          className={`w-full rounded-full border bg-[#2A2A2A] px-4 py-3 pr-12 text-sm text-white placeholder:text-white/40 focus:outline-none ${
+                            newLinkedinUrl && !isValidLinkedInUrl(newLinkedinUrl)
+                              ? 'border-red-500/50 focus:border-red-500'
+                              : 'border-white/10 focus:border-[#C5D86D]'
+                          }`}
+                          placeholder="https://www.linkedin.com/company/... or /in/..."
                         />
                         <button
-                          onClick={addYoutuber}
-                          className="absolute right-2 top-1/2 -translate-y-1/2 flex h-8 w-8 items-center justify-center rounded-full border border-[#C5D86D]/40 bg-[#C5D86D]/10 text-[#C5D86D] transition-colors hover:bg-[#C5D86D]/20"
+                          onClick={addLinkedInUrl}
+                          disabled={!newLinkedinUrl || !isValidLinkedInUrl(newLinkedinUrl)}
+                          className="absolute right-2 top-1/2 -translate-y-1/2 flex h-8 w-8 items-center justify-center rounded-full border border-[#C5D86D]/40 bg-[#C5D86D]/10 text-[#C5D86D] transition-colors hover:bg-[#C5D86D]/20 disabled:opacity-50 disabled:cursor-not-allowed"
                           type="button"
-                          aria-label="Add persona"
+                          aria-label="Add LinkedIn URL"
+                        >
+                          <PlusIcon className="h-4 w-4" />
+                        </button>
+                      </div>
+                      {newLinkedinUrl && !isValidLinkedInUrl(newLinkedinUrl) && (
+                        <p className="text-xs text-red-400">URL must start with https://www.linkedin.com/</p>
+                      )}
+                    </div>
+
+                    {/* X (Twitter) Profiles */}
+                    <div className="space-y-3">
+                      <h3 className="text-xs uppercase tracking-wide text-white/50">X (Twitter) Profiles</h3>
+                      <p className="text-xs text-white/40">Add X profile URLs to monitor for trending discussions.</p>
+                      {formData.top_voices.twitter.map((url, index) => (
+                        <div key={index} className="flex items-center gap-2 rounded-full border border-white/10 bg-[#2A2A2A] px-4 py-3">
+                          <div className="flex-1 text-sm text-white truncate">{url}</div>
+                          <button
+                            onClick={() => removeTwitterUrl(index)}
+                            className="rounded-full border border-red-500/50 bg-red-500/10 p-2 text-red-300 transition-colors hover:bg-red-500/20"
+                            type="button"
+                          >
+                            <TrashIcon className="h-4 w-4" />
+                          </button>
+                        </div>
+                      ))}
+                      <div className="relative">
+                        <input
+                          type="url"
+                          value={newTwitterUrl}
+                          onChange={(e) => setNewTwitterUrl(e.target.value)}
+                          onKeyPress={(e) => e.key === 'Enter' && addTwitterUrl()}
+                          className={`w-full rounded-full border bg-[#2A2A2A] px-4 py-3 pr-12 text-sm text-white placeholder:text-white/40 focus:outline-none ${
+                            newTwitterUrl && !isValidTwitterUrl(newTwitterUrl)
+                              ? 'border-red-500/50 focus:border-red-500'
+                              : 'border-white/10 focus:border-[#C5D86D]'
+                          }`}
+                          placeholder="https://x.com/username or https://twitter.com/username"
+                        />
+                        <button
+                          onClick={addTwitterUrl}
+                          disabled={!newTwitterUrl || !isValidTwitterUrl(newTwitterUrl)}
+                          className="absolute right-2 top-1/2 -translate-y-1/2 flex h-8 w-8 items-center justify-center rounded-full border border-[#C5D86D]/40 bg-[#C5D86D]/10 text-[#C5D86D] transition-colors hover:bg-[#C5D86D]/20 disabled:opacity-50 disabled:cursor-not-allowed"
+                          type="button"
+                          aria-label="Add X URL"
+                        >
+                          <PlusIcon className="h-4 w-4" />
+                        </button>
+                      </div>
+                      {newTwitterUrl && !isValidTwitterUrl(newTwitterUrl) && (
+                        <p className="text-xs text-red-400">URL must start with https://x.com/ or https://twitter.com/</p>
+                      )}
+                    </div>
+
+                    {/* Reddit Keywords */}
+                    <div className="space-y-3">
+                      <h3 className="text-xs uppercase tracking-wide text-white/50">Reddit Keywords</h3>
+                      <p className="text-xs text-white/40">Add keywords to search for trending discussions on Reddit.</p>
+                      <div className="flex flex-wrap gap-2">
+                        {formData.top_voices.reddit_keywords.map((keyword, index) => (
+                          <div
+                            key={index}
+                            className="flex items-center gap-2 rounded-full border border-[#C5D86D]/40 bg-[#C5D86D]/10 px-3 py-1"
+                          >
+                            <span className="text-xs font-medium text-[#C5D86D]">{keyword}</span>
+                            <button
+                              onClick={() => removeRedditKeyword(index)}
+                              className="text-[#C5D86D] transition-colors hover:text-white"
+                              type="button"
+                            >
+                              <TrashIcon className="h-3 w-3" />
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                      <div className="relative">
+                        <input
+                          type="text"
+                          value={newRedditKeyword}
+                          onChange={(e) => setNewRedditKeyword(e.target.value)}
+                          onKeyPress={(e) => e.key === 'Enter' && addRedditKeyword()}
+                          className="w-full rounded-full border border-white/10 bg-[#2A2A2A] px-4 py-3 pr-12 text-sm text-white placeholder:text-white/40 focus:border-[#C5D86D] focus:outline-none"
+                          placeholder="e.g., marketing automation"
+                        />
+                        <button
+                          onClick={addRedditKeyword}
+                          disabled={!newRedditKeyword.trim()}
+                          className="absolute right-2 top-1/2 -translate-y-1/2 flex h-8 w-8 items-center justify-center rounded-full border border-[#C5D86D]/40 bg-[#C5D86D]/10 text-[#C5D86D] transition-colors hover:bg-[#C5D86D]/20 disabled:opacity-50 disabled:cursor-not-allowed"
+                          type="button"
+                          aria-label="Add Reddit keyword"
                         >
                           <PlusIcon className="h-4 w-4" />
                         </button>
