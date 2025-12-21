@@ -14,7 +14,6 @@ import { useMemo, useState } from "react";
 import { usePathname } from "next/navigation";
 import { useClerk, useUser } from "@clerk/nextjs";
 import { SidebarSessionItem } from "@/types/image-generation";
-import { formatRelativeTime } from "@/utils/date";
 
 interface SidebarProps {
   sessions: SidebarSessionItem[];
@@ -81,7 +80,7 @@ export default function Sidebar({
 
   const navItemClassName = (active: boolean) => {
     const base = isOpen
-      ? "w-full text-left px-3 py-2 gap-3 text-sm"
+      ? "w-full text-left px-3 py-2.5 gap-3 text-sm font-medium"
       : "w-10 h-10 justify-center mx-auto";
 
     return `flex items-center rounded-md transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-white/40 ${
@@ -92,7 +91,7 @@ export default function Sidebar({
   const sessionItemClassName = (sessionId: string) => {
     const isActive = activeSessionId === sessionId;
 
-    return `w-full text-left px-3 py-2.5 rounded-md transition-colors text-xs focus:outline-none focus-visible:ring-2 focus-visible:ring-white/40 ${
+    return `w-full text-left px-3 py-2.5 rounded-md transition-colors text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-white/40 ${
       isActive ? "bg-white/20 text-white" : "text-white/80 hover:bg-white/10"
     }`;
   };
@@ -160,7 +159,7 @@ export default function Sidebar({
         <div
           className={
             isOpen
-              ? "px-4 py-2 space-y-1"
+              ? "px-1 py-2 space-y-0 text-sm"
               : "px-2 py-4 flex flex-col items-center gap-3"
           }
         >
@@ -185,13 +184,13 @@ export default function Sidebar({
           <>
             <Separator.Root className="bg-white/10 h-px my-2" />
 
-            <div className="px-4 flex-1 min-h-0 pb-4">
+            <div className="px-1 flex-1 min-h-0 pb-4 text-sm">
               <div className="text-xs font-medium text-white/70 mb-3 px-3">
                 Generations
               </div>
               <ScrollArea.Root className="w-full h-full overflow-hidden">
                 <ScrollArea.Viewport className="w-full h-full [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none']">
-                  <div className="space-y-2">
+                  <div className="space-y-0">
                     {filteredSessions.map((session) => {
                       const isActive = activeSessionId === session.session_id;
 
@@ -204,18 +203,11 @@ export default function Sidebar({
                           className={sessionItemClassName(session.session_id)}
                         >
                           <div
-                            className={`font-normal truncate ${
+                            className={`font-medium truncate text-sm ${
                               isActive ? "text-white" : "text-white/90"
                             }`}
                           >
                             {session.name}
-                          </div>
-                          <div
-                            className={`text-xs mt-1 ${
-                              isActive ? "text-white/70" : "text-white/50"
-                            }`}
-                          >
-                            {formatRelativeTime(session.created_at)}
                           </div>
                         </button>
                       );
@@ -228,7 +220,7 @@ export default function Sidebar({
                   </div>
                 </ScrollArea.Viewport>
                 <ScrollArea.Scrollbar
-                  className="flex select-none touch-none p-0.5 bg-transparent transition-colors duration-150 ease-out data-[orientation=vertical]:w-2"
+                  className="flex select-none touch-none p-0 bg-transparent transition-colors duration-150 ease-out data-[orientation=vertical]:w-2"
                   orientation="vertical"
                 >
                   <ScrollArea.Thumb className="flex-1 bg-white/20 rounded-full" />
