@@ -156,25 +156,29 @@ export default function IdeaHubPage() {
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-xl font-medium text-white">Industry Updates</h2>
               <div className="flex gap-4">
-                <button
-                  onClick={handleResearch}
-                  disabled={researching}
-                  className="px-4 py-1 rounded-md bg-transparent border border-white/20 text-white/90 font-medium text-sm transition-all hover:bg-white/10 hover:text-white disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
-                >
-                  {researching ? "Researching..." : "Research"}
-                </button>
-                <button
-                  onClick={() => scroll(industrySliderRef, "left")}
-                  className="w-8 h-8 rounded-full bg-transparent border border-white/20 flex items-center justify-center text-white transition-colors hover:bg-black/40"
-                >
-                  <ChevronLeftIcon className="w-4 h-4" />
-                </button>
-                <button
-                  onClick={() => scroll(industrySliderRef, "right")}
-                  className="w-8 h-8 rounded-full bg-transparent border border-white/20 flex items-center justify-center text-white transition-colors hover:bg-black/40"
-                >
-                  <ChevronRightIcon className="w-4 h-4" />
-                </button>
+                <div>
+                  <button
+                    onClick={handleResearch}
+                    disabled={researching}
+                    className="px-4 py-2 rounded-md bg-white/5 text-white/90 font-medium text-sm transition-all hover:bg-white/10 hover:text-white disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                  >
+                    {researching ? "Researching..." : "Research"}
+                  </button>
+                </div>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => scroll(industrySliderRef, "left")}
+                    className="w-8 h-8 rounded-full bg-transparent border border-white/20 flex items-center justify-center text-white transition-colors hover:bg-black/40"
+                  >
+                    <ChevronLeftIcon className="w-4 h-4" />
+                  </button>
+                  <button
+                    onClick={() => scroll(industrySliderRef, "right")}
+                    className="w-8 h-8 rounded-full bg-transparent border border-white/20 flex items-center justify-center text-white transition-colors hover:bg-black/40"
+                  >
+                    <ChevronRightIcon className="w-4 h-4" />
+                  </button>
+                </div>
               </div>
             </div>
 
