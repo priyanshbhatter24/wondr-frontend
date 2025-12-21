@@ -473,7 +473,7 @@ function GeneratePostPageContent() {
       <div className="flex flex-col h-screen bg-[#3A3A3A]">
         {/* Header */}
         <header className="flex items-center justify-between p-4 border-b border-[#262626]">
-          <h1 className="text-2xl font-bold text-white">Generate Post</h1>
+          <h1 className="text-[22px] font-semibold text-white">Generate Post</h1>
         </header>
 
         {/* Error banner */}
