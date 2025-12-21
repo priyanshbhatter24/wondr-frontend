@@ -80,19 +80,19 @@ export default function Sidebar({
 
   const navItemClassName = (active: boolean) => {
     const base = isOpen
-      ? "w-full text-left px-3 py-2.5 gap-3 text-sm font-medium"
+      ? "w-full text-left px-3 py-2 gap-3 text-sm font-medium"
       : "w-10 h-10 justify-center mx-auto";
 
     return `flex items-center rounded-md transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-white/40 ${
-      active ? "bg-white/20 text-white" : "text-white/80 hover:bg-white/10"
+      active ? "bg-white/7 text-white" : "text-white/80 hover:bg-white/10"
     } ${base}`;
   };
 
   const sessionItemClassName = (sessionId: string) => {
     const isActive = activeSessionId === sessionId;
 
-    return `w-full text-left px-3 py-2.5 rounded-md transition-colors text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-white/40 ${
-      isActive ? "bg-white/20 text-white" : "text-white/80 hover:bg-white/10"
+    return `w-full text-left px-3 py-2 rounded-md transition-colors text-sm focus:outline-none focus-visible:ring-1 focus-visible:ring-white/40 ${
+      isActive ? "bg-white/7 text-white" : "text-white/80 hover:bg-white/10"
     }`;
   };
 
@@ -182,10 +182,9 @@ export default function Sidebar({
 
         {isOpen && (
           <>
-            <Separator.Root className="bg-white/10 h-px my-2" />
 
             <div className="px-1 flex-1 min-h-0 pb-4 text-sm">
-              <div className="text-xs font-medium text-white/70 mb-3 px-3">
+              <div className="text-sm font-light text-white/70 mb-2 mt-5 px-3">
                 Generations
               </div>
               <ScrollArea.Root className="w-full h-full overflow-hidden">
@@ -222,6 +221,7 @@ export default function Sidebar({
                 <ScrollArea.Scrollbar
                   className="flex select-none touch-none p-0 bg-transparent transition-colors duration-150 ease-out data-[orientation=vertical]:w-2"
                   orientation="vertical"
+                  style={{ paddingLeft: 0, paddingRight: 0 }}
                 >
                   <ScrollArea.Thumb className="flex-1 bg-white/20 rounded-full" />
                 </ScrollArea.Scrollbar>
