@@ -21,7 +21,7 @@ wondr-frontend/
    ```bash
    npm install
    ```
-2. Configure environment variables in `.env.local` (see below).
+2. Copy `.env.example` to `.env.local` and fill in your own values (see below).
 3. Make sure the backend service is running locally (port 8000 by default).
 4. Start the development server
    ```bash
@@ -29,18 +29,16 @@ wondr-frontend/
    ```
 5. Visit http://localhost:3000 to use the app. The site automatically reloads as you edit files.
 
-## Environment Variables (`.env.local`)
+## Environment Variables
+All required variables are documented in [`.env.example`](.env.example). Copy it to
+`.env.local` and fill in your own values:
+```bash
+cp .env.example .env.local
 ```
-NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_...
-CLERK_SECRET_KEY=sk_test_...
-NEXT_PUBLIC_CLERK_SIGN_IN_URL=/sign-in
-NEXT_PUBLIC_CLERK_SIGN_UP_URL=/sign-up
-NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL=/dashboard
-NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL=/dashboard
-NEXT_PUBLIC_API_URL=http://localhost:8000
-```
+- `.env.local` is git-ignored — never commit it or any file containing real secrets.
+- Production values are configured in the hosting provider (e.g. Vercel project settings), not in a committed file.
 - Keep `NEXT_PUBLIC_API_URL` in sync with the backend host/port.
-- Never commit real secrets; use `.env.local` for local overrides.
+- Get the Clerk keys from the [Clerk dashboard](https://dashboard.clerk.com); only the `NEXT_PUBLIC_*` publishable key is safe to expose in the browser — keep `CLERK_SECRET_KEY` private.
 
 ## Available Scripts
 - `npm run dev` – start the Next.js dev server on port 3000.
